@@ -1,0 +1,41 @@
+@import 'transition.scss';
+
+/* 父容器 */
+html,
+body,
+#app {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  background-color: white;
+  box-sizing: border-box;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB,
+    Microsoft YaHei, Arial, sans-serif;
+}
+
+/*设置进度条颜色  不配置时为默认颜色*/
+#nprogress .bar {
+  background: rgba(245, 208, 25, 0.5) !important;
+}
+
+/*设置滚动条样式*/
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/*定义滚动条轨道 内阴影+圆角*/
+::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/*定义滑块 内阴影+圆角*/
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(26, 25, 25, 0.3);
+  background-color: rgba(0, 0, 0, 0.1);
+}

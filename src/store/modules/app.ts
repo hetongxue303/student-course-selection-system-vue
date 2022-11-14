@@ -1,10 +1,19 @@
 import { defineStore } from 'pinia'
+import { AppStore } from '../../types/StoreTypes'
 
-export const userAppStore = defineStore('app', {
-  state: (): any => {
-    return {}
+export const useAppStore = defineStore('app', {
+  state: (): AppStore => {
+    return {
+      collapse: false
+    }
   },
-  getters: {},
-  actions: {},
+  getters: {
+    getCollapse: (state) => state.collapse
+  },
+  actions: {
+    setCollapse(status: boolean) {
+      this.collapse = status
+    }
+  },
   persist: { key: 'APP' }
 })

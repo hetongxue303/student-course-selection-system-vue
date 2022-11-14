@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint  {**/*,*}.{js,ts,jsx,tsx,html,vue} --fix",
+    "prettier": "prettier --write {**/*,*}.{vue,css,scss,less,json,js,ts,jsx,tsx,cjs}",
+    "prepare": "husky install"
   },
   "husky": {
     "hooks": {

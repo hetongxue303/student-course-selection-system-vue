@@ -51,7 +51,6 @@
                   :src="parameter.imgUrl"
                   style="cursor: pointer; margin-top: 3px"
                   title="点击切换验证码"
-                  @click="initCaptcha"
                 />
               </el-col>
             </el-row>

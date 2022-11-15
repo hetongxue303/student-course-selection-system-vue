@@ -1,83 +1,83 @@
 export const menus: Array<any> = [
   {
     name: '首页',
-    icon: 'document',
+    icon: 'index',
     path: '/dashboard'
   },
   {
     name: '用户管理',
-    icon: 'document',
+    icon: 'user',
     path: '/user',
     children: [
       {
         name: '管理员',
-        icon: 'user',
+        icon: 'admin',
         path: '/user/admin'
       },
       {
         name: '教师管理',
-        icon: 'user',
+        icon: 'teacher',
         path: '/user/teacher'
       },
       {
         name: '学生管理',
-        icon: 'user',
+        icon: 'student',
         path: '/user/student'
       }
     ]
   },
   {
     name: '学校管理',
-    icon: 'document',
+    icon: 'school',
     path: '/school',
     children: [
       {
         name: '学院管理',
-        icon: 'document',
+        icon: 'college',
         path: '/school/college'
       },
       {
         name: '专业管理',
-        icon: 'document',
+        icon: 'major',
         path: '/school/major'
       },
       {
         name: '课程管理',
-        icon: 'document',
+        icon: 'course',
         path: '/school/course'
       },
       {
         name: '选课管理',
-        icon: 'document',
+        icon: 'selection',
         path: '/school/selection'
       }
     ]
   },
   {
     name: '系统管理',
-    icon: 'document',
+    icon: 'system',
     path: '/system',
     children: [
       {
         name: '账户管理',
-        icon: 'document',
+        icon: 'account',
         path: '/system/account'
       },
       {
         name: '角色管理',
-        icon: 'document',
+        icon: 'role',
         path: '/system/role'
       },
       {
         name: '菜单管理',
-        icon: 'document',
+        icon: 'menu',
         path: '/system/menu'
       }
     ]
   },
   {
     name: '关于系统',
-    icon: 'document',
+    icon: 'about',
     path: '/about'
   }
 ]

@@ -9,6 +9,14 @@ import './assets/styles/index.scss'
 import 'virtual:windi.css'
 import 'animate.css'
 
+import 'virtual:svg-icons-register'
+import SvgIcon from '@components/SvgIcon/Index.vue'
+
 const app = createApp(App)
 
-app.use(router).use(ElementPlus).use(pinia).mount('#app')
+app
+  .use(router)
+  .use(ElementPlus)
+  .use(pinia)
+  .component('SvgIcon', SvgIcon)
+  .mount('#app')

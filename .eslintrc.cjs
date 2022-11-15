@@ -42,6 +42,7 @@ module.exports = {
     'import/no-unresolved': 0,
     'import/prefer-default-export': 0,
     'import/extensions': 0,
+    'import/order': 0,
     'import/newline-after-import': 0,
     '@typescript-eslint/no-unused-vars': 0,
     '@typescript-eslint/ban-types': 0,
@@ -53,6 +54,7 @@ module.exports = {
     'no-return-assign': 0,
     'no-unused-vars': 0,
     'vue/require-component-is': 0,
-    'vue/multi-word-component-names': 0
+    'vue/multi-word-component-names': 0,
+    'vue/no-parsing-error': 0
   }
 }

@@ -83,7 +83,7 @@ import { ElMessage, FormInstance, FormRules } from 'element-plus'
 import { useCookies } from '@vueuse/integrations/useCookies'
 import { useRoute, useRouter } from 'vue-router'
 import { decrypt, encrypt } from '../utils/jsencrypt'
-import { COOKIE_EXPIRE_TIME, Settings } from '../../Settings'
+import { COOKIE_EXPIRE_TIME, settings } from '../settings'
 
 // 实例化
 const cookie = useCookies()
@@ -177,7 +177,7 @@ const loginHandler = async (formEl: FormInstance | undefined) => {
 const rememberMeHandler = (status: boolean) => {
   if (status) {
     cookie.set(
-      Settings.USER_INFO_KEY,
+      settings.USER_INFO_KEY,
       encrypt(
         JSON.stringify({
           username: loginForm.username,
@@ -191,8 +191,8 @@ const rememberMeHandler = (status: boolean) => {
 
 // 判断cookie中是否有数据 实现自动登录
 const isRememberMeHandler = () => {
-  if (cookie.get(Settings.USER_INFO_KEY)) {
-    const user: any = decrypt(cookie.get(Settings.USER_INFO_KEY))
+  if (cookie.get(settings.USER_INFO_KEY)) {
+    const user: any = decrypt(cookie.get(settings.USER_INFO_KEY))
     loginForm.username = user.username
     loginForm.password = decrypt(user.password)
     loginForm.rememberMe = true

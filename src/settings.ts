@@ -3,7 +3,7 @@
  */
 export const COOKIE_EXPIRE_TIME = 10 * 60 * 1000 // 10分钟
 
-export enum Settings {
+export enum settings {
   AUTHORIZATION_KEY = 'Authorization',
   EXPIRE_TIME_KEY = 'ExpireTime',
   USER_INFO_KEY = 'userinfo'

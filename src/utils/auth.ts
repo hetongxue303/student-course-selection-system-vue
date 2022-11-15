@@ -1,5 +1,5 @@
 import { useCookies } from '@vueuse/integrations/useCookies'
-import { Settings } from '../../Settings'
+import { settings } from '../settings'
 import { session } from './storage'
 
 const cookies = useCookies()
@@ -7,20 +7,20 @@ const cookies = useCookies()
  * 获取token
  */
 export const getToken = (): string => {
-  return cookies.get(Settings.AUTHORIZATION_KEY)
+  return cookies.get(settings.AUTHORIZATION_KEY)
 }
 /**
  * 清除token
  */
 export const removeToken = () => {
-  cookies.remove(Settings.AUTHORIZATION_KEY)
+  cookies.remove(settings.AUTHORIZATION_KEY)
 }
 /**
  * 设置token
  * @param token
  */
 export const setToken = (token: string) => {
-  cookies.set(Settings.AUTHORIZATION_KEY, token)
+  cookies.set(settings.AUTHORIZATION_KEY, token)
 }
 
 /**
@@ -28,19 +28,19 @@ export const setToken = (token: string) => {
  * @param time
  */
 export const setTokenTime = (time: number) => {
-  session.set(Settings.EXPIRE_TIME_KEY, time)
+  session.set(settings.EXPIRE_TIME_KEY, time)
 }
 
 /**
  * 获取token过期时间
  */
 export const getTokenTime = (): number => {
-  return session.get(Settings.EXPIRE_TIME_KEY)
+  return session.get(settings.EXPIRE_TIME_KEY)
 }
 
 /**
  * 清除token过期时间
  */
 export const removeTokenTime = () => {
-  session.remove(Settings.EXPIRE_TIME_KEY)
+  session.remove(settings.EXPIRE_TIME_KEY)
 }

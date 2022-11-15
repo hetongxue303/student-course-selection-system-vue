@@ -10,6 +10,16 @@ export const menus: Array<any> = [
     path: '/user',
     children: [
       {
+        name: '管理员',
+        icon: 'user',
+        path: '/user/admin'
+      },
+      {
+        name: '教师管理',
+        icon: 'user',
+        path: '/user/teacher'
+      },
+      {
         name: '学生管理',
         icon: 'user',
         path: '/user/student'
@@ -17,36 +27,29 @@ export const menus: Array<any> = [
     ]
   },
   {
-    name: '院系管理',
+    name: '学校管理',
     icon: 'document',
-    path: '/college',
+    path: '/school',
     children: [
-      {
-        name: '专业管理',
-        icon: 'user',
-        path: '/college/major'
-      },
       {
         name: '学院管理',
-        icon: 'user',
-        path: '/college/academy'
-      }
-    ]
-  },
-  {
-    name: '课程管理',
-    icon: 'document',
-    path: '/edu',
-    children: [
-      {
-        name: '编辑课程',
-        icon: 'user',
-        path: '/edu/edit'
+        icon: 'document',
+        path: '/school/college'
       },
       {
-        name: '设置排课',
-        icon: 'user',
-        path: '/edu/setting'
+        name: '专业管理',
+        icon: 'document',
+        path: '/school/major'
+      },
+      {
+        name: '课程管理',
+        icon: 'document',
+        path: '/school/course'
+      },
+      {
+        name: '选课管理',
+        icon: 'document',
+        path: '/school/selection'
       }
     ]
   },
@@ -56,15 +59,25 @@ export const menus: Array<any> = [
     path: '/system',
     children: [
       {
-        name: '修改密码',
-        icon: 'user',
-        path: '/system/updatePw'
+        name: '账户管理',
+        icon: 'document',
+        path: '/system/account'
       },
       {
-        name: '关于系统',
-        icon: 'user',
-        path: '/system/about'
+        name: '角色管理',
+        icon: 'document',
+        path: '/system/role'
+      },
+      {
+        name: '菜单管理',
+        icon: 'document',
+        path: '/system/menu'
       }
     ]
+  },
+  {
+    name: '关于系统',
+    icon: 'document',
+    path: '/about'
   }
 ]

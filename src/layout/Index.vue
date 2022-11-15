@@ -7,6 +7,7 @@
       <el-header>
         <Header />
       </el-header>
+      <Tab />
       <el-main>
         <router-view />
       </el-main>
@@ -21,6 +22,7 @@
 import Sidebar from './sidebar/Index.vue'
 import Header from './header/Index.vue'
 import Footer from './footer/Index.vue'
+import Tab from '../components/Tabs/Index.vue'
 import { useAppStore } from '../store/modules/app'
 
 const appStore = useAppStore()

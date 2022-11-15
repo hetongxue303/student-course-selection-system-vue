@@ -33,8 +33,14 @@ export const session = {
   get(key: string): any {
     return JSON.parse(decrypt(sessionStorage.getItem(key) as any))
   },
+  getNoDecrypt(key: string): any {
+    return JSON.parse(sessionStorage.getItem(key) as any)
+  },
   set(key: string, value: any) {
     sessionStorage.setItem(key, encrypt(JSON.stringify(value)))
+  },
+  setNoEncrypt(key: string, value: any) {
+    sessionStorage.setItem(key, JSON.stringify(value))
   },
   remove(key: string) {
     sessionStorage.removeItem(key)

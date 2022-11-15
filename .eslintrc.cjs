@@ -53,6 +53,7 @@ module.exports = {
     'no-console': 0,
     'no-return-assign': 0,
     'no-unused-vars': 0,
+    'no-underscore-dangle':0,
     'vue/require-component-is': 0,
     'vue/multi-word-component-names': 0,
     'vue/no-parsing-error': 0

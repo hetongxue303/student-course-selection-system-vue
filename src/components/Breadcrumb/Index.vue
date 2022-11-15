@@ -29,7 +29,6 @@ const breadcrumbData: Ref<RouteLocationMatched[]> = ref([])
 const getBreadcrumbs = () => {
   // 获取所有含有meta和title的数据
   let matched = route.matched.filter((item) => item.meta && item.meta.title)
-  console.log(`ma:${matched}`)
   // 判断第一个是否为首页  如果不是首页就构造一个首页
   const first = matched[0]
   if (first.path !== '/dashboard') {

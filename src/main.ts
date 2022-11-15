@@ -11,6 +11,7 @@ import 'animate.css'
 
 import 'virtual:svg-icons-register'
 import SvgIcon from '@components/SvgIcon/Index.vue'
+import { Import } from 'windicss/types/lang/tokens'
 
 const app = createApp(App)
 

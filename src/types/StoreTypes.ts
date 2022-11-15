@@ -14,3 +14,10 @@ export type UserStore = {
   roles: string
   permissions: string[]
 }
+
+export type TabStore = {
+  tabs: Array<any>
+  activeName: string
+  currentTabName: string
+  isContextMenu?: boolean
+}

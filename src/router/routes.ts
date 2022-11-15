@@ -14,31 +14,6 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: Layout,
-    meta: { cache: false },
-    children: [
-      {
-        name: '401',
-        path: '/401',
-        meta: {
-          title: '404',
-          cache: false
-        },
-        component: () => import('@views/error/401.vue')
-      },
-      {
-        name: '404',
-        path: '/:pathMatch(.*)*',
-        meta: {
-          title: '页面不存在',
-          cache: false
-        },
-        component: () => import('@views/error/404.vue')
-      }
-    ]
-  },
-  {
-    path: '/',
-    component: Layout,
     redirect: '/dashboard',
     meta: { cache: false },
     children: [
@@ -50,6 +25,24 @@ const routes: RouteRecordRaw[] = [
           cache: false
         },
         component: () => import('@views/dashboard/Index.vue')
+      },
+      {
+        name: '401',
+        path: '/401',
+        meta: {
+          title: '401',
+          cache: false
+        },
+        component: () => import('@views/error/401.vue')
+      },
+      {
+        name: '404',
+        path: '/:pathMatch(.*)*',
+        meta: {
+          title: '404',
+          cache: false
+        },
+        component: () => import('@views/error/404.vue')
       }
     ]
   },
@@ -57,7 +50,7 @@ const routes: RouteRecordRaw[] = [
     name: '用户管理',
     path: '/user',
     component: Layout,
-    meta: { cache: false },
+    meta: { title: '用户管理', cache: false },
     children: [
       {
         name: 'admin',
@@ -92,7 +85,7 @@ const routes: RouteRecordRaw[] = [
     name: '学校管理',
     path: '/school',
     component: Layout,
-    meta: { cache: false },
+    meta: { title: '学校管理', cache: false },
     children: [
       {
         name: 'college',
@@ -136,7 +129,7 @@ const routes: RouteRecordRaw[] = [
     name: '系统管理',
     path: '/system',
     component: Layout,
-    meta: { cache: false },
+    meta: { title: '系统管理', cache: false },
     children: [
       {
         name: 'account',

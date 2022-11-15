@@ -3,6 +3,7 @@
     <div class="left">
       <!--折叠-->
       <Collapse />
+      <Breadcrumb />
     </div>
     <div class="right">
       <!--全屏-->
@@ -17,6 +18,7 @@
 import Collapse from './components/Collapse.vue'
 import FullScreen from './components/FullScreen.vue'
 import Center from './components/Center.vue'
+import Breadcrumb from '../../components/Breadcrumb/Index.vue'
 </script>
 
 <style scoped lang="scss">
@@ -30,6 +32,7 @@ import Center from './components/Center.vue'
     width: 50%;
     display: flex;
     justify-content: start;
+    align-items: center;
   }
 
   .right {

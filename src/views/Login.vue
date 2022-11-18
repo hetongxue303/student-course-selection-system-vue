@@ -240,9 +240,11 @@ onMounted(() => {
       background-size: cover;
       @apply h-full flex-col;
       @include d-flex;
+
       h1 {
         @apply font-bold text-stroke-sm text-3xl text-gray-800 mb-10;
       }
+
       span {
         @apply font-sans text-1xl text-gray-800 mb-25;
       }

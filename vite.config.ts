@@ -4,8 +4,15 @@ import eslintPlugin from 'vite-plugin-eslint'
 import { resolve } from 'path'
 import WindiCSS from 'vite-plugin-windicss'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
+import { fileURLToPath } from 'url'
 
 export default defineConfig({
+  mode: 'development',
+  base: './',
+  publicDir: 'public',
+  logLevel: 'info',
+  envDir: 'root',
+  envPrefix: 'VITE_',
   plugins: [
     vue(),
     WindiCSS(),
@@ -19,14 +26,14 @@ export default defineConfig({
     })
   ],
   css: {
-    devSourcemap: true
+    preprocessorOptions: {}
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src'),
-      '@views': resolve(__dirname, 'src/views'),
-      '@layout': resolve(__dirname, 'src/layout'),
-      '@components': resolve(__dirname, 'src/components')
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@views': fileURLToPath(new URL('./src/views', import.meta.url)),
+      '@layout': fileURLToPath(new URL('./src/layout', import.meta.url)),
+      '@components': fileURLToPath(new URL('./src/components', import.meta.url))
     }
   },
   server: {
@@ -34,6 +41,7 @@ export default defineConfig({
     port: 5173,
     cors: true,
     open: false,
+    hmr: true,
     proxy: {
       '/api': {
         target: 'http://127.0.0.1:8080',
@@ -41,5 +49,15 @@ export default defineConfig({
         rewrite: (path: string) => path.replace(/^\/api/, '')
       }
     }
+  },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    assetsInlineLimit: 4096,
+    // css代码拆分
+    cssCodeSplit: true,
+    // 取消计算文件大小 加快打包速度
+    reportCompressedSize: false,
+    rollupOptions: {}
   }
 })

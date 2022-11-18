@@ -19,10 +19,10 @@
 </template>
 
 <script setup lang="ts">
-import Sidebar from './sidebar/Index.vue'
-import Header from './header/Index.vue'
-import Footer from './footer/Index.vue'
-import Tab from '../components/Tabs/Index.vue'
+import Sidebar from '@layout/sidebar/Index.vue'
+import Header from '@layout/header/Index.vue'
+import Footer from '@layout/footer/Index.vue'
+import Tab from '@components/Tabs/Index.vue'
 import { useAppStore } from '../store/modules/app'
 
 const appStore = useAppStore()

@@ -1,0 +1,19 @@
+$menu-text: #bfcbd9;
+$menu-active-text: #409eff;
+$menu-sub-active-text: #f4f4f5;
+$menu-background-color: #304156;
+$menu-sub-background-color: #1f2d3d;
+$menu-hover: #263445;
+$menu-min-width: 64px;
+$menu-max-width: 200px;
+
+:export {
+  menuText: $menu-text;
+  menuActiveText: $menu-active-text;
+  menuSubActiveText: $menu-sub-active-text;
+  menuBackgroundColor: $menu-background-color;
+  menuSubBackgroundColor: $menu-sub-background-color;
+  menuHover: $menu-hover;
+  menuMinWidth: $menu-min-width;
+  menuMaxWidth: $menu-max-width;
+}

@@ -26,7 +26,11 @@ export default defineConfig({
     })
   ],
   css: {
-    preprocessorOptions: {}
+    preprocessorOptions: {
+      scss: {
+        additionalData: ''
+      }
+    }
   },
   resolve: {
     alias: {

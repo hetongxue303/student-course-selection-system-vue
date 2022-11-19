@@ -27,4 +27,15 @@ defineProps({
 })
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+:deep(.el-menu-item) {
+  background-color: #1f2d3d;
+  border-right: 0;
+  &:hover {
+    background-color: #001528;
+  }
+}
+:deep(.el-sub-menu__title:hover) {
+  background-color: #263445 !important;
+}
+</style>

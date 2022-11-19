@@ -52,7 +52,7 @@ module.exports = {
   },
   // 0 = off, 1 = warn, 2 = error
   rules: {
-    'import/no-extraneous-dependencies': [2, {devDependencies: true}],
+    'import/no-extraneous-dependencies': [2, { devDependencies: true }],
     'import/no-unresolved': 0,
     'import/prefer-default-export': 0,
     'import/extensions': 0,

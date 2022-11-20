@@ -59,7 +59,7 @@ const routes: RouteRecordRaw[] = [
           title: '管理员',
           cache: false
         },
-        component: () => import('@views/user/Admin.vue')
+        component: () => import('@views/user/admin/Index.vue')
       },
       {
         name: 'teacher',
@@ -68,7 +68,7 @@ const routes: RouteRecordRaw[] = [
           title: '教师管理',
           cache: false
         },
-        component: () => import('@views/user/Teacher.vue')
+        component: () => import('@views/user/teacher/Index.vue')
       },
       {
         name: 'student',
@@ -77,7 +77,7 @@ const routes: RouteRecordRaw[] = [
           title: '学生管理',
           cache: false
         },
-        component: () => import('@views/user/Student.vue')
+        component: () => import('@views/user/student/Index.vue')
       }
     ]
   },
@@ -94,7 +94,7 @@ const routes: RouteRecordRaw[] = [
           title: '学院管理',
           cache: false
         },
-        component: () => import('@views/school/College.vue')
+        component: () => import('@views/school/college/Index.vue')
       },
       {
         name: 'major',
@@ -103,7 +103,7 @@ const routes: RouteRecordRaw[] = [
           title: '专业管理',
           cache: false
         },
-        component: () => import('@views/school/Major.vue')
+        component: () => import('@views/school/major/Index.vue')
       },
       {
         name: 'course',
@@ -112,7 +112,7 @@ const routes: RouteRecordRaw[] = [
           title: '课程管理',
           cache: false
         },
-        component: () => import('@views/school/Course.vue')
+        component: () => import('@views/school/course/Index.vue')
       },
       {
         name: 'selection',
@@ -121,7 +121,7 @@ const routes: RouteRecordRaw[] = [
           title: '选课管理',
           cache: false
         },
-        component: () => import('@views/school/Selection.vue')
+        component: () => import('@views/school/selection/Index.vue')
       }
     ]
   },
@@ -138,7 +138,7 @@ const routes: RouteRecordRaw[] = [
           title: '账户管理',
           cache: false
         },
-        component: () => import('@views/system/Account.vue')
+        component: () => import('@views/system/account/Index.vue')
       },
       {
         name: 'role',
@@ -147,7 +147,7 @@ const routes: RouteRecordRaw[] = [
           title: '角色管理',
           cache: false
         },
-        component: () => import('@views/system/Role.vue')
+        component: () => import('@views/system/role/Index.vue')
       },
       {
         name: 'menu',
@@ -156,7 +156,7 @@ const routes: RouteRecordRaw[] = [
           title: '菜单管理',
           cache: false
         },
-        component: () => import('@views/system/Menu.vue')
+        component: () => import('@views/system/menu/Index.vue')
       }
     ]
   },

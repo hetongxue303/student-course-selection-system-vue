@@ -3,16 +3,17 @@ export type AppStore = {
 }
 
 export type PermissionStore = {
-  menus: Array<any[]>
-  routers: Array<any[]>
+  isAdmin: boolean
+  menus: any[]
+  routers: any[]
+  permissions: string[]
 }
 
 export type UserStore = {
   Authorization: string
   username: string
   avatar: string
-  roles: string
-  permissions: string[]
+  roles: string[]
 }
 
 export type TabStore = {

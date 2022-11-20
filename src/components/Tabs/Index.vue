@@ -93,34 +93,34 @@ const contextMenu = (e: any) => {
   }
 }
 
-const removeSessionStorage = () => {
-  session.setNoEncrypt(settings.TABS_INFO_KEY, JSON.stringify(tabs.value))
-  tabStore.setIsContextMenu(false)
-}
+// const removeSessionStorage = () => {
+//   session.setNoEncrypt(settings.TABS_INFO_KEY, JSON.stringify(tabs.value))
+//   tabStore.setIsContextMenu(false)
+// }
 
-const refresh = () => {
-  const { path } = route
-  // 刷新之前存储数据
-  window.addEventListener('beforeunload', () =>
-    session.setNoEncrypt(settings.TABS_INFO_KEY, JSON.stringify(tabs.value))
-  )
-  const sessionTabsData = session.getNoDecrypt(settings.TABS_INFO_KEY)
-  if (sessionTabsData) {
-    // 设置刷新前的tab数据
-    tabStore.setTabs(JSON.parse(sessionTabsData))
-    // 设置刷新前选中的选项卡
-    tabStore.setActiveName(path as string)
-  }
-}
+// const refresh = () => {
+//   const { path } = route
+//   // 刷新之前存储数据
+//   window.addEventListener('beforeunload', () =>
+//     session.setNoEncrypt(settings.TABS_INFO_KEY, JSON.stringify(tabs.value))
+//   )
+//   const sessionTabsData = session.getNoDecrypt(settings.TABS_INFO_KEY)
+//   if (sessionTabsData) {
+//     // 设置刷新前的tab数据
+//     tabStore.setTabs(JSON.parse(sessionTabsData))
+//     // 设置刷新前选中的选项卡
+//     tabStore.setActiveName(path as string)
+//   }
+// }
 
 const refreshTab = (currentTabName: string) => {
   router.push(currentTabName)
-  removeSessionStorage()
+  tabStore.setIsContextMenu(false)
 }
 
 const closeTab = (currentTabName: string) => {
   handleRemoveTab(currentTabName)
-  removeSessionStorage()
+  tabStore.setIsContextMenu(false)
 }
 
 const closeOtherTab = (currentTabName: string) => {
@@ -130,14 +130,14 @@ const closeOtherTab = (currentTabName: string) => {
   tabStore.setTabs(tabs.value)
   tabStore.setActiveName(currentTabName)
   router.push(currentTabName)
-  removeSessionStorage()
+  tabStore.setIsContextMenu(false)
 }
 
 const closeAllTab = () => {
   tabs.value.splice(1, tabs.value.length)
   tabStore.setActiveName(tabs.value[0].path)
   router.push(tabStore.getActiveName)
-  removeSessionStorage()
+  tabStore.setIsContextMenu(false)
 }
 
 const mouseDown = (e: any) => {
@@ -155,7 +155,9 @@ watch(
   { immediate: true }
 )
 
-onMounted(() => refresh())
+// onMounted(() => {
+//   refresh()
+// })
 </script>
 
 <style scoped lang="scss">

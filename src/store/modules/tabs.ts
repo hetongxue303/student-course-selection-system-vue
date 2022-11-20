@@ -4,7 +4,7 @@ import { TabStore } from '../../types/StoreTypes'
 export const useTabStore = defineStore('tab', {
   state: (): TabStore => {
     return {
-      tabs: [],
+      tabs: [{ title: '首页', path: '/dashboard' }],
       activeName: '',
       currentTabName: '',
       isContextMenu: false

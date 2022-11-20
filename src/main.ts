@@ -14,9 +14,8 @@ import SvgIcon from '@components/SvgIcon/Index.vue'
 
 const app = createApp(App)
 
-app
-  .use(router)
-  .use(ElementPlus)
-  .use(pinia)
-  .component('SvgIcon', SvgIcon)
-  .mount('#app')
+app.use(router).use(ElementPlus).use(pinia)
+
+app.component('SvgIcon', SvgIcon)
+
+app.mount('#app')

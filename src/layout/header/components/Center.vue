@@ -43,24 +43,25 @@
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '../../../store/modules/user'
+import { logout } from '../../../api/auth'
 
 // 实例化
 const userStore = useUserStore()
 const dialogVisible = ref(false)
 
 // 注销处理
-// const handlerLogout = async () => {
-//   const { data } = await logout()
-//   switch (data.code as number) {
-//     case 200:
-//       await userStore.systemLogout()
-//       ElMessage.success('注销成功')
-//       window.location.replace('/login')
-//       break
-//     default:
-//       ElMessage.error('注销失败')
-//   }
-// }
+const handlerLogout = async () => {
+  const { data } = await logout()
+  switch (data.code as number) {
+    case 200:
+      await userStore.systemLogout()
+      ElMessage.success('注销成功')
+      window.location.replace('/login')
+      break
+    default:
+      ElMessage.error('注销失败')
+  }
+}
 </script>
 
 <style scoped lang="scss">

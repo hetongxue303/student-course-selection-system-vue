@@ -51,6 +51,7 @@
                   :src="parameter.imgUrl"
                   style="cursor: pointer; margin-top: 3px"
                   title="点击切换验证码"
+                  @click.stop="initCaptcha"
                 />
               </el-col>
             </el-row>
@@ -84,12 +85,24 @@ import { useCookies } from '@vueuse/integrations/useCookies'
 import { useRoute, useRouter } from 'vue-router'
 import { decrypt, encrypt } from '../utils/jsencrypt'
 import { COOKIE_EXPIRE_TIME, settings } from '../settings'
+import { getCaptcha, getUserInfo, login } from '../api/auth'
+import {
+  removeToken,
+  removeTokenTime,
+  setToken,
+  setTokenTime
+} from '../utils/auth'
+import { encryptMD5 } from '../hook/encryptMD5'
+import { useUserStore } from '../store/modules/user'
+import { usePermissionStore } from '../store/modules/permission'
 
 // 实例化
 const cookie = useCookies()
 const router = useRouter()
 const route = useRoute()
 const ruleFormRef = ref<FormInstance>()
+const userStore = useUserStore()
+const permissionStore = usePermissionStore()
 
 // 参数定义
 const parameter = reactive({
@@ -114,58 +127,35 @@ const rules = reactive<FormRules>({
 })
 
 // 获取图片验证码
-// const initCaptcha = async () => {
-//   const { data } = await getCaptcha()
-//   parameter.imgUrl = data.data
-// }
+const initCaptcha = async () => {
+  const { data } = await getCaptcha()
+  parameter.imgUrl = data.data
+}
 
 // 登陆处理
 const loginHandler = async (formEl: FormInstance | undefined) => {
   if (formEl) {
     await formEl.validate(async (valid) => {
       if (valid) {
-        alert('开始登陆...')
-        // const { data } = await login({
-        //   username: loginForm.username,
-        //   password: encryptMD5(loginForm.password),
-        //   code: loginForm.code,
-        //   rememberMe: loginForm.rememberMe
-        // })
-        // switch (data.code as number) {
-        //   case 200: {
-        //     // rememberMeHandler(loginForm.rememberMe)
-        //     setToken(data.data.token)
-        //     setTokenTime(new Date().getTime() + data.data.expireTime)
-        //     ElMessage.success('登陆成功')
-        //     await router.push(parameter.redirect || '/')
-        //     break
-        //   }
-        //   case 5000:
-        //     ElMessage.error('验证码错误')
-        //     loginForm.code = ''
-        //     await initCaptcha()
-        //     break
-        //   case 5001:
-        //     ElMessage.error('验证码过期')
-        //     loginForm.code = ''
-        //     await initCaptcha()
-        //     break
-        //   case 5002:
-        //     ElMessage.error('验证码不能为空')
-        //     loginForm.code = ''
-        //     await initCaptcha()
-        //     break
-        //   case 400:
-        //     ElMessage.error(
-        //       data.message.length > 0 ? data.message : '用户名或密码错误'
-        //     )
-        //     loginForm.code = ''
-        //     loginForm.password = ''
-        //     await initCaptcha()
-        //     break
-        //   default:
-        //     ElMessage.warning('发生异常')
-        // }
+        const { data } = await login({
+          username: loginForm.username,
+          password: encryptMD5(loginForm.password),
+          code: loginForm.code,
+          rememberMe: loginForm.rememberMe
+        })
+        switch (data.code as number) {
+          case 200:
+            // rememberMeHandler(loginForm.rememberMe)
+            setToken(data.data.token)
+            setTokenTime(new Date().getTime() + data.data.expireTime)
+            ElMessage.success('登陆成功')
+            await router.push(parameter.redirect || '/')
+            break
+          default:
+            loginForm.code = ''
+            await initCaptcha()
+            ElMessage.warning(data.message || '未知错误')
+        }
       } else {
         ElMessage.warning('数据不合法')
       }
@@ -214,7 +204,7 @@ watch(
 
 // 启动时处理
 onMounted(() => {
-  // initCaptcha()
+  initCaptcha()
   // isRememberMeHandler()
 })
 </script>
@@ -274,7 +264,6 @@ onMounted(() => {
     @include d-flex;
   }
 }
-
 :deep(.el-button) {
   @apply w-250px;
 }

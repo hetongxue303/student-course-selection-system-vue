@@ -1,5 +1,5 @@
 <template>
-  <Logo />
+  <Logo :collapse="isCollapse" />
   <el-scrollbar class="scrollbar" wrap-class="scrollbar-wrapper">
     <el-menu
       router

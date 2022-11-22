@@ -1,8 +1,5 @@
 import { defineStore } from 'pinia'
 import { PermissionStore } from '../../types/StoreTypes'
-import Layout from '../../layout/Index.vue'
-import { useRouter } from 'vue-router'
-const router = useRouter()
 
 export const usePermissionStore = defineStore('permission', {
   state: (): PermissionStore => {

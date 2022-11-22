@@ -14,26 +14,33 @@ axios.create({
 })
 
 axios.interceptors.request.use(
-  (config: AxiosRequestConfig) => {
+  async (config: AxiosRequestConfig) => {
     if (getToken() && config.headers) {
       // 判断token是否快要过期
-      const currentTime = new Date().getTime()
-      const expireTime = getTokenTime()
-      if (expireTime) {
-        const min = (expireTime - currentTime) / 1000 / 60
-        if (min < 10) {
-          refreshToken()
-            .then((res) => {
-              if (res.status === 200 || res.data.code === 200) {
-                setToken(res.data.data.token)
-                setTokenTime(new Date().getTime() + res.data.data.expireTime)
-              }
-            })
-            .catch((error) => {
-              ElMessage.error({ message: error.message, duration: 5 * 1000 })
-            })
-        }
-      }
+      // const currentTime = new Date().getTime()
+      // const expireTime = getTokenTime()
+      // console.log(`当前时间：${currentTime}`)
+      // console.log(`存储的过期时间：${expireTime}`)
+      // if (expireTime) {
+      //   const min = (expireTime - currentTime) / 1000 / 60
+      //   console.log(`剩余分钟：${min}`)
+      //   if (min < 29.7) {
+      //     console.log('开始刷新token')
+      //     await refreshToken()
+      //       .then((res) => {
+      //         if (res.status === 200 || res.data.code === 200) {
+      //           console.log(`old:${getToken()}`)
+      //           setToken(res.data.data.token)
+      //           setTokenTime(new Date().getTime() + res.data.data.expireTime)
+      //           console.log(`new:${res.data.data.token}`)
+      //         }
+      //       })
+      //       .catch((error) => {
+      //         window.location.replace('/login')
+      //         ElMessage.error({ message: error.message, duration: 5 * 1000 })
+      //       })
+      //   }
+      // }
       // 每个请求头都带上token
       config.headers.authorization = getToken()
     }

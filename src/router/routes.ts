@@ -47,7 +47,7 @@ const routes: RouteRecordRaw[] = [
     ]
   },
   {
-    name: '用户管理',
+    name: 'user',
     path: '/user',
     component: Layout,
     meta: { title: '用户管理', cache: false },
@@ -82,7 +82,7 @@ const routes: RouteRecordRaw[] = [
     ]
   },
   {
-    name: '学校管理',
+    name: 'school',
     path: '/school',
     component: Layout,
     meta: { title: '学校管理', cache: false },
@@ -126,7 +126,7 @@ const routes: RouteRecordRaw[] = [
     ]
   },
   {
-    name: '系统管理',
+    name: 'system',
     path: '/system',
     component: Layout,
     meta: { title: '系统管理', cache: false },
@@ -161,7 +161,7 @@ const routes: RouteRecordRaw[] = [
     ]
   },
   {
-    name: '关于系统',
+    name: 'about',
     path: '/',
     component: Layout,
     meta: { cache: false },

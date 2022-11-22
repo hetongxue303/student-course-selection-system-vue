@@ -2,7 +2,6 @@ import { defineStore } from 'pinia'
 import { UserStore } from '../../types/StoreTypes'
 import { getToken, removeToken, removeTokenTime } from '../../utils/auth'
 import { local, session } from '../../utils/storage'
-import { settings } from '../../settings'
 
 export const useUserStore = defineStore('user', {
   state: (): UserStore => {

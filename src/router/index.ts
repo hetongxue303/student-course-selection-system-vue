@@ -7,6 +7,7 @@ import pinia from '../store/index'
 import { getUserInfo } from '../api/auth'
 import { ElMessage } from 'element-plus'
 import { usePermissionStore } from '../store/modules/permission'
+import { local } from '../utils/storage'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -29,7 +30,7 @@ router.beforeEach((to, from, next) => {
           userStore.setInfo(data)
           permissionStore.setInfo(data)
           // TODO 动态生成路由
-
+          permissionStore.dynamicGenerationRouter()
           next()
           // next({ ...to, replace: true })
         })
@@ -41,8 +42,11 @@ router.beforeEach((to, from, next) => {
         })
     }
   } else if (REQUEST_WITHE_LIST.indexOf(to.path) !== -1) {
+    // 每次清空一下本地存储
+    userStore.systemLogout()
     next()
   } else {
+    userStore.systemLogout()
     next(
       to.fullPath === '/dashboard' ? '/login' : `/login?redirect=${to.fullPath}`
     )

@@ -2,35 +2,26 @@ import { defineStore } from 'pinia'
 import { UserStore } from '../../types/StoreTypes'
 import { getToken, removeToken, removeTokenTime } from '../../utils/auth'
 import { local, session } from '../../utils/storage'
+import { getUserInfo } from '../../api/auth'
+import { ElMessage } from 'element-plus'
 
 export const useUserStore = defineStore('user', {
   state: (): UserStore => {
     return {
-      Authorization: getToken() || '',
+      authorization: getToken() || '',
       avatar: '',
       username: '',
-      roles: []
+      roles: [],
+      permissions: []
     }
   },
   getters: {
-    getAuthorization: (state) => state.Authorization,
+    getAuthorization: (state) => state.authorization,
     getRoles: (state) => state.roles,
     getUsername: (state) => state.username,
     getAvatar: (state) => state.avatar
   },
   actions: {
-    setAuthorization(Authorization: string) {
-      this.Authorization = Authorization
-    },
-    setRole(roles: string[]) {
-      this.roles = roles
-    },
-    setUsername(username: string) {
-      this.username = username
-    },
-    setAvatar(avatar: string) {
-      this.avatar = avatar
-    },
     systemLogout() {
       this.$reset()
       removeToken()
@@ -38,11 +29,32 @@ export const useUserStore = defineStore('user', {
       session.clear()
       local.clear()
     },
-    setInfo(result: any) {
-      const { data } = result
-      this.setUsername(data.username)
-      this.setAvatar(data.avatar)
-      this.setRole(data.role)
+    fedLogOut() {
+      this.authorization = ''
+      removeToken()
+    },
+    getUser() {
+      return new Promise((resolve, reject) => {
+        getUserInfo()
+          .then((res) => {
+            const { data } = res.data
+            if (data.roles && data.roles.length > 0) {
+              this.roles = data.roles
+              this.permissions = data.permissions
+            } else {
+              this.roles = []
+            }
+            this.username = data.username
+            this.avatar = data.avatar
+            resolve(res)
+          })
+          .catch((err) => {
+            reject(err)
+          })
+      })
+    },
+    generateRoutes() {
+      return new Promise((resolve, reject) => {})
     }
   },
   persist: { key: 'USER' }

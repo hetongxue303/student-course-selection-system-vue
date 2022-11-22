@@ -2,7 +2,6 @@ import * as qs from 'qs'
 import axios from '../../utils/request'
 
 const baseApi = '/api'
-
 // 获取验证码
 export const getCaptcha = () => {
   return axios({
@@ -26,7 +25,7 @@ export const login = (data: any) => {
 // 注销处理
 export const logout = () => {
   return axios({
-    method: 'GET',
+    method: 'get',
     url: `${baseApi}/auth/logout`
   })
 }
@@ -34,7 +33,7 @@ export const logout = () => {
 // 获取用户信息
 export const getUserInfo = () => {
   return axios({
-    method: 'GET',
+    method: 'get',
     url: `${baseApi}/user/getUserInfo`
   })
 }
@@ -42,7 +41,7 @@ export const getUserInfo = () => {
 // 刷新token
 export const refreshToken = () => {
   return axios({
-    method: 'POST',
+    method: 'post',
     url: `${baseApi}/user/refreshToken`
   })
 }

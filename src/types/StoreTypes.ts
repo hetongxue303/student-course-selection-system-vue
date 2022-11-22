@@ -6,14 +6,14 @@ export type PermissionStore = {
   isAdmin: boolean
   menus: any[]
   routers: any[]
-  permissions: string[]
 }
 
 export type UserStore = {
-  Authorization: string
+  authorization: string
   username: string
   avatar: string
   roles: string[]
+  permissions: string[]
 }
 
 export type TabStore = {

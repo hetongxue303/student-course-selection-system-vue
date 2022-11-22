@@ -6,15 +6,13 @@ export const usePermissionStore = defineStore('permission', {
     return {
       isAdmin: false,
       menus: [],
-      routers: [],
-      permissions: ['user:add', 'user:del']
+      routers: []
     }
   },
   getters: {
     getIsAdmin: (state) => state.isAdmin,
     getMenus: (state) => state.menus,
-    getRouters: (state) => state.routers,
-    getPermissions: (state) => state.permissions
+    getRouters: (state) => state.routers
   },
   actions: {
     setIsAdmin(status: boolean) {
@@ -26,17 +24,14 @@ export const usePermissionStore = defineStore('permission', {
     setRouters(routers: any) {
       this.routers = routers
     },
-    setPermissions(permissions: string[]) {
-      this.permissions = permissions
-    },
     setInfo(result: any) {
       const { data } = result
       this.setMenus(data.menus)
       this.setRouters(data.routers)
-      this.setPermissions(data.permissions)
       this.setIsAdmin(data.isAdmin)
     },
-    dynamicGenerationRouter() {}
+    // 过滤菜单
+    filterMenus() {}
   },
   persist: { key: 'PERMISSION' }
 })

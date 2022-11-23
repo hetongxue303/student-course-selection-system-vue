@@ -3,7 +3,8 @@ import { UserStore } from '../../types/StoreTypes'
 import { getToken, removeToken, removeTokenTime } from '../../utils/auth'
 import { local, session } from '../../utils/storage'
 import { getUserInfo } from '../../api/auth'
-import { ElMessage } from 'element-plus'
+import { usePermissionStore } from './permission'
+import { filterAsyncRouter } from '../../router'
 
 export const useUserStore = defineStore('user', {
   state: (): UserStore => {
@@ -33,8 +34,9 @@ export const useUserStore = defineStore('user', {
       this.authorization = ''
       removeToken()
     },
-    getUser() {
+    getUserInfo() {
       return new Promise((resolve, reject) => {
+        const permissionStore = usePermissionStore()
         getUserInfo()
           .then((res) => {
             const { data } = res.data
@@ -46,15 +48,14 @@ export const useUserStore = defineStore('user', {
             }
             this.username = data.username
             this.avatar = data.avatar
-            resolve(res)
+            permissionStore.menus = data.menus
+            permissionStore.routers = filterAsyncRouter(data.routers)
+            resolve(data)
           })
           .catch((err) => {
             reject(err)
           })
       })
-    },
-    generateRoutes() {
-      return new Promise((resolve, reject) => {})
     }
   },
   persist: { key: 'USER' }

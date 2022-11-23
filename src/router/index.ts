@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import Layout from '@layout/Index.vue'
 
-const constantRoutes: RouteRecordRaw[] = [
+const routes: RouteRecordRaw[] = [
   {
     name: 'login',
     path: '/login',
@@ -50,7 +50,48 @@ const constantRoutes: RouteRecordRaw[] = [
 
 const router = createRouter({
   history: createWebHistory(),
-  routes: constantRoutes
+  routes
 })
+
+export const hasRouter = () => {
+  console.log(router.getRoutes())
+}
+
+/**
+ * 动态添加路由
+ * @param asyncRouter
+ */
+export const addRouter = (asyncRouter: Array<any>) => {
+  asyncRouter.forEach((item) => router.addRoute(item))
+}
+
+/**
+ * 过滤后台路由
+ * @param routers
+ */
+export const filterAsyncRouter = (routers: Array<any>) => {
+  // 解决vite不能使用vue2+router动态导入问题
+  const modules = import.meta.glob('@views/*/*.vue')
+  const router: Array<any> = []
+  routers.forEach((item) => {
+    router.push({
+      name: item.name,
+      path: item.path,
+      component:
+        item.component === 'Layout'
+          ? Layout
+          : modules[`@views${item.component}`],
+      meta: {
+        title: item.meta.title,
+        icon: item.meta.icon,
+        show: item.meta.show,
+        cache: item.meta.cache,
+        permission: item.meta.permission
+      },
+      children: item.children.length > 0 ? filterAsyncRouter(item.children) : []
+    })
+  })
+  return router
+}
 
 export default router

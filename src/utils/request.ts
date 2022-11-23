@@ -1,7 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
-import { ElMessageBox, ElNotification } from 'element-plus'
+import { ElNotification } from 'element-plus'
 import { getToken } from './auth'
-import { useUserStore } from '../store/modules/user'
 
 axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
@@ -54,27 +53,28 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(
   (response: AxiosResponse) => {
-    const { code } = response.data
-    const { status } = response
-    if (status === 200 && code === 200) return response
-    if (status === 401 || code === 401)
-      return Promise.reject(new Error(response.data.message || 'Error'))
-    const userStore = useUserStore()
-    if (status === 401 || code === 401) {
-      ElMessageBox.confirm(
-        '你已被登出，可以取消继续留在该页面，或者重新登录',
-        '确定登出',
-        {
-          confirmButtonText: '重新登录',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }
-      ).then(() => {
-        userStore.systemLogout()
-        window.location.reload()
-      })
-    }
-    return Promise.reject(new Error(response.data.message || 'Error'))
+    // const { code } = response.data
+    // const { status } = response
+    // if (status === 200 && code === 200) return response
+    // if (status === 401 || code === 401)
+    //   return Promise.reject(new Error(response.data.message || 'Error'))
+    // const userStore = useUserStore()
+    // if (status === 401 || code === 401) {
+    //   ElMessageBox.confirm(
+    //     '你已被登出，可以取消继续留在该页面，或者重新登录',
+    //     '确定登出',
+    //     {
+    //       confirmButtonText: '重新登录',
+    //       cancelButtonText: '取消',
+    //       type: 'warning'
+    //     }
+    //   ).then(() => {
+    //     userStore.systemLogout()
+    //     window.location.reload()
+    //   })
+    // }
+    // return Promise.reject(new Error(response.data.message || 'Error'))
+    return response
   },
   (error: any) => {
     ElNotification.error(error.message || '响应错误！')

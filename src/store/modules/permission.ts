@@ -14,24 +14,6 @@ export const usePermissionStore = defineStore('permission', {
     getMenus: (state) => state.menus,
     getRouters: (state) => state.routers
   },
-  actions: {
-    setIsAdmin(status: boolean) {
-      this.isAdmin = status
-    },
-    setMenus(menus: any) {
-      this.menus = menus
-    },
-    setRouters(routers: any) {
-      this.routers = routers
-    },
-    setInfo(result: any) {
-      const { data } = result
-      this.setMenus(data.menus)
-      this.setRouters(data.routers)
-      this.setIsAdmin(data.isAdmin)
-    },
-    // 过滤菜单
-    filterMenus() {}
-  },
+  actions: {},
   persist: { key: 'PERMISSION' }
 })

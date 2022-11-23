@@ -4,8 +4,8 @@ export type AppStore = {
 
 export type PermissionStore = {
   isAdmin: boolean
-  menus: any[]
-  routers: any[]
+  menus: Array<any>
+  routers: Array<any>
 }
 
 export type UserStore = {

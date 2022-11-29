@@ -1,7 +1,7 @@
 import * as qs from 'qs'
 import axios from '../../utils/request'
 
-const baseApi = '/api'
+const baseApi = import.meta.env.VITE_BASIC_API
 // 获取验证码
 export const getCaptcha = () => {
   return axios({

@@ -7,12 +7,6 @@ import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import { fileURLToPath } from 'url'
 
 export default defineConfig({
-  mode: 'development',
-  base: './',
-  publicDir: 'public',
-  logLevel: 'info',
-  envDir: 'root',
-  envPrefix: 'VITE_',
   plugins: [
     vue(),
     WindiCSS(),
@@ -25,13 +19,6 @@ export default defineConfig({
       symbolId: 'icon-[dir]-[name]'
     })
   ],
-  css: {
-    preprocessorOptions: {
-      scss: {
-        additionalData: ''
-      }
-    }
-  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
@@ -40,6 +27,13 @@ export default defineConfig({
       '@utils': fileURLToPath(new URL('./src/utils', import.meta.url)),
       '@layout': fileURLToPath(new URL('./src/layout', import.meta.url)),
       '@components': fileURLToPath(new URL('./src/components', import.meta.url))
+    }
+  },
+  css: {
+    preprocessorOptions: {
+      sass: {
+        additionalData: `@import '@/assets/styles/variables.scss';`
+      }
     }
   },
   server: {

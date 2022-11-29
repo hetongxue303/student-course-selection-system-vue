@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --mode development",
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
-    "lint": "eslint  {**/*,*}.{js,ts,jsx,tsx,html,vue} --fix",
+    "lint": "eslint {**/*,*}.{js,ts,jsx,tsx,html,vue} --fix",
     "prettier": "prettier --write {**/*,*}.{vue,css,scss,less,json,js,ts,jsx,tsx,cjs}",
     "prepare": "husky install"
   },
@@ -17,7 +17,7 @@
     }
   },
   "lint-staged": {
-    "*.{js,vue,ts,jsx,tsx}": [
+    "*.{js,vue,ts,jsx,tsx,d.ts}": [
       "npm run lint",
       "npm run prettier"
     ],

@@ -36,7 +36,7 @@
             </el-input>
           </el-form-item>
           <el-form-item prop="code">
-            <el-row class="w-250px">
+            <el-row :gutter="10" class="w-250px">
               <el-col :span="14" class="mr-3">
                 <el-input v-model="loginForm.code" placeholder="验证码">
                   <template #prefix>

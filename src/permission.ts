@@ -13,22 +13,22 @@ router.beforeEach((to, from, next) => {
 
   const userStore = useUserStore()
   const permissionStore = usePermissionStore()
-  hasRouter()
+  // hasRouter()
   if (getToken()) {
     if (to.path === '/login') {
       next('/')
-    } else if (userStore.roles.length === 0) {
-      userStore
-        .getUserInfo()
-        .then(() => {
-          addRouter(permissionStore.routers)
-          next({ ...to, replace: true })
-        })
-        .catch((err) => {
-          userStore.systemLogout()
-          ElMessage.error(err.message)
-          next('/')
-        })
+      // } else if (userStore.roles.length === 0) {
+      //   userStore
+      //     .getUserInfo()
+      //     .then(() => {
+      //       addRouter(permissionStore.routers)
+      //       next({ ...to, replace: true })
+      //     })
+      //     .catch((err) => {
+      //       userStore.systemLogout()
+      //       ElMessage.error(err.message)
+      //       next('/')
+      //     })
     } else {
       next()
     }

@@ -1,4 +1,4 @@
-const menus: Array<any> = [
+export const menus: Array<any> = [
   {
     name: '首页',
     icon: 'index',

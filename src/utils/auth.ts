@@ -3,6 +3,7 @@ import { settings } from '../settings'
 import { session } from './storage'
 
 const cookies = useCookies()
+
 /**
  * 获取token
  */

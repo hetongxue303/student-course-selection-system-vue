@@ -12,7 +12,7 @@
       active-text-color="#409eff"
       background-color="#304156"
     >
-      <menu-item :data="menus" />
+      <menu-item :data="menuList" />
     </el-menu>
   </el-scrollbar>
 </template>
@@ -24,12 +24,13 @@ import { useRoute } from 'vue-router'
 import MenuItem from './components/MenuItem.vue'
 import { constMenu } from '../data/constMenu'
 import { usePermissionStore } from '../../store/modules/permission'
-
+import { menus } from '../data/menus'
+const menuList = menus
 const route = useRoute()
 const permissionStore = usePermissionStore()
 
-const menus: Array<any> = constMenu
-permissionStore.getMenus.forEach((menu) => menus.push(menu))
+// const menus: Array<any> = constMenu
+// permissionStore.getMenus.forEach((menu) => menus.push(menu))
 
 defineProps({
   isCollapse: { type: Boolean, required: true, default: false }

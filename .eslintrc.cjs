@@ -52,7 +52,7 @@ module.exports = {
   },
   // 0 = off, 1 = warn, 2 = error
   rules: {
-    'import/no-extraneous-dependencies': [2, {devDependencies: true}],
+    'import/no-extraneous-dependencies': [2, { devDependencies: true }],
     'import/no-unresolved': 0,
     'import/prefer-default-export': 0,
     'import/extensions': 0,
@@ -69,7 +69,7 @@ module.exports = {
     'no-param-reassign': 0,
     'no-unused-vars': 0,
     'no-underscore-dangle': 0,
-    'no-use-before-define':0,
+    'no-use-before-define': 0,
     'vue/require-component-is': 0,
     'vue/multi-word-component-names': 0,
     'vue/no-parsing-error': 0

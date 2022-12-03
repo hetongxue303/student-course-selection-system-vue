@@ -85,7 +85,7 @@ import { useCookies } from '@vueuse/integrations/useCookies'
 import { useRoute, useRouter } from 'vue-router'
 import { decrypt, encrypt } from '../utils/jsencrypt'
 import { COOKIE_EXPIRE_TIME, settings } from '../settings'
-import { getCaptcha, login } from '../api/auth'
+import { getCaptcha, login } from '../api/login'
 import {
   removeToken,
   removeTokenTime,

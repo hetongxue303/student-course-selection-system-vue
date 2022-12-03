@@ -1,5 +1,5 @@
 import * as qs from 'qs'
-import axios from '../../utils/request'
+import axios from '../utils/request'
 
 const baseApi = import.meta.env.VITE_BASIC_API
 // 获取验证码

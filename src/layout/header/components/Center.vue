@@ -43,7 +43,7 @@
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '../../../store/modules/user'
-import { logout } from '../../../api/auth'
+import { logout } from '../../../api/login'
 
 // 实例化
 const userStore = useUserStore()

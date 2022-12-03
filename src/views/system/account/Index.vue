@@ -1,18 +1,17 @@
 <script setup lang="ts">
-import { getMajorAll } from '../../../api/major'
 import { onMounted } from 'vue'
 import { getAccountAll } from '../../../api/account'
 
 interface Account {
-  accountId?: number
-  username?: string
-  password?: string
-  status?: boolean
-  delete?: boolean
-  lastLoginIp?: string
-  lastLoginTime?: string
-  createTime?: string
-  updateTime?: string
+  accountId: number
+  username: string
+  password: string
+  status: boolean
+  delete: boolean
+  lastLoginIp: string
+  lastLoginTime: string
+  createTime: string
+  updateTime: string
 }
 
 let tableData: Account[] = []

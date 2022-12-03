@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { UserStore } from '../../types/StoreTypes'
 import { getToken, removeToken, removeTokenTime } from '../../utils/auth'
 import { local, session } from '../../utils/storage'
-import { getUserInfo } from '../../api/auth'
+import { getUserInfo } from '../../api/login'
 import { usePermissionStore } from './permission'
 import { filterAsyncRouter } from '../../router'
 

@@ -34,7 +34,7 @@ onMounted(() => {
 
 <template>
   <el-table :data="tableData" style="width: 100%">
-    <el-table-column type="selection" width="30" />
+    <el-table-column type="selection" width="30"></el-table-column>
     <el-table-column prop="collegeId" label="ID" align="center" width="80" />
     <el-table-column
       prop="collegeName"

@@ -1,16 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { getRoleAll } from '../../../api/role'
-
-interface Role {
-  roleId: number
-  roleName: string
-  roleKey: string
-  status: boolean
-  delete: boolean
-  createTime: string
-  updateTime: string
-}
+import { Role } from '../../../types/entity'
 
 interface menuTree {
   label: string
@@ -106,6 +97,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <!--表格工具-->
   <div class="table-tool">
     <el-row :gutter="20" class="search-box">
       <el-col :span="4">
@@ -158,16 +150,15 @@ onMounted(() => {
             <template #default="scope">
               <el-button
                 type="primary"
-                size="small"
                 @click="handleEdit(scope.$index, scope.row)"
-                >编辑</el-button
-              >
+                ><el-icon> <component is="EditPen" /> </el-icon
+              ></el-button>
               <el-button
-                size="small"
                 type="danger"
                 @click="handleDelete(scope.$index, scope.row)"
-                >删除</el-button
               >
+                <el-icon> <component is="Delete" /> </el-icon
+              ></el-button>
             </template>
           </el-table-column>
         </el-table>

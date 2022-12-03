@@ -1,15 +1,8 @@
 <script setup lang="ts">
 import { getCollegeAll } from '../../../api/college'
 import { onMounted } from 'vue'
+import { College } from '../../../types/entity'
 
-interface College {
-  collegeId: number
-  collegeName: string
-  remark: string | undefined
-  createTime: string
-  updateTime: string
-  delete: boolean
-}
 let tableData: College[] = []
 
 const getCollegeListAll = async () => {
@@ -55,18 +48,12 @@ onMounted(() => {
     />
     <el-table-column label="操作" align="center" width="200">
       <template #default="scope">
-        <el-button
-          type="primary"
-          size="small"
-          @click="handleEdit(scope.$index, scope.row)"
-          >编辑</el-button
-        >
-        <el-button
-          size="small"
-          type="danger"
-          @click="handleDelete(scope.$index, scope.row)"
-          >删除</el-button
-        >
+        <el-button type="primary" @click="handleEdit(scope.$index, scope.row)"
+          ><el-icon> <component is="EditPen" /> </el-icon
+        ></el-button>
+        <el-button type="danger" @click="handleDelete(scope.$index, scope.row)"
+          ><el-icon> <component is="Delete" /> </el-icon
+        ></el-button>
       </template>
     </el-table-column>
   </el-table>

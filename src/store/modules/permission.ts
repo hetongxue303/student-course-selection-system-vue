@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { PermissionStore } from '../../types/StoreTypes'
+import { PermissionStore } from '../../types/store'
 
 export const usePermissionStore = defineStore('permission', {
   state: (): PermissionStore => {

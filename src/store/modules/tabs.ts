@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { TabStore } from '../../types/StoreTypes'
+import { TabStore } from '../../types/store'
 
 export const useTabStore = defineStore('tab', {
   state: (): TabStore => {

@@ -16,6 +16,24 @@ import SvgIcon from '@components/SvgIcon/Index.vue'
 
 const app = createApp(App)
 
+app.directive('permission', (el, binding) => {
+  const { value } = binding
+  const permissions = ['user:list', 'user:add']
+  // const permissions = ['user:list', 'user:add', 'user:del', 'user:update']
+  if (value && value.length > 0 && value instanceof Array) {
+    const needPermission = value
+    const hasPermission = permissions.some((permission) => {
+      return needPermission.includes(permission)
+    })
+    if (!hasPermission) {
+      // el.style.display = 'none'
+      el.parentNode.removeChild(el)
+    }
+  } else {
+    throw new Error('权限不足')
+  }
+})
+
 app.use(router).use(ElementPlus).use(pinia)
 
 app.component('SvgIcon', SvgIcon)

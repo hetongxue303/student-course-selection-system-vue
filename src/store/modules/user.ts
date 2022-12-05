@@ -20,7 +20,8 @@ export const useUserStore = defineStore('user', {
     getAuthorization: (state) => state.authorization,
     getRoles: (state) => state.roles,
     getUsername: (state) => state.username,
-    getAvatar: (state) => state.avatar
+    getAvatar: (state) => state.avatar,
+    getPermissions: (state) => state.permissions
   },
   actions: {
     systemLogout() {

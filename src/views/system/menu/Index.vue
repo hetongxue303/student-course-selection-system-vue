@@ -17,7 +17,7 @@ const handleDelete = (index: number, row: any) => {
   <div class="table-tool">
     <el-row :gutter="20" class="search-box">
       <el-col :span="4">
-        <el-input type="text" placeholder="请输入搜索角色名..." />
+        <el-input type="text" placeholder="请输入搜索内容..." />
       </el-col>
       <el-button type="success">
         <el-icon> <component is="Search" /> </el-icon>

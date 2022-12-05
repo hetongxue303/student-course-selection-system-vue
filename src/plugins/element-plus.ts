@@ -8,7 +8,7 @@ export default {
   install(app: App) {
     app.use(ElementPlus, {
       locale,
-      size: 'small' || 'default' || 'large'
+      size: 'default' || 'small' || 'large'
     })
     Object.keys(Icons).forEach((key: string) => {
       app.component(key, Icons[key as keyof typeof Icons])

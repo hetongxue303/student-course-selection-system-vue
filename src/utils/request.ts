@@ -77,15 +77,18 @@ axios.interceptors.response.use(
     return response
   },
   (error: any) => {
-    let { message } = error
+    let msg = ''
+    const { message, response } = error
     if (message === 'Network Error') {
-      message = '连接异常'
+      msg = '连接异常'
     } else if (message.includes('timeout')) {
-      message = '请求超时'
+      msg = '请求超时'
+    } else if (response.status === 401) {
+      msg = 'token过期'
     } else if (message.includes('Request failed with status code')) {
-      message = '请求异常'
+      msg = '请求异常'
     }
-    ElNotification.error(message)
+    ElNotification.error(msg)
     return Promise.reject(error)
   }
 )

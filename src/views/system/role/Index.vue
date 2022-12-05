@@ -101,7 +101,7 @@ onMounted(() => {
   <div class="table-tool">
     <el-row :gutter="20" class="search-box">
       <el-col :span="4">
-        <el-input type="text" placeholder="请输入搜索角色名..." />
+        <el-input type="text" placeholder="请输入搜索内容..." />
       </el-col>
       <el-button type="success">
         <el-icon> <component is="Search" /> </el-icon>
@@ -131,6 +131,8 @@ onMounted(() => {
       </el-button>
     </div>
   </div>
+
+  <!--主体-->
   <el-row :gutter="10">
     <el-col :span="18">
       <el-card>

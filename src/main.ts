@@ -26,12 +26,15 @@ app.directive('permission', (el, binding) => {
       return needPermission.includes(permission)
     })
     if (!hasPermission) {
-      // el.style.display = 'none'
       el.parentNode.removeChild(el)
     }
   } else {
     throw new Error('权限不足')
   }
+})
+
+app.directive('focus', (el) => {
+  el.focus()
 })
 
 app.use(router).use(ElementPlus).use(pinia)

@@ -6,14 +6,14 @@ const baseApi = import.meta.env.VITE_BASIC_API
 export const getCollegeAll = () => {
   return axios({
     method: 'GET',
-    url: `${baseApi}/college/getAll`
+    url: `${baseApi}/college/get/all`
   })
 }
 
 export const getCollegePage = (params: any) => {
   return axios({
     method: 'GET',
-    url: `${baseApi}/college/getPage`,
+    url: `${baseApi}/college/get/page`,
     params
   })
 }
@@ -22,7 +22,7 @@ export const addCollege = (data: College) => {
   if (data.remark?.length === 0) data.remark = '空'
   return axios({
     method: 'POST',
-    url: `${baseApi}/college/add`,
+    url: `${baseApi}/college/insert`,
     data
   })
 }
@@ -38,6 +38,6 @@ export const updateCollege = (data: College) => {
 export const delCollege = (id: number) => {
   return axios({
     method: 'DELETE',
-    url: `${baseApi}/college/del/${id}`
+    url: `${baseApi}/college/delete/${id}`
   })
 }

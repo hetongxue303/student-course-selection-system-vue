@@ -45,13 +45,11 @@
     />
     <el-table-column label="操作" align="center" width="200">
       <template #default="scope">
-        <!--编辑-->
         <el-button
           icon="EditPen"
           type="primary"
           @click="handleEdit(scope.row)"
         />
-        <!--删除-->
         <el-popconfirm
           title="确定删除本条数据吗？"
           @confirm="handleDelete(scope.row)"
@@ -63,6 +61,15 @@
       </template>
     </el-table-column>
   </el-table>
+
+  <!--分页-->
+  <Pagination
+    :current-page="queryInfo.page"
+    :page-size="queryInfo.size"
+    :total="total"
+    @size-change="handlerSizeChange"
+    @current-change="handlerCurrentChange"
+  />
 
   <!--新增-->
   <el-dialog v-model="dialogVisible" title="新增学院">
@@ -128,6 +135,18 @@ import { onMounted, reactive, ref, watch } from 'vue'
 import { College } from '../../../types/entity'
 import { ElNotification } from 'element-plus'
 import { QueryCollege } from '../../../types/query'
+import Pagination from '../../../components/Pagination/Index.vue'
+
+/* 分页相关 */
+const total = ref<number>(0)
+const handlerCurrentChange = (val: number) => {
+  queryInfo.page = val
+  getCollegeListPage()
+}
+const handlerSizeChange = (val: number) => {
+  queryInfo.size = val
+  getCollegeListPage()
+}
 
 /* 重置表单方法 */
 const resetForm = (form: any) => {
@@ -143,7 +162,7 @@ const resetForm = (form: any) => {
 const queryInfo = reactive<QueryCollege>({
   name: '',
   page: 1,
-  size: 5
+  size: 10
 })
 const resetSearch = () => {
   queryInfo.name = ''
@@ -218,6 +237,7 @@ const tableData = ref<College[]>([])
 const getCollegeListPage = async () => {
   const { data } = await getCollegePage(queryInfo)
   tableData.value = data.data.records
+  total.value = JSON.parse(data.data.total)
 }
 onMounted(() => {
   getCollegeListPage()

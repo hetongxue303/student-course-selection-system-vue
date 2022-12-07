@@ -6,14 +6,14 @@ const baseApi = import.meta.env.VITE_BASIC_API
 export const getCollegeAll = () => {
   return axios({
     method: 'GET',
-    url: `${baseApi}/college/getCollegeAll`
+    url: `${baseApi}/college/getAll`
   })
 }
 
 export const getCollegePage = (params: any) => {
   return axios({
     method: 'GET',
-    url: `${baseApi}/college/getCollegePage`,
+    url: `${baseApi}/college/getPage`,
     params
   })
 }
@@ -23,6 +23,14 @@ export const addCollege = (data: College) => {
   return axios({
     method: 'POST',
     url: `${baseApi}/college/add`,
+    data
+  })
+}
+export const updateCollege = (data: College) => {
+  if (data.remark?.length === 0) data.remark = '空'
+  return axios({
+    method: 'PUT',
+    url: `${baseApi}/college/update`,
     data
   })
 }

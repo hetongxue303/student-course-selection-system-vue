@@ -10,12 +10,14 @@ const cookies = useCookies()
 export const getToken = (): string => {
   return cookies.get(settings.AUTHORIZATION_KEY)
 }
+
 /**
  * 清除token
  */
 export const removeToken = () => {
   cookies.remove(settings.AUTHORIZATION_KEY)
 }
+
 /**
  * 设置token
  * @param token

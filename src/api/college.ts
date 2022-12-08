@@ -41,3 +41,11 @@ export const delCollege = (id: number) => {
     url: `${baseApi}/college/delete/${id}`
   })
 }
+
+export const delBatchCollege = (data: number[]) => {
+  return axios({
+    method: 'DELETE',
+    url: `${baseApi}/college/delete/batch`,
+    data
+  })
+}

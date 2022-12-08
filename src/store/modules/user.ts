@@ -25,11 +25,11 @@ export const useUserStore = defineStore('user', {
   },
   actions: {
     systemLogout() {
-      this.$reset()
       removeToken()
       removeTokenTime()
       session.clear()
       local.clear()
+      this.$reset()
     },
     fedLogOut() {
       this.authorization = ''

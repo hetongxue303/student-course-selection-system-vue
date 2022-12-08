@@ -20,14 +20,34 @@
       <el-button icon="Plus" type="primary" @click="dialogVisible = true">
         新增
       </el-button>
-      <el-button icon="EditPen" type="success"> 修改</el-button>
-      <el-button icon="Delete" type="danger"> 删除</el-button>
-      <el-button icon="Bottom" type="warning"> 导出</el-button>
+      <el-button
+        icon="EditPen"
+        :disabled="disabled.update"
+        type="success"
+        @click="handleEdit()"
+      >
+        修改</el-button
+      >
+      <el-button
+        icon="Delete"
+        :disabled="disabled.delete"
+        type="danger"
+        @click="deleteDialogVisible = true"
+      >
+        删除</el-button
+      >
+      <el-button icon="Bottom" :disabled="disabled.export" type="warning">
+        导出</el-button
+      >
     </div>
   </div>
 
   <!--表格-->
-  <el-table :data="tableData">
+  <el-table
+    ref="multipleTableRef"
+    :data="tableData"
+    @selection-change="handleSelectionChange"
+  >
     <el-table-column type="selection" width="30" />
     <el-table-column prop="collegeId" label="ID" align="center" width="80" />
     <el-table-column prop="collegeName" label="学院名称" width="200" />
@@ -67,8 +87,8 @@
     :current-page="queryInfo.page"
     :page-size="queryInfo.size"
     :total="total"
-    @size-change="handlerSizeChange"
-    @current-change="handlerCurrentChange"
+    @size-change="handleSizeChange"
+    @current-change="handleCurrentChange"
   />
 
   <!--新增-->
@@ -94,7 +114,7 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogVisible = false">返回</el-button>
-        <el-button type="primary" @click="handlerAddCollege"> 确认 </el-button>
+        <el-button type="primary" @click="handleAddCollege"> 确认 </el-button>
       </span>
     </template>
   </el-dialog>
@@ -118,7 +138,18 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="editDialogVisible = false">返回</el-button>
-        <el-button type="primary" @click="handlerEditCollege"> 确认 </el-button>
+        <el-button type="primary" @click="handleEditCollege"> 确认 </el-button>
+      </span>
+    </template>
+  </el-dialog>
+
+  <!--确认删除框-->
+  <el-dialog v-model="deleteDialogVisible" title="提示" width="30%">
+    <span>确认删除选中的{{ multipleSelection.length }}条数据?</span>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="deleteDialogVisible = false">返回</el-button>
+        <el-button type="primary" @click="handleBatchDelete"> 确定 </el-button>
       </span>
     </template>
   </el-dialog>
@@ -127,26 +158,64 @@
 <script setup lang="ts">
 import {
   addCollege,
+  delBatchCollege,
   delCollege,
   getCollegePage,
   updateCollege
 } from '../../../api/college'
 import { onMounted, reactive, ref, watch } from 'vue'
 import { College } from '../../../types/entity'
-import { ElNotification } from 'element-plus'
+import { ElNotification, ElTable } from 'element-plus'
 import { QueryCollege } from '../../../types/query'
 import Pagination from '../../../components/Pagination/Index.vue'
 
 /* 分页相关 */
 const total = ref<number>(0)
-const handlerCurrentChange = (val: number) => {
+const handleCurrentChange = (val: number) => {
   queryInfo.page = val
   getCollegeListPage()
 }
-const handlerSizeChange = (val: number) => {
+const handleSizeChange = (val: number) => {
   queryInfo.size = val
   getCollegeListPage()
 }
+
+/* 表格相关 */
+const disabled = reactive({
+  update: true,
+  delete: true,
+  export: false
+})
+const deleteDialogVisible = ref(false)
+const multipleTableRef = ref<InstanceType<typeof ElTable>>()
+const multipleSelection = ref<College[]>([])
+const handleSelectionChange = (colleges: College[]) => {
+  multipleSelection.value = colleges
+}
+const handleBatchDelete = async () => {
+  const { data } = await delBatchCollege(
+    multipleSelection.value.map((item) => {
+      return item.collegeId as number
+    })
+  )
+  switch (data.code) {
+    case 200:
+      await getCollegeListPage()
+      ElNotification.success('删除成功')
+      deleteDialogVisible.value = false
+      break
+    default:
+      ElNotification.success('删除失败,请重试！')
+  }
+}
+watch(
+  () => multipleSelection.value,
+  () => {
+    disabled.update = multipleSelection.value.length !== 1
+    disabled.delete = multipleSelection.value.length < 1
+  },
+  { immediate: true, deep: true }
+)
 
 /* 重置表单方法 */
 const resetForm = (form: any) => {
@@ -179,7 +248,7 @@ const handleDelete = async ({ collegeId }: College) => {
         await getCollegeListPage()
         break
       default:
-        ElNotification.success('删除失败')
+        ElNotification.success('删除失败,请重试！')
     }
   }
 }
@@ -199,7 +268,7 @@ watch(
   },
   { deep: true }
 )
-const handlerAddCollege = async () => {
+const handleAddCollege = async () => {
   const { data } = await addCollege(addForm)
   switch (data.code) {
     case 200:
@@ -215,11 +284,15 @@ const handlerAddCollege = async () => {
 /* 编辑相关 */
 const editDialogVisible = ref(false)
 const editForm = ref<College>({})
-const handleEdit = (row: College) => {
+const handleEdit = (row?: College) => {
+  if (row) {
+    editForm.value = row
+  } else {
+    editForm.value = multipleSelection.value[0] as College
+  }
   editDialogVisible.value = true
-  editForm.value = row
 }
-const handlerEditCollege = async () => {
+const handleEditCollege = async () => {
   const { data } = await updateCollege(editForm.value)
   switch (data.code) {
     case 200:

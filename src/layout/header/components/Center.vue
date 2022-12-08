@@ -44,6 +44,9 @@ import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '../../../store/modules/user'
 import { logout } from '../../../api/login'
+import { useRouter } from 'vue-router'
+import { useCookies } from '@vueuse/integrations/useCookies'
+import { settings } from '../../../settings'
 
 // 实例化
 const userStore = useUserStore()
@@ -52,9 +55,11 @@ const dialogVisible = ref(false)
 // 注销处理
 const handlerLogout = async () => {
   const { data } = await logout()
-  switch (data.code as number) {
+  const cookies = useCookies()
+  switch (data.code) {
     case 200:
-      await userStore.systemLogout()
+      userStore.systemLogout()
+      cookies.remove(settings.AUTHORIZATION_KEY)
       ElMessage.success('注销成功')
       window.location.replace('/login')
       break

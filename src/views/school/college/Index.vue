@@ -4,7 +4,7 @@
     <el-row :gutter="20" class="search-box">
       <el-col :span="4">
         <el-input
-          v-model="queryInfo.name"
+          v-model="query.name"
           type="text"
           placeholder="请输入学院名称..."
         />
@@ -17,28 +17,28 @@
       </el-button>
     </el-row>
     <div class="operate-box">
-      <el-button icon="Plus" type="primary" @click="dialogVisible = true">
+      <el-button icon="Plus" type="primary" @click="dialog.add = true">
         新增
       </el-button>
       <el-button
         icon="EditPen"
-        :disabled="disabled.update"
+        :disabled="disabled.edit"
         type="success"
         @click="handleEdit()"
       >
-        修改</el-button
-      >
+        修改
+      </el-button>
       <el-button
         icon="Delete"
         :disabled="disabled.delete"
         type="danger"
-        @click="deleteDialogVisible = true"
+        @click="dialog.delete = true"
       >
-        删除</el-button
-      >
+        删除
+      </el-button>
       <el-button icon="Bottom" :disabled="disabled.export" type="warning">
-        导出</el-button
-      >
+        导出
+      </el-button>
     </div>
   </div>
 
@@ -84,15 +84,15 @@
 
   <!--分页-->
   <Pagination
-    :current-page="queryInfo.page"
-    :page-size="queryInfo.size"
+    :current-page="query.currentPage"
+    :page-size="query.pageSize"
     :total="total"
     @size-change="handleSizeChange"
     @current-change="handleCurrentChange"
   />
 
   <!--新增-->
-  <el-dialog v-model="dialogVisible" title="新增学院">
+  <el-dialog v-model="dialog.add" title="新增学院" width="40%">
     <el-form :model="addForm">
       <el-form-item label="学院名称">
         <el-input
@@ -113,14 +113,14 @@
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="dialogVisible = false">返回</el-button>
+        <el-button @click="dialog.add = false">返回</el-button>
         <el-button type="primary" @click="handleAddCollege"> 确认 </el-button>
       </span>
     </template>
   </el-dialog>
 
   <!--编辑-->
-  <el-dialog v-model="editDialogVisible" title="编辑学院" width="40%">
+  <el-dialog v-model="dialog.edit" title="编辑学院" width="40%">
     <el-form :model="editForm">
       <el-form-item label="学院名称">
         <el-input v-model="editForm.collegeName" />
@@ -137,18 +137,18 @@
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="editDialogVisible = false">返回</el-button>
+        <el-button @click="dialog.edit = false">返回</el-button>
         <el-button type="primary" @click="handleEditCollege"> 确认 </el-button>
       </span>
     </template>
   </el-dialog>
 
   <!--确认删除框-->
-  <el-dialog v-model="deleteDialogVisible" title="提示" width="30%">
+  <el-dialog v-model="dialog.delete" title="提示" width="30%">
     <span>确认删除选中的{{ multipleSelection.length }}条数据?</span>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="deleteDialogVisible = false">返回</el-button>
+        <el-button @click="dialog.delete = false">返回</el-button>
         <el-button type="primary" @click="handleBatchDelete"> 确定 </el-button>
       </span>
     </template>
@@ -169,40 +169,63 @@ import { ElNotification, ElTable } from 'element-plus'
 import { QueryCollege } from '../../../types/query'
 import Pagination from '../../../components/Pagination/Index.vue'
 
+/* 初始化相关 */
+const tableData = ref<College[]>([])
+const getCollegeListPage = async () => {
+  const { data } = await getCollegePage(query)
+  tableData.value = data.data.records
+  total.value = JSON.parse(data.data.total)
+}
+onMounted(() => getCollegeListPage())
+
 /* 分页相关 */
 const total = ref<number>(0)
-const handleCurrentChange = (val: number) => {
-  queryInfo.page = val
+const handleCurrentChange = (currentPage: number) => {
+  query.currentPage = currentPage
   getCollegeListPage()
 }
-const handleSizeChange = (val: number) => {
-  queryInfo.size = val
+const handleSizeChange = (pageSize: number) => {
+  query.pageSize = pageSize
+  getCollegeListPage()
+}
+
+/* 查询相关 */
+const query = reactive<QueryCollege>({
+  name: '',
+  currentPage: 1,
+  pageSize: 10
+})
+const resetSearch = () => {
+  query.name = ''
   getCollegeListPage()
 }
 
 /* 表格相关 */
 const disabled = reactive({
-  update: true,
+  edit: true,
   delete: true,
   export: false
 })
-const deleteDialogVisible = ref(false)
+const dialog = reactive({
+  add: false,
+  delete: false,
+  edit: false
+})
 const multipleTableRef = ref<InstanceType<typeof ElTable>>()
 const multipleSelection = ref<College[]>([])
 const handleSelectionChange = (colleges: College[]) => {
   multipleSelection.value = colleges
 }
 const handleBatchDelete = async () => {
-  const { data } = await delBatchCollege(
-    multipleSelection.value.map((item) => {
-      return item.collegeId as number
-    })
-  )
+  const ids: number[] = multipleSelection.value.map((item) => {
+    return item.collegeId as number
+  })
+  const { data } = await delBatchCollege(ids)
   switch (data.code) {
     case 200:
       await getCollegeListPage()
+      dialog.delete = false
       ElNotification.success('删除成功')
-      deleteDialogVisible.value = false
       break
     default:
       ElNotification.success('删除失败,请重试！')
@@ -211,7 +234,7 @@ const handleBatchDelete = async () => {
 watch(
   () => multipleSelection.value,
   () => {
-    disabled.update = multipleSelection.value.length !== 1
+    disabled.edit = multipleSelection.value.length !== 1
     disabled.delete = multipleSelection.value.length < 1
   },
   { immediate: true, deep: true }
@@ -227,25 +250,14 @@ const resetForm = (form: any) => {
   Object.assign(form, obj)
 }
 
-/* 查询相关 */
-const queryInfo = reactive<QueryCollege>({
-  name: '',
-  page: 1,
-  size: 10
-})
-const resetSearch = () => {
-  queryInfo.name = ''
-  getCollegeListPage()
-}
-
 /* 删除相关 */
 const handleDelete = async ({ collegeId }: College) => {
   if (collegeId) {
     const { data } = await delCollege(collegeId)
     switch (data.code) {
       case 200:
-        ElNotification.success('删除成功')
         await getCollegeListPage()
+        ElNotification.success('删除成功')
         break
       default:
         ElNotification.success('删除失败,请重试！')
@@ -254,13 +266,9 @@ const handleDelete = async ({ collegeId }: College) => {
 }
 
 /* 新增相关 */
-const dialogVisible = ref(false)
-const addForm = reactive<College>({
-  collegeName: '',
-  remark: ''
-})
+const addForm = reactive<College>({})
 watch(
-  () => dialogVisible.value,
+  () => dialog.add,
   (value) => {
     if (!value) {
       resetForm(addForm)
@@ -273,7 +281,7 @@ const handleAddCollege = async () => {
   switch (data.code) {
     case 200:
       await getCollegeListPage()
-      dialogVisible.value = false
+      dialog.add = false
       ElNotification.success('添加成功')
       break
     default:
@@ -282,39 +290,29 @@ const handleAddCollege = async () => {
 }
 
 /* 编辑相关 */
-const editDialogVisible = ref(false)
 const editForm = ref<College>({})
 const handleEdit = (row?: College) => {
   if (row) {
-    editForm.value = row
+    editForm.value = JSON.parse(JSON.stringify(row))
   } else {
-    editForm.value = multipleSelection.value[0] as College
+    editForm.value = JSON.parse(
+      JSON.stringify(multipleSelection.value[0] as College)
+    )
   }
-  editDialogVisible.value = true
+  dialog.edit = true
 }
 const handleEditCollege = async () => {
   const { data } = await updateCollege(editForm.value)
   switch (data.code) {
     case 200:
       await getCollegeListPage()
-      editDialogVisible.value = false
+      dialog.edit = false
       ElNotification.success('更新成功')
       break
     default:
       ElNotification.error('更新失败,请重试！')
   }
 }
-
-/* 初始化相关 */
-const tableData = ref<College[]>([])
-const getCollegeListPage = async () => {
-  const { data } = await getCollegePage(queryInfo)
-  tableData.value = data.data.records
-  total.value = JSON.parse(data.data.total)
-}
-onMounted(() => {
-  getCollegeListPage()
-})
 </script>
 
 <style scoped lang="scss">

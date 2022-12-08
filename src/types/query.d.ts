@@ -1,8 +1,8 @@
 import { College } from './entity'
 
 interface Query {
-  page?: number
-  size?: number
+  currentPage?: number
+  pageSize?: number
 }
 
 export interface QueryCollege extends College, Query {

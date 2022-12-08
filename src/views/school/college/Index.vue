@@ -36,7 +36,12 @@
       >
         删除
       </el-button>
-      <el-button icon="Bottom" :disabled="disabled.export" type="warning">
+      <el-button
+        icon="Bottom"
+        :disabled="disabled.export"
+        type="warning"
+        @click="handleExport"
+      >
         导出
       </el-button>
     </div>
@@ -145,7 +150,10 @@
 
   <!--确认删除框-->
   <el-dialog v-model="dialog.delete" title="提示" width="30%">
-    <span>确认删除选中的{{ multipleSelection.length }}条数据?</span>
+    <div style="display: flex; align-items: center">
+      <svg-icon name="warning" size="1.5" />
+      <span>确认删除选中的{{ multipleSelection.length }}条数据?</span>
+    </div>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialog.delete = false">返回</el-button>
@@ -165,7 +173,7 @@ import {
 } from '../../../api/college'
 import { onMounted, reactive, ref, watch } from 'vue'
 import { College } from '../../../types/entity'
-import { ElNotification, ElTable } from 'element-plus'
+import { ElMessage, ElNotification, ElTable } from 'element-plus'
 import { QueryCollege } from '../../../types/query'
 import Pagination from '../../../components/Pagination/Index.vue'
 
@@ -230,6 +238,9 @@ const handleBatchDelete = async () => {
     default:
       ElNotification.success('删除失败,请重试！')
   }
+}
+const handleExport = () => {
+  ElMessage.info('待开发...')
 }
 watch(
   () => multipleSelection.value,

@@ -1,4 +1,4 @@
-import { College } from './entity'
+import { College, Major } from './entity'
 
 interface Query {
   currentPage?: number
@@ -6,5 +6,8 @@ interface Query {
 }
 
 export interface QueryCollege extends College, Query {
+  name?: string
+}
+export interface QueryMajor extends Major, Query {
   name?: string
 }

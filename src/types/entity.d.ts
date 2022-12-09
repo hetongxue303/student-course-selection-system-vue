@@ -68,3 +68,15 @@ export interface Major extends common {
   remark?: string
   delete?: boolean
 }
+
+/**
+ * 课程属性
+ */
+export interface Course extends common {
+  courseId?: number
+  userId?: number
+  courseName?: string
+  count?: number
+  remark?: string
+  isDelete?: boolean
+}

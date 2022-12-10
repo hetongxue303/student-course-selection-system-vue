@@ -32,6 +32,8 @@ export interface menu extends common {
  */
 export interface User extends common {
   userId?: number
+  username?: string
+  password?: string
   nickName?: string
   realName?: string
   avatar?: string

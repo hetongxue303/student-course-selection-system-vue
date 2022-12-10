@@ -28,14 +28,21 @@ export interface menu extends common {
 }
 
 /**
- * 账户属性
+ * 用户属性
  */
-export interface Account extends common {
-  accountId?: number
-  username?: string
-  password?: string
-  status?: boolean
-  delete?: boolean
+export interface User extends common {
+  userId?: number
+  nickName?: string
+  realName?: string
+  avatar?: string
+  gender?: number
+  email?: string
+  phone?: string
+  type?: number
+  isDelete?: boolean
+  isEnable?: boolean
+  isAdmin?: boolean
+  remark?: string
   lastLoginIp?: string
   lastLoginTime?: string
 }
@@ -77,6 +84,7 @@ export interface Course extends common {
   userId?: number
   courseName?: string
   count?: number
+  choice?: number
   remark?: string
   isDelete?: boolean
 }

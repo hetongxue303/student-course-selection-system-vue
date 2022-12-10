@@ -59,9 +59,9 @@ export const menus: Array<any> = [
     path: '/system',
     children: [
       {
-        name: '账户管理',
-        icon: 'account',
-        path: '/system/account'
+        name: '用户管理',
+        icon: 'userManager',
+        path: '/system/user'
       },
       {
         name: '角色管理',

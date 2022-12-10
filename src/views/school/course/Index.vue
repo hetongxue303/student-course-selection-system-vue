@@ -17,7 +17,7 @@
       </el-button>
     </el-row>
     <div class="operate-box">
-      <el-button icon="Plus" type="primary" @click="dialog.add = true">
+      <el-button icon="Plus" type="primary" @click="handleAdd">
         新增
       </el-button>
       <el-button
@@ -55,13 +55,14 @@
   >
     <el-table-column type="selection" width="30" />
     <el-table-column prop="courseId" label="ID" align="center" width="80" />
-    <el-table-column prop="courseName" label="课程名称" width="200" />
-    <el-table-column
-      prop="remark"
-      label="课程描述"
-      align="center"
-      width="auto"
-    />
+    <el-table-column prop="courseName" label="名称" width="200" />
+    <el-table-column label="已选" width="200">
+      <template #default="scope">
+        <span>{{ scope.row.choice }}</span>
+      </template>
+    </el-table-column>
+    <el-table-column label="总人数" prop="count" width="200" />
+    <el-table-column prop="remark" label="描述" align="center" width="auto" />
     <el-table-column
       prop="createTime"
       label="创建时间"
@@ -106,6 +107,19 @@
           placeholder="请输入课程名"
         />
       </el-form-item>
+      <el-form-item label="课程人数">
+        <el-input v-model="addForm.count" type="number" />
+      </el-form-item>
+      <el-form-item label="任课老师">
+        <el-select v-model="addForm.userId" placeholder="请选择">
+          <el-option
+            v-for="(item, index) in teachers"
+            :key="index"
+            :label="item.realName"
+            :value="item.userId"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item label="课程描述">
         <el-input
           v-model="addForm.remark"
@@ -128,7 +142,24 @@
   <el-dialog v-model="dialog.edit" title="编辑课程" width="40%">
     <el-form :model="editForm">
       <el-form-item label="课程名称">
-        <el-input v-model="editForm.courseName" />
+        <el-input
+          v-model="editForm.courseName"
+          type="text"
+          placeholder="请输入课程名"
+        />
+      </el-form-item>
+      <el-form-item label="课程人数">
+        <el-input v-model="editForm.count" type="number" />
+      </el-form-item>
+      <el-form-item label="任课老师">
+        <el-select v-model="editForm.userId" placeholder="请选择">
+          <el-option
+            v-for="(item, index) in teachers"
+            :key="index"
+            :label="item.realName"
+            :value="item.userId"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="课程描述">
         <el-input
@@ -174,8 +205,9 @@ import {
   updateCourse
 } from '../../../api/course'
 import { QueryCourse } from '../../../types/query'
-import { Course } from '../../../types/entity'
+import { Course, User } from '../../../types/entity'
 import { ElMessage, ElNotification, ElTable } from 'element-plus'
+import { getUserByType } from '../../../api/user'
 
 /* 初始化相关 */
 const tableData = ref<Course[]>([])
@@ -278,6 +310,15 @@ const handleDelete = async ({ courseId }: Course) => {
 
 /* 新增相关 */
 const addForm = reactive<Course>({})
+const teachers = ref<User[]>([])
+const getTeacherList = async (type: number) => {
+  const { data } = await getUserByType(type)
+  teachers.value = data.data
+}
+const handleAdd = () => {
+  getTeacherList(2)
+  dialog.add = true
+}
 watch(
   () => dialog.add,
   (value) => {
@@ -310,6 +351,8 @@ const handleEdit = (row?: Course) => {
       JSON.stringify(multipleSelection.value[0] as Course)
     )
   }
+  console.log(editForm.value)
+  getTeacherList(2)
   dialog.edit = true
 }
 const handleEditCollege = async () => {

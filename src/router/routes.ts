@@ -132,13 +132,13 @@ const routes: RouteRecordRaw[] = [
     meta: { title: '系统管理', cache: false },
     children: [
       {
-        name: 'account',
-        path: '/system/account',
+        name: 'user',
+        path: '/system/user',
         meta: {
-          title: '账户管理',
+          title: '用户管理',
           cache: false
         },
-        component: () => import('@views/system/account/Index.vue')
+        component: () => import('@views/system/user/Index.vue')
       },
       {
         name: 'role',

@@ -4,7 +4,7 @@
     <el-row :gutter="20" class="search-box">
       <el-col :span="4">
         <el-input
-          v-model="query.name"
+          v-model="query.courseName"
           type="text"
           placeholder="请输入学院名称..."
         />
@@ -230,13 +230,12 @@ const handleSizeChange = (pageSize: number) => {
 }
 
 /* 查询相关 */
-const query = reactive<QueryCourse>({
-  name: '',
+const query: QueryCourse = reactive({
   currentPage: 1,
   pageSize: 10
 })
 const resetSearch = () => {
-  query.name = ''
+  query.courseName = ''
   getCourseListPage()
 }
 
@@ -309,7 +308,7 @@ const handleDelete = async ({ courseId }: Course) => {
 }
 
 /* 新增相关 */
-const addForm = reactive<Course>({})
+const addForm: Course = reactive({})
 const teachers = ref<User[]>([])
 const getTeacherList = async (type: number) => {
   const { data } = await getUserByType(type)

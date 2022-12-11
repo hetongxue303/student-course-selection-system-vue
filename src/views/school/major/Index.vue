@@ -33,23 +33,22 @@ const handleSizeChange = (pageSize: number) => {
 }
 
 /* 查询相关 */
-const query = reactive<QueryMajor>({
-  name: '',
+const query: QueryMajor = reactive({
   currentPage: 1,
   pageSize: 10
 })
 const resetSearch = () => {
-  query.name = ''
+  query.majorName = ''
   getMajorListPage()
 }
 
 /* 表格相关 */
-const disabled = reactive({
+const disabled: any = reactive({
   edit: true,
   delete: true,
   export: false
 })
-const dialog = reactive({
+const dialog: any = reactive({
   add: false,
   delete: false,
   edit: false
@@ -112,7 +111,7 @@ const handleDelete = async ({ majorId }: Major) => {
 }
 
 /* 新增相关 */
-const addForm = reactive<Major>({})
+const addForm: Major = reactive({})
 watch(
   () => dialog.add,
   (value) => {
@@ -167,7 +166,7 @@ const handleEditMajor = async () => {
     <el-row :gutter="20" class="search-box">
       <el-col :span="4">
         <el-input
-          v-model="query.name"
+          v-model="query.majorName"
           type="text"
           placeholder="请输入专业名称..."
         />

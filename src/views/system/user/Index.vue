@@ -275,12 +275,14 @@ const handleSizeChange = (pageSize: number) => {
 }
 
 /* 查询相关 */
-const query = reactive<QueryUser>({
+const query: QueryUser = reactive({
   currentPage: 1,
   pageSize: 10
 })
 const resetSearch = () => {
   query.username = ''
+  query.type = undefined
+  query.isEnable = undefined
   getUserListPage()
 }
 
@@ -379,7 +381,7 @@ const handleDelete = async ({ userId }: User) => {
 }
 
 /* 新增相关 */
-const addForm = reactive<User>({ gender: 1, isEnable: false, type: 1 })
+const addForm: User = reactive({ gender: 1, isEnable: false, type: 1 })
 watch(
   () => dialog.add,
   (value) => {

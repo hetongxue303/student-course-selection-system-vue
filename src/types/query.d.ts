@@ -5,15 +5,9 @@ interface Query {
   pageSize?: number
 }
 
-export interface QueryCollege extends College, Query {
-  name?: string
-}
+export interface QueryCollege extends College, Query {}
 
-export interface QueryMajor extends Major, Query {
-  name?: string
-}
+export interface QueryMajor extends Major, Query {}
 
-export interface QueryCourse extends Course, Query {
-  name?: string
-}
+export interface QueryCourse extends Course, Query {}
 export interface QueryUser extends User, Query {}

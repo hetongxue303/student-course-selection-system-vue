@@ -1,5 +1,9 @@
-<template>选课管理</template>
+<template>
+  <el-table :data="tableData"></el-table>
+</template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const tableData = []
+</script>
 
 <style scoped lang="scss"></style>

@@ -9,7 +9,7 @@ interface common {
 /**
  * 菜单属性
  */
-export interface menu extends common {
+export interface Menu extends common {
   menuId?: number
   menuName?: string
   menuTitle?: string
@@ -20,11 +20,16 @@ export interface menu extends common {
   sort?: number
   icon?: string
   perKey?: string
-  display?: boolean
-  frame?: boolean
-  cache?: boolean
-  delete?: boolean
+  isDisplay?: boolean
+  isFrame?: boolean
+  isCache?: boolean
+  isDelete?: boolean
   remark?: string
+}
+
+export interface MenuTable extends Menu {
+  hasChildren?: boolean
+  children?: MenuTable[]
 }
 
 /**

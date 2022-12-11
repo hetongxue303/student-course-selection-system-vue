@@ -53,8 +53,7 @@
     :data="tableData"
     @selection-change="handleSelectionChange"
   >
-    <el-table-column type="selection" width="30" />
-    <el-table-column prop="collegeId" label="ID" align="center" width="80" />
+    <el-table-column type="selection" width="50" align="center" />
     <el-table-column prop="collegeName" label="学院名称" width="200" />
     <el-table-column
       prop="remark"
@@ -66,7 +65,7 @@
       prop="createTime"
       label="创建时间"
       align="center"
-      width="200"
+      width="180"
     />
     <el-table-column label="操作" align="center" width="200">
       <template #default="scope">

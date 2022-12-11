@@ -66,7 +66,7 @@
     :data="tableData"
     @selection-change="handleSelectionChange"
   >
-    <el-table-column type="selection" width="50" />
+    <el-table-column type="selection" width="50" align="center" />
     <el-table-column prop="username" label="用户名" width="150" />
     <el-table-column prop="nickName" label="昵称" width="150" />
     <el-table-column label="性别" width="100">
@@ -253,7 +253,6 @@ import {
   updateUser
 } from '../../../api/user'
 
-const aa = ref(1)
 /* 初始化相关 */
 const tableData = ref<User[]>([])
 const getUserListPage = async () => {

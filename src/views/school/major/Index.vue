@@ -215,8 +215,7 @@ const handleEditMajor = async () => {
     :data="tableData"
     @selection-change="handleSelectionChange"
   >
-    <el-table-column type="selection" width="30" />
-    <el-table-column prop="majorId" label="ID" align="center" width="80" />
+    <el-table-column type="selection" width="50" align="center" />
     <el-table-column prop="majorName" label="专业名称" width="200" />
     <el-table-column
       prop="remark"
@@ -228,7 +227,7 @@ const handleEditMajor = async () => {
       prop="createTime"
       label="创建时间"
       align="center"
-      width="200"
+      width="auto"
     />
     <el-table-column label="操作" align="center" width="200">
       <template #default="scope">

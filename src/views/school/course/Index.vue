@@ -53,8 +53,7 @@
     :data="tableData"
     @selection-change="handleSelectionChange"
   >
-    <el-table-column type="selection" width="30" />
-    <el-table-column prop="courseId" label="ID" align="center" width="80" />
+    <el-table-column type="selection" width="50" align="center" />
     <el-table-column prop="courseName" label="名称" width="200" />
     <el-table-column label="已选" width="200">
       <template #default="scope">

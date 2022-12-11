@@ -1,7 +1,7 @@
 <template>
   <el-container>
     <el-aside>
-      <Sidebar :is-collapse="appStore.getCollapse" />
+      <Sidebar v-model:is-collapse="appStore.getCollapse" />
     </el-aside>
     <el-container>
       <el-header>

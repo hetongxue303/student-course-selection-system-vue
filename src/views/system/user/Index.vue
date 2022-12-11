@@ -4,10 +4,23 @@
     <el-row :gutter="20" class="search-box">
       <el-col :span="4">
         <el-input
-          v-model="query.name"
+          v-model="query.username"
           type="text"
-          placeholder="请输入学院名称..."
+          placeholder="请输入用户名..."
         />
+      </el-col>
+      <el-col :span="2">
+        <el-select v-model="query.isEnable" placeholder="状态" clearable>
+          <el-option label="启用" :value="true" />
+          <el-option label="禁用" :value="false" />
+        </el-select>
+      </el-col>
+      <el-col :span="3">
+        <el-select v-model="query.type" placeholder="角色" clearable>
+          <el-option label="管理员" :value="1" />
+          <el-option label="教师" :value="2" />
+          <el-option label="学生" :value="3" />
+        </el-select>
       </el-col>
       <el-button icon="Search" type="success" @click="getUserListPage">
         搜索
@@ -162,9 +175,37 @@
 
   <!--编辑-->
   <el-dialog v-model="dialog.edit" title="编辑用户" width="40%">
-    <el-form :model="editForm">
+    <el-form :model="editForm" label-width="80px">
       <el-form-item label="用户名">
-        <el-input v-model="editForm.nickName" />
+        <el-input v-model="editForm.username" type="text" />
+      </el-form-item>
+      <el-form-item label="电话">
+        <el-input v-model="editForm.phone" type="number" />
+      </el-form-item>
+      <el-form-item label="昵称">
+        <el-input v-model="editForm.nickName" type="text" />
+      </el-form-item>
+      <el-form-item label="邮箱">
+        <el-input v-model="editForm.email" type="email" />
+      </el-form-item>
+      <el-form-item label="性别">
+        <el-radio-group v-model="editForm.gender">
+          <el-radio label="1">男</el-radio>
+          <el-radio label="2">女</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="状态">
+        <el-radio-group v-model="editForm.isEnable">
+          <el-radio :label="true">启用</el-radio>
+          <el-radio :label="false">禁用</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="角色">
+        <el-radio-group v-model="editForm.type">
+          <el-radio-button :label="1">管理员</el-radio-button>
+          <el-radio-button :label="2">教师</el-radio-button>
+          <el-radio-button :label="3">学生</el-radio-button>
+        </el-radio-group>
       </el-form-item>
       <el-form-item label="用户描述">
         <el-input
@@ -235,12 +276,11 @@ const handleSizeChange = (pageSize: number) => {
 
 /* 查询相关 */
 const query = reactive<QueryUser>({
-  name: '',
   currentPage: 1,
   pageSize: 10
 })
 const resetSearch = () => {
-  query.name = ''
+  query.username = ''
   getUserListPage()
 }
 
@@ -279,11 +319,15 @@ const handleExport = () => {
   ElMessage.info('待开发...')
 }
 const handleSwitchChange = (user: User) => {
-  ElMessageBox.confirm(`此操作将 "禁用" ${user.nickName}, 是否继续？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  })
+  ElMessageBox.confirm(
+    `此操作将 ${user.isEnable ? '启用' : '禁用'} ${user.nickName}, 是否继续？`,
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  )
     .then(async () => {
       const { data } = await updateUser(user)
       switch (data.code) {

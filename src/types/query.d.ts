@@ -16,6 +16,4 @@ export interface QueryMajor extends Major, Query {
 export interface QueryCourse extends Course, Query {
   name?: string
 }
-export interface QueryUser extends User, Query {
-  name?: string
-}
+export interface QueryUser extends User, Query {}

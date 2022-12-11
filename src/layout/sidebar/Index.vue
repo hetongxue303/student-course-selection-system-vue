@@ -1,12 +1,12 @@
 <template>
-  <Logo :collapse="isCollapse" />
+  <!--  <Logo :collapse="isCollapse" />-->
   <el-scrollbar class="scrollbar" wrap-class="scrollbar-wrapper">
     <el-menu
+      :collapse="isCollapse"
       router
       :unique-opened="false"
       :collapse-transition="true"
       :default-active="activeValue"
-      :collapse="isCollapse"
       mode="vertical"
       text-color="#f4f4f5"
       active-text-color="#409eff"
@@ -25,6 +25,7 @@ import MenuItem from './components/MenuItem.vue'
 import { constMenu } from '../data/constMenu'
 import { usePermissionStore } from '../../store/modules/permission'
 import { menus } from '../data/menus'
+
 const menuList = menus
 const route = useRoute()
 const permissionStore = usePermissionStore()
@@ -51,13 +52,16 @@ const activeValue = computed((): string => {
     width: 200px;
   }
 }
+
 .el-scrollbar {
-  height: calc(100% - 50px);
+  //height: calc(100% - 50px);
   background-color: #304156;
 }
+
 .scrollbar-wrapper {
   overflow-x: hidden !important;
 }
+
 .horizontal-collapse-transition {
   transition: 0.25s width ease-in-out, 0.25s padding-left ease-in-out,
     0.25s padding-right ease-in-out;

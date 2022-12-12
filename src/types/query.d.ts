@@ -1,4 +1,12 @@
-import { College, Course, Major, MenuTable, MenuTree, User } from './entity'
+import {
+  College,
+  Course,
+  Major,
+  MenuTable,
+  MenuTree,
+  Role,
+  User
+} from './entity'
 
 interface Query {
   currentPage?: number
@@ -12,3 +20,4 @@ export interface QueryMajor extends Major, Query {}
 export interface QueryCourse extends Course, Query {}
 export interface QueryUser extends User, Query {}
 export interface QueryMenuTree extends MenuTree, Query {}
+export interface QueryRole extends Role, Query {}

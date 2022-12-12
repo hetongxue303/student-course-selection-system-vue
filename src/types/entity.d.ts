@@ -59,8 +59,13 @@ export interface User extends common {
  */
 export interface Role extends common {
   roleId?: number
-  status?: boolean
-  delete?: boolean
+  roleName?: string
+  roleKey?: string
+  level?: number
+  dataScope?: string
+  description?: string
+  isEnable?: boolean
+  isDelete?: boolean
 }
 
 /**

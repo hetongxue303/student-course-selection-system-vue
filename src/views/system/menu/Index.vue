@@ -11,17 +11,17 @@ const getMenuList = async () => {
 }
 onMounted(() => getMenuList())
 
-/* 懒加载 */
+/* 表格懒加载 */
 const load = (
   row: MenuTable,
   treeNode: unknown,
   resolve: (date: MenuTable[]) => void
 ) => {
   setTimeout(() => {
-    if (row.menuId != null) {
-      getMenuToTable(row.menuId).then((res) => {
-        console.log(res.data.data)
-        resolve(res.data.data)
+    if (row.menuId) {
+      getMenuToTable(row.menuId).then(({ data }) => {
+        console.log(data.data)
+        resolve(data.data)
       })
     }
   }, 500)
@@ -34,19 +34,29 @@ const load = (
     table-layout="fixed"
     style="width: 100%"
     row-key="menuId"
-    border
     lazy
+    empty-text="暂无数据"
+    :highlight-current-row="true"
     :load="load"
     :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
   >
     <el-table-column type="selection" width="50" align="center" />
-    <el-table-column prop="menuTitle" label="菜单标题" width="200" />
+    <el-table-column label="菜单标题" width="200">
+      <template #default="{ row }">
+        <span
+          :class="[
+            row.hasChildren ? '' : 'menu-title',
+            row.menuType !== 2 ? '' : 'menu-title-type'
+          ]"
+        >
+          {{ row.menuTitle }}
+        </span>
+      </template>
+    </el-table-column>
     <el-table-column label="图标" align="center">
       <template #default="{ row }">
-        <div
-          style="display: flex; align-items: center; justify-content: center"
-        >
-          <svg-icon :name="row.icon" />
+        <div v-if="row.icon" class="menu-icon">
+          <svg-icon :name="row.icon" :mr="0" />
         </div>
       </template>
     </el-table-column>
@@ -108,5 +118,17 @@ const load = (
   .operate-box {
     margin-bottom: 15px;
   }
+}
+
+.menu-title {
+  margin-left: 20px;
+  &-type {
+    margin-left: 0;
+  }
+}
+.menu-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

@@ -20,10 +20,10 @@ export interface Menu extends common {
   sort?: number
   icon?: string
   perKey?: string
-  isDisplay?: boolean | number
-  isFrame?: boolean | number
-  isCache?: boolean | number
-  isDelete?: boolean | number
+  isDisplay?: boolean
+  isFrame?: boolean
+  isCache?: boolean
+  isDelete?: boolean
   remark?: string
 }
 

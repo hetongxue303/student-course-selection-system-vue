@@ -199,10 +199,8 @@
         <el-col v-show="[0, 1].includes(addForm.menuType)" :span="8">
           <el-form-item label="菜单可见">
             <el-radio-group v-model="addForm.isDisplay">
-              <el-radio-button v-if="addForm.isDisplay" :label="1"
-                >是</el-radio-button
-              >
-              <el-radio-button v-else :label="false">否</el-radio-button>
+              <el-radio-button :label="true">是</el-radio-button>
+              <el-radio-button :label="false">否</el-radio-button>
             </el-radio-group>
           </el-form-item>
         </el-col>

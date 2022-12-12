@@ -14,7 +14,11 @@
         </div>
         <el-form ref="ruleFormRef" :model="loginForm" :rules="rules">
           <el-form-item prop="username">
-            <el-input v-model="loginForm.username" placeholder="用户名">
+            <el-input
+              v-model="loginForm.username"
+              size="default"
+              placeholder="用户名"
+            >
               <template #prefix>
                 <el-icon>
                   <component is="user" />
@@ -26,6 +30,7 @@
             <el-input
               v-model="loginForm.password"
               show-password
+              size="default"
               placeholder="密码"
             >
               <template #prefix>
@@ -38,7 +43,11 @@
           <el-form-item prop="code">
             <el-row :gutter="10" class="w-250px">
               <el-col :span="14" class="mr-3">
-                <el-input v-model="loginForm.code" placeholder="验证码">
+                <el-input
+                  v-model="loginForm.code"
+                  size="default"
+                  placeholder="验证码"
+                >
                   <template #prefix>
                     <el-icon>
                       <component is="key" />
@@ -57,11 +66,14 @@
             </el-row>
           </el-form-item>
           <el-form-item>
-            <el-checkbox v-model="loginForm.rememberMe">记住我</el-checkbox>
+            <el-checkbox v-model="loginForm.rememberMe" size="default">
+              记住我
+            </el-checkbox>
           </el-form-item>
           <el-form-item>
             <el-button
               type="primary"
+              size="default"
               :loading="parameter.loading"
               @click="loginHandler(ruleFormRef)"
             >

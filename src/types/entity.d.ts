@@ -20,16 +20,16 @@ export interface Menu extends common {
   sort?: number
   icon?: string
   perKey?: string
-  isDisplay?: boolean
-  isFrame?: boolean
-  isCache?: boolean
-  isDelete?: boolean
+  isDisplay?: boolean | number
+  isFrame?: boolean | number
+  isCache?: boolean | number
+  isDelete?: boolean | number
   remark?: string
 }
 
-export interface MenuTable extends Menu {
+export interface MenuTree extends Menu {
   hasChildren?: boolean
-  children?: MenuTable[]
+  children?: MenuTree[]
 }
 
 /**

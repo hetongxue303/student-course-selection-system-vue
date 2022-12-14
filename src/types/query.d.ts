@@ -13,6 +13,13 @@ interface Query {
   pageSize?: number
 }
 
+export interface QueryVO {
+  page?: number
+  size?: number
+  total: number
+  pages?: number
+  records?: object
+}
 export interface QueryCollege extends College, Query {}
 
 export interface QueryMajor extends Major, Query {}

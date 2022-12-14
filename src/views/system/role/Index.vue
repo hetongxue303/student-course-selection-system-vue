@@ -61,7 +61,9 @@
         <el-table
           ref="multipleTableRef"
           :data="tableData"
+          highlight-current-row
           @selection-change="handleSelectionChange"
+          @row-click="handleRowClick"
         >
           <el-table-column type="selection" width="50" align="center" />
           <el-table-column prop="roleName" label="名称" width="auto" />
@@ -113,20 +115,33 @@
         <template #header>
           <div class="header-box">
             <span>菜单分配</span>
-            <el-button type="primary" size="small">
-              <el-icon>
-                <component is="Check" />
-              </el-icon>
-              <span>保存</span>
+            <el-button
+              :disabled="saveDisabled"
+              type="primary"
+              size="small"
+              icon="Check"
+              @click="handleSaveMenu"
+            >
+              保存
             </el-button>
           </div>
         </template>
         <!--菜单树-->
         <el-tree
-          :data="data"
-          :props="{ children: 'children', label: 'label' }"
+          ref="menuTreeRef"
+          lazy
+          empty-text="暂无数据"
+          node-key="id"
+          :load="menuTreeLoad"
+          :highlight-current="false"
+          :props="{
+            id: 'id',
+            label: 'label',
+            children: 'children',
+            disabled: 'disabled',
+            isLeaf: 'isLeaf'
+          }"
           show-checkbox
-          @node-click="handleNodeClick"
         />
       </el-card>
     </el-col>
@@ -267,16 +282,24 @@ import {
   getRolePage,
   updateRole
 } from '../../../api/role'
-import { College, Role } from '../../../types/entity'
+import { Role } from '../../../types/entity'
 import { QueryRole } from '../../../types/query'
-import { ElMessage, ElMessageBox, ElNotification, ElTable } from 'element-plus'
-import { updateCollege } from '../../../api/college'
+import {
+  ElMessage,
+  ElMessageBox,
+  ElNotification,
+  ElTable,
+  ElTree
+} from 'element-plus'
+import type Node from 'element-plus/es/components/tree/src/model/node'
+import { getMenuSelectTree, getMenuTree } from '../../../api/menu'
+import { cloneDeep } from 'lodash'
 
 /* 初始化相关 */
 const tableData = ref<Role[]>([])
 const getRoleListPage = async () => {
   const { data } = await getRolePage(query)
-  tableData.value = data.data.records
+  tableData.value = cloneDeep(data.data.records)
   total.value = JSON.parse(data.data.total)
 }
 onMounted(() => getRoleListPage())
@@ -317,6 +340,10 @@ const multipleTableRef = ref<InstanceType<typeof ElTable>>()
 const multipleSelection = ref<Role[]>([])
 const handleSelectionChange = (roles: Role[]) => {
   multipleSelection.value = roles
+}
+const handleRowClick = async ({ roleId }: Role, column: any, event: Event) => {
+  const { data } = await getMenuSelectTree(roleId as number)
+  menuTreeRef.value?.setCheckedNodes(cloneDeep(data.data))
 }
 const handleBatchDelete = async () => {
   ElMessageBox.confirm(
@@ -414,11 +441,9 @@ const handleAddRole = async () => {
 const editForm = ref<Role>({})
 const handleEdit = (row?: Role) => {
   if (row) {
-    editForm.value = JSON.parse(JSON.stringify(row))
+    editForm.value = cloneDeep(row)
   } else {
-    editForm.value = JSON.parse(
-      JSON.stringify(multipleSelection.value[0] as Role)
-    )
+    editForm.value = cloneDeep(multipleSelection.value[0] as Role)
   }
   dialog.edit = true
 }
@@ -435,73 +460,46 @@ const handleEditRole = async () => {
   }
 }
 
-/** *********************** */
+/* 菜单树相关 */
 interface menuTree {
+  id: number
   label: string
+  isLeaf?: boolean
+  disabled?: boolean
   children?: menuTree[]
 }
-
-const handleNodeClick = (data: menuTree) => {
-  console.log(data)
+const menuTreeLoad = async (
+  node: Node,
+  resolve: (data: menuTree[]) => void
+  // eslint-disable-next-line consistent-return
+) => {
+  const { level, key } = node
+  if (level === 0) {
+    const { data } = await getMenuTree(0)
+    return resolve(cloneDeep(data.data))
+  }
+  if (level > 0) {
+    setTimeout(async () => {
+      const { data } = await getMenuTree(key as number)
+      return resolve(cloneDeep(data.data))
+    }, 500)
+  }
+}
+const menuTreeRef = ref<InstanceType<typeof ElTree>>()
+const handleSaveMenu = () => {
+  const menuIds: number[] = menuTreeRef.value?.getCheckedKeys(false) as number[]
+  console.log(menuIds)
 }
 
-const data: menuTree[] = [
-  {
-    label: 'Level one 1',
-    children: [
-      {
-        label: 'Level two 1-1',
-        children: [
-          {
-            label: 'Level three 1-1-1'
-          }
-        ]
-      }
-    ]
-  },
-  {
-    label: 'Level one 2',
-    children: [
-      {
-        label: 'Level two 2-1',
-        children: [
-          {
-            label: 'Level three 2-1-1'
-          }
-        ]
-      },
-      {
-        label: 'Level two 2-2',
-        children: [
-          {
-            label: 'Level three 2-2-1'
-          }
-        ]
-      }
-    ]
-  },
-  {
-    label: 'Level one 3',
-    children: [
-      {
-        label: 'Level two 3-1',
-        children: [
-          {
-            label: 'Level three 3-1-1'
-          }
-        ]
-      },
-      {
-        label: 'Level two 3-2',
-        children: [
-          {
-            label: 'Level three 3-2-1'
-          }
-        ]
-      }
-    ]
+const saveDisabled = ref<boolean>(true)
+watch(
+  () => menuTreeRef.value?.getCheckedNodes(),
+  (value) => {
+    if (value) {
+      saveDisabled.value = !(value.length > 0)
+    }
   }
-]
+)
 </script>
 
 <style scoped lang="scss">

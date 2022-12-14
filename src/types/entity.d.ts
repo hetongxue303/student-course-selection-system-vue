@@ -66,6 +66,10 @@ export interface Role extends common {
   description?: string
   isEnable?: boolean
   isDelete?: boolean
+  menus?: Menu[]
+}
+export interface RoleMenuBO extends common {
+  menus?: Array
 }
 
 /**

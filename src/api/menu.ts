@@ -3,11 +3,26 @@ import { Menu } from '../types/entity'
 
 const baseApi = import.meta.env.VITE_BASIC_API
 
-export const getMenuTableTree = (params: Menu) => {
+export const getMenuTree = (parentId: number) => {
   return axios({
     method: 'GET',
     url: `${baseApi}/menu/tree`,
+    params: { parentId }
+  })
+}
+export const getMenuTableTree = (params: Menu) => {
+  return axios({
+    method: 'GET',
+    url: `${baseApi}/menu/table/tree`,
     params
+  })
+}
+
+export const getMenuSelectTree = (roleId: number) => {
+  return axios({
+    method: 'GET',
+    url: `${baseApi}/menu/selection/tree`,
+    params: { roleId }
   })
 }
 

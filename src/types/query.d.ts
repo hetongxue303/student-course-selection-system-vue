@@ -1,4 +1,5 @@
 import {
+  Choice,
   College,
   Course,
   Major,
@@ -21,6 +22,7 @@ export interface QueryVO {
   records?: object
 }
 export interface QueryCollege extends College, Query {}
+export interface QueryChoice extends Choice, Query {}
 
 export interface QueryMajor extends Major, Query {}
 

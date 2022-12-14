@@ -104,4 +104,6 @@ export interface Choice extends common {
   score?: number
   isQuit?: boolean
   isEnd?: boolean
+  username?: string
+  courseName?: string
 }

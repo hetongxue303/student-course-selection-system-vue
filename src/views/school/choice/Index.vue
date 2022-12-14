@@ -54,13 +54,20 @@
     @selection-change="handleSelectionChange"
   >
     <el-table-column type="selection" width="50" align="center" />
-    <el-table-column prop="collegeName" label="学院名称" width="200" />
-    <el-table-column
-      prop="remark"
-      label="学院描述"
-      align="center"
-      width="auto"
-    />
+    <el-table-column prop="username" label="学生名字" width="200" />
+    <el-table-column prop="courseName" label="课程名字" width="200" />
+    <el-table-column label="成绩" align="center" width="auto">
+      <template #default="{ row }">
+        <span v-if="row.score">{{ row.score }}</span>
+        <span v-else>暂无</span>
+      </template>
+    </el-table-column>
+    <el-table-column label="是否结课" align="center" width="auto">
+      <template #default="{ row }">
+        <span v-if="row.isEnd">是</span>
+        <span v-else>否</span>
+      </template>
+    </el-table-column>
     <el-table-column label="创建时间" align="center" width="180">
       <template #default="{ row }">
         <span>
@@ -95,18 +102,54 @@
     @size-change="handleSizeChange"
     @current-change="handleCurrentChange"
   />
+
+  <!--新增-->
+  <el-dialog v-model="dialog.add" title="新增学院" width="40%">
+    <el-form :model="addForm">
+      <el-form-item label="学院名称">
+        <el-input
+          v-model="addForm.collegeName"
+          type="text"
+          placeholder="请输入学院名"
+        />
+      </el-form-item>
+      <el-form-item label="学院描述">
+        <el-input
+          v-model="addForm.remark"
+          type="textarea"
+          :rows="5"
+          resize="none"
+          placeholder="请输入学院描述(默认：空)"
+        />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialog.add = false">返回</el-button>
+        <el-button type="primary" @click="handleAddChoice"> 确认 </el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import { Choice } from '../../../types/entity'
-import { getCollegePage } from '../../../api/college'
-import { QueryCollege } from '../../../types/query'
+import {
+  addChoice,
+  delBatchChoice,
+  delChoice,
+  getChoicePage
+} from '../../../api/choice'
+import { QueryChoice } from '../../../types/query'
+import moment from 'moment'
+import Pagination from '../../../components/Pagination/Index.vue'
+import { ElMessage, ElNotification, ElTable } from 'element-plus'
 
 /* 初始化相关 */
 const tableData = ref<Choice[]>([])
 const getChoiceListPage = async () => {
-  const { data } = await getCollegePage(query)
+  const { data } = await getChoicePage(query)
   tableData.value = data.data.records
   total.value = JSON.parse(data.data.total)
 }
@@ -124,14 +167,118 @@ const handleSizeChange = (pageSize: number) => {
 }
 
 /* 查询相关 */
-const query: QueryCollege = reactive({
+const query: QueryChoice = reactive({
   currentPage: 1,
   pageSize: 10
 })
 const resetSearch = () => {
-  query.collegeName = ''
+  query.username = ''
   getChoiceListPage()
+}
+
+/* 表格相关 */
+const disabled = reactive({
+  edit: true,
+  delete: true,
+  export: false
+})
+const dialog = reactive({
+  add: false,
+  delete: false,
+  edit: false
+})
+const multipleTableRef = ref<InstanceType<typeof ElTable>>()
+const multipleSelection = ref<Choice[]>([])
+const handleSelectionChange = (colleges: Choice[]) => {
+  multipleSelection.value = colleges
+}
+const handleBatchDelete = async () => {
+  const ids: number[] = multipleSelection.value.map((item) => {
+    return item.choiceId as number
+  })
+  const { data } = await delBatchChoice(ids)
+  switch (data.code) {
+    case 200:
+      await getChoiceListPage()
+      dialog.delete = false
+      ElNotification.success('删除成功')
+      break
+    default:
+      ElNotification.success('删除失败,请重试！')
+  }
+}
+const handleExport = () => {
+  ElMessage.info('待开发...')
+}
+watch(
+  () => multipleSelection.value,
+  () => {
+    disabled.edit = multipleSelection.value.length !== 1
+    disabled.delete = multipleSelection.value.length < 1
+  },
+  { immediate: true, deep: true }
+)
+
+/* 重置表单方法 */
+const resetForm = (form: any) => {
+  const keys = Object.keys(form)
+  const obj: { [name: string]: string } = {}
+  keys.forEach((item) => {
+    obj[item] = ''
+  })
+  Object.assign(form, obj)
+}
+
+/* 删除相关 */
+const handleDelete = async ({ choiceId }: Choice) => {
+  if (choiceId) {
+    const { data } = await delChoice(choiceId)
+    switch (data.code) {
+      case 200:
+        await getChoiceListPage()
+        ElNotification.success('删除成功')
+        break
+      default:
+        ElNotification.success('删除失败,请重试！')
+    }
+  }
+}
+
+/* 新增相关 */
+const addForm: Choice = reactive({})
+watch(
+  () => dialog.add,
+  (value) => {
+    if (!value) {
+      resetForm(addForm)
+    }
+  },
+  { deep: true }
+)
+const handleAddChoice = async () => {
+  const { data } = await addChoice(addForm)
+  switch (data.code) {
+    case 200:
+      await getChoiceListPage()
+      dialog.add = false
+      ElNotification.success('添加成功')
+      break
+    default:
+      ElNotification.error('添加失败,请重试！')
+  }
 }
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.table-tool {
+  padding: 15px 0 15px 0;
+
+  .search-box {
+    margin-bottom: 15px;
+  }
+
+  .operate-box {
+    margin-bottom: 15px;
+  }
+}
+</style>

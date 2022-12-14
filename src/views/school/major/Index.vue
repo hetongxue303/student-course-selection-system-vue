@@ -3,7 +3,7 @@ import { onMounted, reactive, ref, watch } from 'vue'
 import { Major } from '../../../types/entity'
 import { QueryMajor } from '../../../types/query'
 import Pagination from '../../../components/Pagination/Index.vue'
-import { ElMessage, ElNotification, ElTable } from 'element-plus'
+import { ElMessage, ElMessageBox, ElNotification, ElTable } from 'element-plus'
 import {
   addMajor,
   delBatchMajor,
@@ -60,19 +60,29 @@ const handleSelectionChange = (majors: Major[]) => {
   multipleSelection.value = majors
 }
 const handleBatchDelete = async () => {
-  const ids: number[] = multipleSelection.value.map((item) => {
-    return item.majorId as number
+  ElMessageBox.confirm(
+    `确认删除选中的${multipleSelection.value.length}条数据?`,
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  ).then(async () => {
+    const ids: number[] = multipleSelection.value.map((item) => {
+      return item.majorId as number
+    })
+    const { data } = await delBatchMajor(ids)
+    switch (data.code) {
+      case 200:
+        await getMajorListPage()
+        dialog.delete = false
+        ElNotification.success('删除成功')
+        break
+      default:
+        ElNotification.error(data.message ? data.message : '删除失败,请重试！')
+    }
   })
-  const { data } = await delBatchMajor(ids)
-  switch (data.code) {
-    case 200:
-      await getMajorListPage()
-      dialog.delete = false
-      ElNotification.success('删除成功')
-      break
-    default:
-      ElNotification.success('删除失败,请重试！')
-  }
 }
 const handleExport = () => {
   ElMessage.info('待开发...')
@@ -195,7 +205,7 @@ const handleEditMajor = async () => {
         icon="Delete"
         :disabled="disabled.delete"
         type="danger"
-        @click="dialog.delete = true"
+        @click="handleBatchDelete"
       >
         删除
       </el-button>

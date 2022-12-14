@@ -32,7 +32,7 @@
         icon="Delete"
         :disabled="disabled.delete"
         type="danger"
-        @click="dialog.delete = true"
+        @click="handleBatchDelete"
       >
         删除
       </el-button>
@@ -147,20 +147,6 @@
       </span>
     </template>
   </el-dialog>
-
-  <!--确认删除框-->
-  <el-dialog v-model="dialog.delete" title="提示" width="30%">
-    <div style="display: flex; align-items: center">
-      <svg-icon name="warning" size="1.5" />
-      <span>确认删除选中的{{ multipleSelection.length }}条数据?</span>
-    </div>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="dialog.delete = false">返回</el-button>
-        <el-button type="primary" @click="handleBatchDelete"> 确定 </el-button>
-      </span>
-    </template>
-  </el-dialog>
 </template>
 
 <script setup lang="ts">
@@ -173,7 +159,7 @@ import {
 } from '../../../api/college'
 import { onMounted, reactive, ref, watch } from 'vue'
 import { College } from '../../../types/entity'
-import { ElMessage, ElNotification, ElTable } from 'element-plus'
+import { ElMessage, ElMessageBox, ElNotification, ElTable } from 'element-plus'
 import { QueryCollege } from '../../../types/query'
 import Pagination from '../../../components/Pagination/Index.vue'
 import moment from 'moment'
@@ -216,7 +202,6 @@ const disabled = reactive({
 })
 const dialog = reactive({
   add: false,
-  delete: false,
   edit: false
 })
 const multipleTableRef = ref<InstanceType<typeof ElTable>>()
@@ -225,19 +210,28 @@ const handleSelectionChange = (colleges: College[]) => {
   multipleSelection.value = colleges
 }
 const handleBatchDelete = async () => {
-  const ids: number[] = multipleSelection.value.map((item) => {
-    return item.collegeId as number
+  ElMessageBox.confirm(
+    `确认删除选中的${multipleSelection.value.length}条数据?`,
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  ).then(async () => {
+    const ids: number[] = multipleSelection.value.map((item) => {
+      return item.collegeId as number
+    })
+    const { data } = await delBatchCollege(ids)
+    switch (data.code) {
+      case 200:
+        await getCollegeListPage()
+        ElNotification.success('删除成功')
+        break
+      default:
+        ElNotification.error('删除失败,请重试！')
+    }
   })
-  const { data } = await delBatchCollege(ids)
-  switch (data.code) {
-    case 200:
-      await getCollegeListPage()
-      dialog.delete = false
-      ElNotification.success('删除成功')
-      break
-    default:
-      ElNotification.success('删除失败,请重试！')
-  }
 }
 const handleExport = () => {
   ElMessage.info('待开发...')
@@ -271,7 +265,7 @@ const handleDelete = async ({ collegeId }: College) => {
         ElNotification.success('删除成功')
         break
       default:
-        ElNotification.success('删除失败,请重试！')
+        ElNotification.error(data.message ? data.message : '删除失败,请重试！')
     }
   }
 }
@@ -296,7 +290,7 @@ const handleAddCollege = async () => {
       ElNotification.success('添加成功')
       break
     default:
-      ElNotification.error('添加失败,请重试！')
+      ElNotification.error(data.message ? data.message : '添加失败,请重试！')
   }
 }
 
@@ -321,7 +315,7 @@ const handleEditCollege = async () => {
       ElNotification.success('更新成功')
       break
     default:
-      ElNotification.error('更新失败,请重试！')
+      ElNotification.error(data.message ? data.message : '更新失败,请重试！')
   }
 }
 </script>

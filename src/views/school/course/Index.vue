@@ -32,7 +32,7 @@
         icon="Delete"
         :disabled="disabled.delete"
         type="danger"
-        @click="dialog.delete = true"
+        @click="handleBatchDelete"
       >
         删除
       </el-button>
@@ -72,7 +72,7 @@
     <el-table-column label="操作" align="center" width="300">
       <template #default="scope">
         <el-button type="primary" @click="handleChoiceCourse(1, scope.row)">
-          <span>选课</span>
+          <span>选择</span>
         </el-button>
         <el-button type="primary" @click="handleChoiceCourse(2, scope.row)">
           <span>退课</span>
@@ -105,96 +105,128 @@
 
   <!--新增-->
   <el-dialog v-model="dialog.add" title="新增课程" width="40%">
-    <el-form :model="addForm">
-      <el-form-item label="课程名称">
-        <el-input
-          v-model="addForm.courseName"
-          type="text"
-          placeholder="请输入课程名"
-        />
-      </el-form-item>
-      <el-form-item label="课程人数">
-        <el-input v-model="addForm.count" type="number" />
-      </el-form-item>
-      <el-form-item label="任课老师">
-        <el-select v-model="addForm.userId" placeholder="请选择">
-          <el-option
-            v-for="(item, index) in teachers"
-            :key="index"
-            :label="item.realName"
-            :value="item.userId"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="课程描述">
-        <el-input
-          v-model="addForm.remark"
-          type="textarea"
-          :rows="5"
-          resize="none"
-          placeholder="请输入课程描述(默认：空)"
-        />
-      </el-form-item>
+    <el-form
+      ref="ruleFormRef"
+      :model="addForm"
+      :rules="rules"
+      status-icon
+      label-width="80px"
+    >
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="课程名称" prop="courseName">
+            <el-input v-model="addForm.courseName" type="text" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="课程人数" prop="count">
+            <el-input-number
+              v-model="addForm.count"
+              controls-position="right"
+              :min="0"
+              style="width: 100%"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="任课老师" prop="userId">
+            <el-select v-model="addForm.userId" placeholder="请选择">
+              <el-option
+                v-for="(item, index) in teachers"
+                :key="index"
+                :label="item.realName"
+                :value="item.userId"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <el-form-item label="课程描述" prop="remark">
+            <el-input
+              v-model="addForm.remark"
+              type="textarea"
+              :rows="5"
+              resize="none"
+              placeholder="请输入课程描述(默认：空)"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
     </el-form>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialog.add = false">返回</el-button>
-        <el-button type="primary" @click="handleAddCollege"> 确认 </el-button>
+        <el-button type="primary" @click="handleAddCollege(ruleFormRef)">
+          确认
+        </el-button>
       </span>
     </template>
   </el-dialog>
 
   <!--编辑-->
   <el-dialog v-model="dialog.edit" title="编辑课程" width="40%">
-    <el-form :model="editForm">
-      <el-form-item label="课程名称">
-        <el-input
-          v-model="editForm.courseName"
-          type="text"
-          placeholder="请输入课程名"
-        />
-      </el-form-item>
-      <el-form-item label="课程人数">
-        <el-input v-model="editForm.count" type="number" />
-      </el-form-item>
-      <el-form-item label="任课老师">
-        <el-select v-model="editForm.userId" placeholder="请选择">
-          <el-option
-            v-for="(item, index) in teachers"
-            :key="index"
-            :label="item.realName"
-            :value="item.userId"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="课程描述">
-        <el-input
-          v-model="editForm.remark"
-          type="textarea"
-          :rows="5"
-          resize="none"
-          placeholder="请输入课程描述(默认：空)"
-        />
-      </el-form-item>
+    <el-form :model="editForm" label-width="80px">
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="课程名称" prop="courseName">
+            <el-input
+              v-model="editForm.courseName"
+              type="text"
+              placeholder="请输入课程名"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="课程人数" prop="count">
+            <el-input-number
+              v-model="editForm.count"
+              controls-position="right"
+              :min="0"
+              style="width: 100%"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="任课老师" prop="userId">
+            <el-select v-model="editForm.userId" placeholder="请选择">
+              <el-option
+                v-for="(item, index) in teachers"
+                :key="index"
+                :label="item.realName"
+                :value="item.userId"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <el-form-item label="课程描述" prop="remark">
+            <el-input
+              v-model="editForm.remark"
+              type="textarea"
+              :rows="5"
+              resize="none"
+              placeholder="请输入课程描述(默认：空)"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
     </el-form>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialog.edit = false">返回</el-button>
         <el-button type="primary" @click="handleEditCollege"> 确认 </el-button>
-      </span>
-    </template>
-  </el-dialog>
-
-  <!--确认删除框-->
-  <el-dialog v-model="dialog.delete" title="提示" width="30%">
-    <div style="display: flex; align-items: center">
-      <svg-icon name="warning" size="1.5" />
-      <span>确认删除选中的{{ multipleSelection.length }}条数据?</span>
-    </div>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="dialog.delete = false">返回</el-button>
-        <el-button type="primary" @click="handleBatchDelete"> 确定 </el-button>
       </span>
     </template>
   </el-dialog>
@@ -212,7 +244,14 @@ import {
 } from '../../../api/course'
 import { QueryCourse } from '../../../types/query'
 import { Course, User } from '../../../types/entity'
-import { ElMessage, ElMessageBox, ElNotification, ElTable } from 'element-plus'
+import {
+  ElMessage,
+  ElMessageBox,
+  ElNotification,
+  ElTable,
+  FormInstance,
+  FormRules
+} from 'element-plus'
 import { getUserByType } from '../../../api/user'
 import moment from 'moment'
 import { studentChoiceCourse } from '../../../api/choice'
@@ -237,6 +276,38 @@ const handleSizeChange = (pageSize: number) => {
   getCourseListPage()
 }
 
+/* 表单检验 */
+const ruleFormRef = ref<FormInstance>()
+const rules = reactive<FormRules>({
+  courseName: [
+    {
+      required: true,
+      type: 'string',
+      message: '课程名称不能为空',
+      trigger: 'blur'
+    }
+  ],
+  count: [
+    {
+      required: true,
+      type: 'number',
+      message: '课程人数不能为空',
+      trigger: 'blur'
+    }
+  ],
+  userId: [
+    {
+      required: true,
+      type: 'number',
+      message: '请选择任课老师',
+      trigger: 'blur'
+    }
+  ]
+})
+const resetForm = (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  formEl.resetFields()
+}
 /* 查询相关 */
 const query: QueryCourse = reactive({
   currentPage: 1,
@@ -255,7 +326,6 @@ const disabled = reactive({
 })
 const dialog = reactive({
   add: false,
-  delete: false,
   edit: false
 })
 const multipleTableRef = ref<InstanceType<typeof ElTable>>()
@@ -264,19 +334,26 @@ const handleSelectionChange = (colleges: Course[]) => {
   multipleSelection.value = colleges
 }
 const handleBatchDelete = async () => {
-  const ids: number[] = multipleSelection.value.map((item) => {
-    return item.courseId as number
-  })
-  const { data } = await delBatchCourse(ids)
-  switch (data.code) {
-    case 200:
+  ElMessageBox.confirm(
+    `确认删除选中的${multipleSelection.value.length}条数据?`,
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  ).then(async () => {
+    const ids: number[] = multipleSelection.value.map((item) => {
+      return item.courseId as number
+    })
+    const { data } = await delBatchCourse(ids)
+    if (data.code === 200) {
       await getCourseListPage()
-      dialog.delete = false
       ElNotification.success('删除成功')
-      break
-    default:
-      ElNotification.success('删除失败,请重试！')
-  }
+      return
+    }
+    ElNotification.error(data.message ? data.message : '删除失败,请重试！')
+  })
 }
 const handleChoiceCourse = async (type: number, row: Course) => {
   const info: any = reactive({
@@ -290,8 +367,8 @@ const handleChoiceCourse = async (type: number, row: Course) => {
     info.errorText = '选课失败,请重试！'
   } else {
     info.text = `确认退选 ${row.courseName} 课程吗?`
-    info.successText = '退课成功'
-    info.errorText = '退课失败,请重试！'
+    info.successText = '退选成功'
+    info.errorText = '退选失败,请重试！'
   }
   ElMessageBox.confirm(info.text, '提示', {
     confirmButtonText: '确定',
@@ -322,7 +399,7 @@ watch(
 )
 
 /* 重置表单方法 */
-const resetForm = (form: any) => {
+const resetForms = (form: any) => {
   const keys = Object.keys(form)
   const obj: { [name: string]: string } = {}
   keys.forEach((item) => {
@@ -335,19 +412,17 @@ const resetForm = (form: any) => {
 const handleDelete = async ({ courseId }: Course) => {
   if (courseId) {
     const { data } = await delCourse(courseId)
-    switch (data.code) {
-      case 200:
-        await getCourseListPage()
-        ElNotification.success('删除成功')
-        break
-      default:
-        ElNotification.success('删除失败,请重试！')
+    if (data.code === 200) {
+      await getCourseListPage()
+      ElNotification.success('删除成功')
+      return
     }
+    ElNotification.error('删除失败,请重试！')
   }
 }
 
 /* 新增相关 */
-const addForm: Course = reactive({})
+const addForm: Course = reactive({ count: 0 })
 const teachers = ref<User[]>([])
 const getTeacherList = async (type: number) => {
   const { data } = await getUserByType(type)
@@ -361,22 +436,26 @@ watch(
   () => dialog.add,
   (value) => {
     if (!value) {
-      resetForm(addForm)
+      resetForms(addForm)
     }
   },
   { deep: true }
 )
-const handleAddCollege = async () => {
-  const { data } = await addCourse(addForm)
-  switch (data.code) {
-    case 200:
-      await getCourseListPage()
-      dialog.add = false
-      ElNotification.success('添加成功')
-      break
-    default:
+const handleAddCollege = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  await formEl.validate(async (valid) => {
+    if (valid) {
+      const { data } = await addCourse(addForm)
+      if (data.code === 200) {
+        dialog.add = false
+        await getCourseListPage()
+        resetForm(formEl)
+        ElNotification.success('添加成功')
+        return
+      }
       ElNotification.error('添加失败,请重试！')
-  }
+    }
+  })
 }
 
 /* 编辑相关 */

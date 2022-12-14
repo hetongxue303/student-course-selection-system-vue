@@ -12,11 +12,15 @@
     </span>
     <template #dropdown>
       <el-dropdown-menu>
-        <el-dropdown-item>布局设置</el-dropdown-item>
-        <el-dropdown-item>个人中心</el-dropdown-item>
-        <el-dropdown-item divided @click="dialogVisible = true"
-          >退出登录</el-dropdown-item
-        >
+        <el-dropdown-item>
+          <span>布局设置</span>
+        </el-dropdown-item>
+        <el-dropdown-item>
+          <span>个人中心</span>
+        </el-dropdown-item>
+        <el-dropdown-item divided @click="handlerLogout">
+          <span>退出登录</span>
+        </el-dropdown-item>
       </el-dropdown-menu>
     </template>
   </el-dropdown>
@@ -41,31 +45,34 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '../../../store/modules/user'
 import { logout } from '../../../api/login'
-import { useRouter } from 'vue-router'
 import { useCookies } from '@vueuse/integrations/useCookies'
 import { settings } from '../../../settings'
 
-// 实例化
 const userStore = useUserStore()
 const dialogVisible = ref(false)
 
-// 注销处理
 const handlerLogout = async () => {
-  const { data } = await logout()
-  const cookies = useCookies()
-  switch (data.code) {
-    case 200:
-      userStore.systemLogout()
-      cookies.remove(settings.AUTHORIZATION_KEY)
-      ElMessage.success('注销成功')
-      window.location.replace('/login')
-      break
-    default:
-      ElMessage.error('注销失败')
-  }
+  ElMessageBox.confirm('您确认确认退出系统吗？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(async () => {
+    const { data } = await logout()
+    const cookies = useCookies()
+    switch (data.code) {
+      case 200:
+        userStore.systemLogout()
+        cookies.remove(settings.AUTHORIZATION_KEY)
+        ElMessage.success('注销成功')
+        window.location.replace('/login')
+        break
+      default:
+        ElMessage.error('注销失败')
+    }
+  })
 }
 </script>
 

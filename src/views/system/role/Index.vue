@@ -75,12 +75,13 @@
             align="center"
           />
           <el-table-column prop="description" label="描述" width="auto" />
-          <el-table-column
-            prop="createTime"
-            label="创建时间"
-            align="center"
-            width="180"
-          />
+          <el-table-column label="创建时间" align="center" width="180">
+            <template #default="{ row }">
+              <span>
+                {{ moment(row.createTime).format('YYYY-MM-DD HH:mm:ss') }}
+              </span>
+            </template>
+          </el-table-column>
           <el-table-column label="操作" align="center" width="200">
             <template #default="scope">
               <el-button
@@ -294,6 +295,7 @@ import {
 import type Node from 'element-plus/es/components/tree/src/model/node'
 import { getMenuSelectTree, getMenuTree } from '../../../api/menu'
 import { cloneDeep } from 'lodash'
+import moment from 'moment'
 
 /* 初始化相关 */
 const tableData = ref<Role[]>([])
@@ -354,24 +356,22 @@ const handleBatchDelete = async () => {
       cancelButtonText: '取消',
       type: 'warning'
     }
-  )
-    .then(async () => {
-      const ids: number[] = multipleSelection.value.map((item) => {
-        return item.roleId as number
-      })
-      const { data } = await delBatchRole(ids)
-      switch (data.code) {
-        case 200:
-          await getRoleListPage()
-          ElNotification.success('删除成功')
-          break
-        default:
-          ElNotification.success(
-            data.message ? data.message : '删除失败,请重试！'
-          )
-      }
+  ).then(async () => {
+    const ids: number[] = multipleSelection.value.map((item) => {
+      return item.roleId as number
     })
-    .catch(() => {})
+    const { data } = await delBatchRole(ids)
+    switch (data.code) {
+      case 200:
+        await getRoleListPage()
+        ElNotification.success('删除成功')
+        break
+      default:
+        ElNotification.success(
+          data.message ? data.message : '删除失败,请重试！'
+        )
+    }
+  })
 }
 const handleExport = () => {
   ElMessage.info('待开发...')
@@ -489,6 +489,7 @@ const menuTreeRef = ref<InstanceType<typeof ElTree>>()
 const handleSaveMenu = () => {
   const menuIds: number[] = menuTreeRef.value?.getCheckedKeys(false) as number[]
   console.log(menuIds)
+  console.log(moment(new Date()).format('YYYY-MM-DD hh:mm:ss'))
 }
 
 const saveDisabled = ref<boolean>(true)

@@ -7,5 +7,6 @@ export enum settings {
   AUTHORIZATION_KEY = 'authorization',
   EXPIRE_TIME_KEY = 'expireTime',
   USER_INFO_KEY = 'userinfo',
-  TABS_INFO_KEY = 'tabsInfo'
+  TABS_INFO_KEY = 'tabsInfo',
+  DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss'
 }

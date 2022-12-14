@@ -61,12 +61,13 @@
       align="center"
       width="auto"
     />
-    <el-table-column
-      prop="createTime"
-      label="创建时间"
-      align="center"
-      width="180"
-    />
+    <el-table-column label="创建时间" align="center" width="180">
+      <template #default="{ row }">
+        <span>
+          {{ moment(row.createTime).format('YYYY-MM-DD HH:mm:ss') }}
+        </span>
+      </template>
+    </el-table-column>
     <el-table-column label="操作" align="center" width="200">
       <template #default="scope">
         <el-button
@@ -175,6 +176,7 @@ import { College } from '../../../types/entity'
 import { ElMessage, ElNotification, ElTable } from 'element-plus'
 import { QueryCollege } from '../../../types/query'
 import Pagination from '../../../components/Pagination/Index.vue'
+import moment from 'moment'
 
 /* 初始化相关 */
 const tableData = ref<College[]>([])

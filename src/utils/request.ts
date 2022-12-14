@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { ElNotification } from 'element-plus'
-import { getToken } from './auth'
+import { getToken, removeToken, removeTokenTime } from './auth'
 
 axios.create({
   baseURL: import.meta.env.VITE_BASIC_HTTP,

@@ -115,12 +115,13 @@
         <span v-else>否</span>
       </template>
     </el-table-column>
-    <el-table-column
-      prop="createTime"
-      label="创建时间"
-      align="center"
-      width="180"
-    />
+    <el-table-column label="创建时间" align="center" width="180">
+      <template #default="{ row }">
+        <span>
+          {{ moment(row.createTime).format('YYYY-MM-DD HH:mm:ss') }}
+        </span>
+      </template>
+    </el-table-column>
     <el-table-column label="操作" align="center" width="150">
       <template #default="scope">
         <el-button
@@ -309,9 +310,10 @@
 <script setup lang="ts">
 import { Menu, MenuTree } from '../../../types/entity'
 import { onMounted, reactive, ref, watch } from 'vue'
-import { addMenu, getMenuTableTree } from '../../../api/menu'
+import { getMenuTableTree } from '../../../api/menu'
 import { QueryMenuTree } from '../../../types/query'
-import { ElMessage, ElNotification } from 'element-plus'
+import { ElMessage } from 'element-plus'
+import moment from 'moment'
 
 /* 树形选择 */
 const value = ref(1)

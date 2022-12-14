@@ -47,9 +47,9 @@ export const menus: Array<any> = [
         path: '/school/course'
       },
       {
-        name: '选课管理',
-        icon: 'selection',
-        path: '/school/selection'
+        name: '选课记录',
+        icon: 'choice',
+        path: '/school/choice'
       }
     ]
   },

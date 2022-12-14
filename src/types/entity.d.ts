@@ -2,8 +2,8 @@
  * 公共属性
  */
 interface common {
-  createTime?: string
-  updateTime?: string
+  createTime?: Date
+  updateTime?: Date
 }
 
 /**
@@ -68,9 +68,6 @@ export interface Role extends common {
   isDelete?: boolean
   menus?: Menu[]
 }
-export interface RoleMenuBO extends common {
-  menus?: Array
-}
 
 /**
  * 学院属性
@@ -103,4 +100,14 @@ export interface Course extends common {
   choice?: number
   remark?: string
   isDelete?: boolean
+}
+
+export interface Choice extends common {
+  choiceId?: number
+  userId?: number
+  courseId?: number
+  score?: number
+  isQuit?: boolean
+  isDelete?: boolean
+  isEnd?: boolean
 }

@@ -62,14 +62,21 @@
     </el-table-column>
     <el-table-column label="总人数" prop="count" width="200" />
     <el-table-column prop="remark" label="描述" align="center" width="auto" />
-    <el-table-column
-      prop="createTime"
-      label="创建时间"
-      align="center"
-      width="200"
-    />
-    <el-table-column label="操作" align="center" width="200">
+    <el-table-column label="创建时间" align="center" width="180">
+      <template #default="{ row }">
+        <span>
+          {{ moment(row.createTime).format('YYYY-MM-DD HH:mm:ss') }}
+        </span>
+      </template>
+    </el-table-column>
+    <el-table-column label="操作" align="center" width="300">
       <template #default="scope">
+        <el-button type="primary" @click="handleChoiceCourse(1, scope.row)">
+          <span>选课</span>
+        </el-button>
+        <el-button type="primary" @click="handleChoiceCourse(2, scope.row)">
+          <span>退课</span>
+        </el-button>
         <el-button
           icon="EditPen"
           type="primary"
@@ -205,8 +212,10 @@ import {
 } from '../../../api/course'
 import { QueryCourse } from '../../../types/query'
 import { Course, User } from '../../../types/entity'
-import { ElMessage, ElNotification, ElTable } from 'element-plus'
+import { ElMessage, ElMessageBox, ElNotification, ElTable } from 'element-plus'
 import { getUserByType } from '../../../api/user'
+import moment from 'moment'
+import { studentChoiceCourse } from '../../../api/choice'
 
 /* 初始化相关 */
 const tableData = ref<Course[]>([])
@@ -268,6 +277,37 @@ const handleBatchDelete = async () => {
     default:
       ElNotification.success('删除失败,请重试！')
   }
+}
+const handleChoiceCourse = async (type: number, row: Course) => {
+  const info: any = reactive({
+    text: '',
+    success: '',
+    error: ''
+  })
+  if (type === 1) {
+    info.text = `确认选择 ${row.courseName} 课程吗?`
+    info.successText = '选课成功'
+    info.errorText = '选课失败,请重试！'
+  } else {
+    info.text = `确认退选 ${row.courseName} 课程吗?`
+    info.successText = '退课成功'
+    info.errorText = '退课失败,请重试！'
+  }
+  ElMessageBox.confirm(info.text, '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(async () => {
+    const { data } = await studentChoiceCourse(type, row.courseId as number)
+    switch (data.code) {
+      case 200:
+        await getCourseListPage()
+        ElNotification.success(info.successText)
+        break
+      default:
+        ElNotification.error(data.message ? data.message : info.errorText)
+    }
+  })
 }
 const handleExport = () => {
   ElMessage.info('待开发...')
@@ -349,7 +389,6 @@ const handleEdit = (row?: Course) => {
       JSON.stringify(multipleSelection.value[0] as Course)
     )
   }
-  console.log(editForm.value)
   getTeacherList(2)
   dialog.edit = true
 }

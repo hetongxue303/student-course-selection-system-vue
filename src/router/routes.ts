@@ -115,13 +115,13 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@views/school/course/Index.vue')
       },
       {
-        name: 'selection',
-        path: '/school/selection',
+        name: 'choice',
+        path: '/school/choice',
         meta: {
-          title: '选课管理',
+          title: '选课记录',
           cache: false
         },
-        component: () => import('@views/school/selection/Index.vue')
+        component: () => import('@views/school/choice/Index.vue')
       }
     ]
   },

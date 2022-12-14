@@ -22,7 +22,7 @@
           <el-option label="学生" :value="3" />
         </el-select>
       </el-col>
-      <el-button icon="Search" type="success" @click="getUserListPage">
+      <el-button icon="Search" type="success" @click="handleSearch">
         搜索
       </el-button>
       <el-button icon="RefreshLeft" type="warning" @click="resetSearch">
@@ -30,14 +30,14 @@
       </el-button>
     </el-row>
     <div class="operate-box">
-      <el-button icon="Plus" type="primary" @click="dialog.add = true">
+      <el-button icon="Plus" type="primary" @click="setDialog('insert')">
         新增
       </el-button>
       <el-button
         icon="EditPen"
         :disabled="disabled.edit"
         type="success"
-        @click="handleEdit()"
+        @click="setDialog('update')"
       >
         修改
       </el-button>
@@ -45,7 +45,7 @@
         icon="Delete"
         :disabled="disabled.delete"
         type="danger"
-        @click="dialog.delete = true"
+        @click="handleBatchDelete"
       >
         删除
       </el-button>
@@ -64,12 +64,13 @@
   <el-table
     ref="multipleTableRef"
     :data="tableData"
+    width="100%"
     @selection-change="handleSelectionChange"
   >
     <el-table-column type="selection" width="50" align="center" />
-    <el-table-column prop="username" label="用户名" width="150" />
-    <el-table-column prop="nickName" label="昵称" width="150" />
-    <el-table-column label="性别" width="100">
+    <el-table-column prop="username" label="用户名" width="auto" />
+    <el-table-column prop="nickName" label="昵称" width="auto" />
+    <el-table-column label="性别" width="auto">
       <template #default="scope">
         <span v-if="scope.row.gender === '1'">男</span>
         <span v-else-if="scope.row.gender === '2'">女</span>
@@ -89,9 +90,7 @@
     </el-table-column>
     <el-table-column label="创建时间" align="center" width="180">
       <template #default="{ row }">
-        <span>
-          {{ moment(row.createTime).format('YYYY-MM-DD HH:mm:ss') }}
-        </span>
+        {{ moment(row.createTime).format('YYYY-MM-DD HH:mm:ss') }}
       </template>
     </el-table-column>
     <el-table-column label="操作" align="center" width="200">
@@ -99,7 +98,7 @@
         <el-button
           icon="EditPen"
           type="primary"
-          @click="handleEdit(scope.row)"
+          @click="setDialog('update', scope.row)"
         />
         <el-popconfirm
           title="确定删除本条数据吗？"
@@ -122,131 +121,141 @@
     @current-change="handleCurrentChange"
   />
 
-  <!--新增-->
-  <el-dialog v-model="dialog.add" title="新增用户" width="40%">
-    <el-form :model="addForm" label-width="80px">
-      <el-form-item label="用户名">
-        <el-input v-model="addForm.username" type="text" />
-      </el-form-item>
-      <el-form-item label="电话">
-        <el-input v-model="addForm.phone" type="number" />
-      </el-form-item>
-      <el-form-item label="昵称">
-        <el-input v-model="addForm.nickName" type="text" />
-      </el-form-item>
-      <el-form-item label="邮箱">
-        <el-input v-model="addForm.email" type="email" />
-      </el-form-item>
-      <el-form-item label="性别">
-        <el-radio-group v-model="addForm.gender">
-          <el-radio :label="1">男</el-radio>
-          <el-radio :label="2">女</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="状态">
-        <el-radio-group v-model="addForm.isEnable">
-          <el-radio :label="true">启用</el-radio>
-          <el-radio :label="false">禁用</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="角色">
-        <el-radio-group v-model="addForm.type">
-          <el-radio-button :label="1">管理员</el-radio-button>
-          <el-radio-button :label="2">教师</el-radio-button>
-          <el-radio-button :label="3">学生</el-radio-button>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="用户描述">
-        <el-input
-          v-model="addForm.remark"
-          type="textarea"
-          :rows="5"
-          resize="none"
-          placeholder="请输入用户描述(默认：空)"
-        />
-      </el-form-item>
+  <!--对话框-->
+  <el-dialog
+    v-model="dialog.show"
+    :title="dialog.title"
+    width="50%"
+    :close-on-click-modal="false"
+  >
+    <el-form
+      ref="ruleFormRef"
+      :model="dialogForm"
+      :rules="rules"
+      status-icon
+      label-width="70px"
+    >
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="账户名" prop="username">
+            <el-input
+              v-model="dialogForm.username"
+              type="text"
+              clearable
+              placeholder="账户名"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="电话" prop="phone">
+            <el-input
+              v-model="dialogForm.phone"
+              :controls="false"
+              type="text"
+              maxlength="11"
+              placeholder="电话"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="昵称" prop="nickName">
+            <el-input
+              v-model="dialogForm.nickName"
+              placeholder="昵称"
+              type="text"
+              clearable
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="邮箱" prop="email">
+            <el-input
+              v-model="dialogForm.email"
+              placeholder="邮箱"
+              type="text"
+              clearable
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="性别" prop="gender">
+            <el-radio-group v-model="dialogForm.gender">
+              <el-radio label="1">男</el-radio>
+              <el-radio label="2">女</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="状态" prop="isEnable">
+            <el-radio-group v-model="dialogForm.isEnable">
+              <el-radio :label="true">启用</el-radio>
+              <el-radio :label="false">禁用</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <el-form-item label="角色" prop="type">
+            <el-select
+              v-model="dialogForm.type"
+              style="width: 100%"
+              placeholder="请选择"
+              clearable
+            >
+              <el-option
+                v-for="(item, index) in roleList"
+                :key="index"
+                :label="item.roleName"
+                :value="item.roleId"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <el-form-item label="描述" prop="remark">
+            <el-input
+              v-model="dialogForm.remark"
+              type="textarea"
+              :rows="5"
+              resize="none"
+              placeholder="用户描述(默认：空)"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="dialog.add = false">返回</el-button>
-        <el-button type="primary" @click="handleAddUser"> 确认 </el-button>
-      </span>
-    </template>
-  </el-dialog>
-
-  <!--编辑-->
-  <el-dialog v-model="dialog.edit" title="编辑用户" width="40%">
-    <el-form :model="editForm" label-width="80px">
-      <el-form-item label="用户名">
-        <el-input v-model="editForm.username" type="text" />
-      </el-form-item>
-      <el-form-item label="电话">
-        <el-input v-model="editForm.phone" type="number" />
-      </el-form-item>
-      <el-form-item label="昵称">
-        <el-input v-model="editForm.nickName" type="text" />
-      </el-form-item>
-      <el-form-item label="邮箱">
-        <el-input v-model="editForm.email" type="email" />
-      </el-form-item>
-      <el-form-item label="性别">
-        <el-radio-group v-model="editForm.gender">
-          <el-radio label="1">男</el-radio>
-          <el-radio label="2">女</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="状态">
-        <el-radio-group v-model="editForm.isEnable">
-          <el-radio :label="true">启用</el-radio>
-          <el-radio :label="false">禁用</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="角色">
-        <el-radio-group v-model="editForm.type">
-          <el-radio-button :label="1">管理员</el-radio-button>
-          <el-radio-button :label="2">教师</el-radio-button>
-          <el-radio-button :label="3">学生</el-radio-button>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="用户描述">
-        <el-input
-          v-model="editForm.remark"
-          type="textarea"
-          :rows="5"
-          resize="none"
-          placeholder="请输入用户描述(默认：空)"
-        />
-      </el-form-item>
-    </el-form>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="dialog.edit = false">返回</el-button>
-        <el-button type="primary" @click="handleEditUser"> 确认 </el-button>
-      </span>
-    </template>
-  </el-dialog>
-
-  <!--确认删除框-->
-  <el-dialog v-model="dialog.delete" title="提示" width="30%">
-    <div style="display: flex; align-items: center">
-      <svg-icon name="warning" size="1.5" />
-      <span>确认删除选中的{{ multipleSelection.length }}条数据?</span>
-    </div>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="dialog.delete = false">返回</el-button>
-        <el-button type="primary" @click="handleBatchDelete"> 确定 </el-button>
+        <el-button @click="dialog.show = false">返回</el-button>
+        <el-button type="primary" @click="handleOperate(ruleFormRef)">
+          确认
+        </el-button>
       </span>
     </template>
   </el-dialog>
 </template>
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from 'vue'
-import { User } from '../../../types/entity'
-import { ElMessage, ElMessageBox, ElNotification, ElTable } from 'element-plus'
-import { QueryUser } from '../../../types/query'
 import Pagination from '../../../components/Pagination/Index.vue'
+import { onMounted, reactive, ref, watch } from 'vue'
+import { Role, User } from '../../../types/entity'
+import { QueryUser } from '../../../types/query'
 import moment from 'moment'
+import { cloneDeep } from 'lodash'
+import {
+  ElMessage,
+  ElMessageBox,
+  ElNotification,
+  ElTable,
+  FormInstance,
+  FormRules
+} from 'element-plus'
 import {
   addUser,
   delBatchUser,
@@ -254,17 +263,50 @@ import {
   getUserPage,
   updateUser
 } from '../../../api/user'
+import { getRoleAll } from '../../../api/role'
 
-/* 初始化相关 */
+// 初始化相关
 const tableData = ref<User[]>([])
 const getUserListPage = async () => {
   const { data } = await getUserPage(query)
-  tableData.value = data.data.records
+  tableData.value = cloneDeep(data.data.records)
   total.value = JSON.parse(data.data.total)
 }
 onMounted(() => getUserListPage())
-
-/* 分页相关 */
+// 表单检验
+const ruleFormRef = ref<FormInstance>()
+const rules = reactive<FormRules>({
+  username: [
+    {
+      required: true,
+      type: 'string',
+      message: '用户名不能为空',
+      trigger: 'blur'
+    }
+  ],
+  phone: [
+    {
+      required: true,
+      type: 'number',
+      message: '电话不能为空',
+      trigger: 'blur'
+    }
+  ],
+  email: [
+    {
+      required: true,
+      type: 'email',
+      message: '邮箱不能为空',
+      trigger: 'blur'
+    }
+  ]
+})
+// 查询属性
+const query: QueryUser = reactive({
+  currentPage: 1,
+  pageSize: 10
+})
+// 分页相关
 const total = ref<number>(0)
 const handleCurrentChange = (currentPage: number) => {
   query.currentPage = currentPage
@@ -274,53 +316,148 @@ const handleSizeChange = (pageSize: number) => {
   query.pageSize = pageSize
   getUserListPage()
 }
-
-/* 查询相关 */
-const query: QueryUser = reactive({
-  currentPage: 1,
-  pageSize: 10
-})
-const resetSearch = () => {
-  query.username = ''
-  query.type = undefined
-  query.isEnable = undefined
+// 处理搜索
+const handleSearch = () => {
+  if (!query.username || !query.isEnable || !query.type) {
+    ElMessage.warning('请选择搜索内容...')
+    return
+  }
   getUserListPage()
 }
-
+// 重置搜索
+const resetSearch = () => {
+  query.username = ''
+  getUserListPage()
+}
+// 监听查询属性
+watch(
+  () => query,
+  async () => {
+    await getUserListPage()
+  },
+  { deep: true }
+)
 /* 表格相关 */
 const disabled = reactive({
   edit: true,
   delete: true,
   export: false
 })
-const dialog = reactive({
-  add: false,
-  delete: false,
-  edit: false
-})
 const multipleTableRef = ref<InstanceType<typeof ElTable>>()
 const multipleSelection = ref<User[]>([])
-const handleSelectionChange = (colleges: User[]) => {
-  multipleSelection.value = colleges
+const handleSelectionChange = (users: User[]) => {
+  multipleSelection.value = users
 }
-const handleBatchDelete = async () => {
-  const ids: number[] = multipleSelection.value.map((item) => {
-    return item.userId as number
-  })
-  const { data } = await delBatchUser(ids)
-  switch (data.code) {
-    case 200:
+// 单个删除
+const handleDelete = async ({ userId }: User) => {
+  if (userId) {
+    const { data } = await delUser(userId)
+    if (data.code === 200) {
       await getUserListPage()
-      dialog.delete = false
       ElNotification.success('删除成功')
-      break
-    default:
-      ElNotification.success('删除失败,请重试！')
+      return
+    }
+    ElNotification.error('删除失败,请重试！')
   }
 }
+// 批量删除
+const handleBatchDelete = async () => {
+  ElMessageBox.confirm(
+    `确认删除选中的${multipleSelection.value.length}条数据?`,
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  ).then(async () => {
+    const ids: number[] = multipleSelection.value.map((item) => {
+      return item.userId as number
+    })
+    const { data } = await delBatchUser(ids)
+    if (data.code === 200) {
+      await getUserListPage()
+      ElNotification.success('删除成功')
+      return
+    }
+    ElNotification.error('删除失败,请重试！')
+  })
+}
+// 处理导出
 const handleExport = () => {
   ElMessage.info('待开发...')
 }
+// 监听多选
+watch(
+  () => multipleSelection.value,
+  () => {
+    disabled.edit = multipleSelection.value.length !== 1
+    disabled.delete = multipleSelection.value.length < 1
+  },
+  { immediate: true, deep: true }
+)
+/* 增加 编辑相关 */
+const dialogForm = ref<User>({ gender: 1, isEnable: false })
+const dialog = reactive({
+  show: false,
+  title: '',
+  operate: ''
+})
+// 设置dialog
+const setDialog = async (operate: string, row?: User) => {
+  if (operate === 'insert') {
+    dialog.title = '新增用户'
+  }
+  if (operate === 'update') {
+    if (row) {
+      dialogForm.value = cloneDeep(row)
+    } else {
+      dialogForm.value = cloneDeep(multipleSelection.value[0] as User)
+    }
+    dialog.title = '编辑用户'
+  }
+  getRoleList()
+  dialog.show = true
+  dialog.operate = operate
+}
+// 处理dialog操作
+const handleOperate = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  await formEl.validate(async (valid) => {
+    if (valid) {
+      if (dialog.operate === 'insert') {
+        const { data } = await addUser(dialogForm.value)
+        if (data.code === 200) {
+          await getUserListPage()
+          dialog.show = false
+          ElNotification.success('添加成功')
+          return
+        }
+        ElNotification.error('添加失败,请重试！')
+      }
+      if (dialog.operate === 'update') {
+        const { data } = await updateUser(dialogForm.value)
+        if (data.code === 200) {
+          await getUserListPage()
+          dialog.show = false
+          ElNotification.success('更新成功')
+          return
+        }
+        ElNotification.error('更新失败,请重试！')
+      }
+    }
+  })
+}
+// 监听dialog显示
+watch(
+  () => dialog,
+  (newValue) => {
+    // 关闭表单时重置表单
+    if (!newValue.show) ruleFormRef.value?.resetFields()
+  },
+  { deep: true }
+)
+// switch改变处理
 const handleSwitchChange = (user: User) => {
   ElMessageBox.confirm(
     `此操作将 ${user.isEnable ? '启用' : '禁用'} ${user.nickName}, 是否继续？`,
@@ -333,101 +470,17 @@ const handleSwitchChange = (user: User) => {
   )
     .then(async () => {
       const { data } = await updateUser(user)
-      switch (data.code) {
-        case 200:
-          ElNotification.success('更新成功')
-          break
-        default:
-          ElNotification.error('更新失败，请重试！')
-      }
+      // eslint-disable-next-line no-unused-expressions
+      data.code === 200
+        ? ElNotification.success('更新成功')
+        : ElNotification.error('更新失败，请重试！')
     })
-    .catch(() => {
-      user.isEnable = !user.isEnable
-    })
+    .catch(() => (user.isEnable = !user.isEnable))
 }
-watch(
-  () => multipleSelection.value,
-  () => {
-    disabled.edit = multipleSelection.value.length !== 1
-    disabled.delete = multipleSelection.value.length < 1
-  },
-  { immediate: true, deep: true }
-)
-
-/* 重置表单方法 */
-const resetForm = (form: any) => {
-  const keys = Object.keys(form)
-  const obj: { [name: string]: string } = {}
-  keys.forEach((item) => {
-    if (!['isEnable', 'gender', 'type'].includes(item)) {
-      obj[item] = ''
-    }
-  })
-  Object.assign(form, obj)
-}
-
-/* 删除相关 */
-const handleDelete = async ({ userId }: User) => {
-  if (userId) {
-    const { data } = await delUser(userId)
-    switch (data.code) {
-      case 200:
-        await getUserListPage()
-        ElNotification.success('删除成功')
-        break
-      default:
-        ElNotification.success('删除失败,请重试！')
-    }
-  }
-}
-
-/* 新增相关 */
-const addForm: User = reactive({ gender: 1, isEnable: false, type: 1 })
-watch(
-  () => dialog.add,
-  (value) => {
-    if (!value) {
-      resetForm(addForm)
-    }
-  },
-  { deep: true }
-)
-const handleAddUser = async () => {
-  const { data } = await addUser(addForm)
-  switch (data.code) {
-    case 200:
-      await getUserListPage()
-      dialog.add = false
-      ElNotification.success('添加成功')
-      break
-    default:
-      ElNotification.error('添加失败,请重试！')
-  }
-}
-
-/* 编辑相关 */
-const editForm = ref<User>({})
-const handleEdit = (row?: User) => {
-  if (row) {
-    editForm.value = JSON.parse(JSON.stringify(row))
-  } else {
-    editForm.value = JSON.parse(
-      JSON.stringify(multipleSelection.value[0] as User)
-    )
-  }
-  dialog.edit = true
-}
-const handleEditUser = async () => {
-  const { data } = await updateUser(editForm.value)
-  switch (data.code) {
-    case 200:
-      await getUserListPage()
-      dialog.edit = false
-      ElNotification.success('更新成功')
-      break
-    default:
-      ElNotification.error('更新失败,请重试！')
-  }
+// 获取所有角色信息
+const roleList = ref<Role[]>([])
+const getRoleList = () => {
+  getRoleAll().then(({ data }) => (roleList.value = cloneDeep(data.data)))
 }
 </script>
 <style scoped lang="scss">

@@ -255,7 +255,7 @@ const handleSizeChange = (pageSize: number) => {
 // 处理搜索
 const handleSearch = () => {
   if (!query.courseName) {
-    ElMessage.info('请输入搜索内容')
+    ElMessage.info('请输入搜索内容...')
     return
   }
   getCourseListPage()
@@ -265,6 +265,14 @@ const resetSearch = () => {
   query.courseName = ''
   getCourseListPage()
 }
+// 监听查询属性
+watch(
+  () => query,
+  async () => {
+    await getCourseListPage()
+  },
+  { deep: true }
+)
 /* 表格相关 */
 const disabled = reactive({
   edit: true,
@@ -420,14 +428,6 @@ watch(
   () => dialog,
   (value) => {
     if (!value.show) ruleFormRef.value?.resetFields()
-  },
-  { deep: true }
-)
-// 监听查询属性
-watch(
-  () => query,
-  async () => {
-    await getCourseListPage()
   },
   { deep: true }
 )

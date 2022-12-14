@@ -4,6 +4,7 @@
 interface common {
   createTime?: Date
   updateTime?: Date
+  isDelete?: boolean
 }
 
 /**
@@ -23,7 +24,6 @@ export interface Menu extends common {
   isDisplay?: boolean
   isFrame?: boolean
   isCache?: boolean
-  isDelete?: boolean
   remark?: string
 }
 
@@ -46,7 +46,6 @@ export interface User extends common {
   email?: string
   phone?: string
   type?: number
-  isDelete?: boolean
   isEnable?: boolean
   isAdmin?: boolean
   remark?: string
@@ -65,7 +64,6 @@ export interface Role extends common {
   dataScope?: string
   description?: string
   isEnable?: boolean
-  isDelete?: boolean
   menus?: Menu[]
 }
 
@@ -76,7 +74,6 @@ export interface College extends common {
   collegeId?: number
   collegeName?: string
   remark?: string
-  delete?: boolean
 }
 
 /**
@@ -86,7 +83,6 @@ export interface Major extends common {
   majorId?: number
   majorName?: string
   remark?: string
-  delete?: boolean
 }
 
 /**
@@ -99,7 +95,6 @@ export interface Course extends common {
   count?: number
   choice?: number
   remark?: string
-  isDelete?: boolean
 }
 
 export interface Choice extends common {
@@ -108,6 +103,5 @@ export interface Choice extends common {
   courseId?: number
   score?: number
   isQuit?: boolean
-  isDelete?: boolean
   isEnd?: boolean
 }

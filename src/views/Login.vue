@@ -16,66 +16,51 @@
           <el-form-item prop="username">
             <el-input
               v-model="loginForm.username"
-              size="default"
-              placeholder="用户名"
-            >
-              <template #prefix>
-                <el-icon>
-                  <component is="user" />
-                </el-icon>
-              </template>
-            </el-input>
+              placeholder="账号"
+              clearable
+              prefix-icon="user"
+            />
           </el-form-item>
           <el-form-item prop="password">
             <el-input
               v-model="loginForm.password"
               show-password
-              size="default"
+              clearable
               placeholder="密码"
-            >
-              <template #prefix>
-                <el-icon>
-                  <component is="lock" />
-                </el-icon>
-              </template>
-            </el-input>
+              prefix-icon="lock"
+              @keyup.enter="loginHandler(ruleFormRef)"
+            />
           </el-form-item>
           <el-form-item prop="code">
             <el-row :gutter="10" class="w-250px">
               <el-col :span="14" class="mr-3">
                 <el-input
-                  v-model="loginForm.code"
-                  size="default"
+                  v-model.trim="loginForm.code"
                   placeholder="验证码"
-                >
-                  <template #prefix>
-                    <el-icon>
-                      <component is="key" />
-                    </el-icon>
-                  </template>
-                </el-input>
+                  clearable
+                  prefix-icon="key"
+                  @keyup.enter="loginHandler(ruleFormRef)"
+                />
               </el-col>
               <el-col :span="8" class="flex justify-center items-center">
                 <el-image
                   :src="parameter.imgUrl"
                   style="cursor: pointer; margin-top: 3px"
                   title="点击切换验证码"
-                  @click.stop="initCaptcha"
+                  @click.stop="getCaptchaImage"
                 />
               </el-col>
             </el-row>
           </el-form-item>
           <el-form-item>
-            <el-checkbox v-model="loginForm.rememberMe" size="default">
-              记住我
-            </el-checkbox>
+            <el-checkbox v-model="loginForm.rememberMe"> 记住我</el-checkbox>
           </el-form-item>
           <el-form-item>
             <el-button
               type="primary"
-              size="default"
               :loading="parameter.loading"
               @click="loginHandler(ruleFormRef)"
+              @keyup.enter="loginHandler(ruleFormRef)"
             >
               <span v-if="!parameter.loading">登 录</span>
               <span v-else>登 陆 中...</span>
@@ -96,109 +81,104 @@ import { ElMessage, FormInstance, FormRules } from 'element-plus'
 import { useCookies } from '@vueuse/integrations/useCookies'
 import { useRoute, useRouter } from 'vue-router'
 import { decrypt, encrypt } from '../utils/jsencrypt'
-import { COOKIE_EXPIRE_TIME, settings } from '../settings'
 import { getCaptcha, login } from '../api/login'
-import {
-  removeToken,
-  removeTokenTime,
-  setToken,
-  setTokenTime
-} from '../utils/auth'
+import { setToken, setTokenTime } from '../utils/auth'
 import { encryptMD5 } from '../hook/encryptMD5'
-import { useUserStore } from '../store/modules/user'
-import { usePermissionStore } from '../store/modules/permission'
 
 // 实例化
 const cookie = useCookies()
 const router = useRouter()
 const route = useRoute()
-const ruleFormRef = ref<FormInstance>()
-const userStore = useUserStore()
-const permissionStore = usePermissionStore()
 
 // 参数定义
-const parameter = reactive({
+interface IParameter {
+  loading: boolean
+  imgUrl: string
+  redirect: string
+}
+
+const parameter: IParameter = reactive({
   loading: false,
   imgUrl: '',
   redirect: ''
 })
 
 // 登陆表单
-const loginForm = reactive({
-  username: 'admin',
-  password: '123456',
+interface ILogin {
+  username: string
+  password: string
+  code: string
+  rememberMe: boolean
+}
+
+const loginForm: ILogin = reactive({
+  username: '',
+  password: '',
   code: '',
   rememberMe: false
 })
 
 // 验证规则
+const ruleFormRef = ref<FormInstance>()
 const rules = reactive<FormRules>({
-  username: [{ required: true, message: '账号不能为空', trigger: 'blur' }],
-  password: [{ required: true, message: '密码不能为空', trigger: 'blur' }],
-  code: [{ required: true, message: '验证码不能为空', trigger: 'blur' }]
+  username: [{ required: true, trigger: 'blur', message: '账号不能为空' }],
+  password: [{ required: true, trigger: 'blur', message: '密码不能为空' }],
+  code: [{ required: true, trigger: 'change', message: '验证码不能为空' }]
 })
 
 // 获取图片验证码
-const initCaptcha = async () => {
+const getCaptchaImage = async () => {
   const { data } = await getCaptcha()
   parameter.imgUrl = data.data
 }
 
+// 获取用户名密码等Cookie
+const getCookie = async () => {
+  loginForm.username = cookie.get('username')
+  loginForm.password = cookie.get('password')
+    ? decrypt(cookie.get('password'))
+    : ''
+  loginForm.rememberMe = Boolean(cookie.get('rememberMe'))
+}
+
 // 登陆处理
 const loginHandler = async (formEl: FormInstance | undefined) => {
-  if (formEl) {
-    await formEl.validate(async (valid) => {
-      if (valid) {
-        const { data } = await login({
-          username: loginForm.username,
-          password: encryptMD5(loginForm.password),
-          code: loginForm.code,
-          rememberMe: loginForm.rememberMe
-        })
-        switch (data.code as number) {
-          case 200:
-            // rememberMeHandler(loginForm.rememberMe)
-            setToken(data.data.token)
-            setTokenTime(new Date().getTime() + data.data.expireTime)
-            ElMessage.success('登陆成功')
-            await router.push(parameter.redirect || '/')
-            break
-          default:
-            loginForm.code = ''
-            await initCaptcha()
-            ElMessage.warning(data.message || '未知错误')
-        }
+  if (!formEl) return
+  await formEl.validate(async (valid) => {
+    if (valid) {
+      parameter.loading = true
+      if (loginForm.rememberMe) {
+        const expires: Date = new Date(new Date().getTime() + 60 * 60 * 1000)
+        cookie.set('username', loginForm.username.trim(), { expires })
+        cookie.set('password', encrypt(loginForm.password.trim()), { expires })
+        cookie.set('rememberMe', loginForm.rememberMe, { expires })
       } else {
-        ElMessage.warning('数据不合法')
+        cookie.remove('username')
+        cookie.remove('password')
+        cookie.remove('rememberMe')
       }
-    })
-  }
-}
-
-// 勾选记住我处理
-const rememberMeHandler = (status: boolean) => {
-  if (status) {
-    cookie.set(
-      settings.USER_INFO_KEY,
-      encrypt(
-        JSON.stringify({
-          username: loginForm.username,
-          password: encrypt(loginForm.password)
-        })
-      ),
-      { expires: new Date(new Date().getTime() + COOKIE_EXPIRE_TIME) }
-    )
-  }
-}
-
-// 判断cookie中是否有数据 实现自动登录
-const isRememberMeHandler = () => {
-  if (cookie.get(settings.USER_INFO_KEY)) {
-    const user: any = decrypt(cookie.get(settings.USER_INFO_KEY))
-    loginForm.username = user.username
-    loginForm.password = decrypt(user.password)
-    loginForm.rememberMe = true
-  }
+      const { data, status } = await login({
+        username: loginForm.username.trim(),
+        password: encryptMD5(loginForm.password.trim()),
+        code: loginForm.code.trim(),
+        rememberMe: loginForm.rememberMe
+      })
+      if (data.code === 200 && status === 200) {
+        setToken(data.data.token)
+        setTokenTime(new Date().getTime() + data.data.expireTime)
+        ElMessage.success('登陆成功')
+        await router.push(parameter.redirect || '/')
+      } else {
+        loginForm.code = ''
+        await getCaptchaImage()
+        ElMessage.warning(data.message || '登陆失败')
+      }
+      parameter.loading = false
+    } else {
+      console.log('error submit!!')
+    }
+    return false
+  })
 }
 
 // 监听图片验证码切换
@@ -216,8 +196,8 @@ watch(
 
 // 启动时处理
 onMounted(() => {
-  initCaptcha()
-  // isRememberMeHandler()
+  getCaptchaImage()
+  getCookie()
 })
 </script>
 
@@ -276,6 +256,7 @@ onMounted(() => {
     @include d-flex;
   }
 }
+
 :deep(.el-button) {
   @apply w-250px;
 }

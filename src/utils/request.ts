@@ -1,6 +1,15 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
-import { ElNotification } from 'element-plus'
-import { getToken, removeToken, removeTokenTime } from './auth'
+import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
+import {
+  getToken,
+  getTokenTime,
+  removeToken,
+  removeTokenTime,
+  setToken,
+  setTokenTime
+} from './auth'
+import { refreshToken } from '../api/login'
+import { useUserStore } from '../store/modules/user'
 
 axios.create({
   baseURL: import.meta.env.VITE_BASIC_HTTP,
@@ -20,18 +29,19 @@ axios.interceptors.request.use(
       // const expireTime = getTokenTime()
       // console.log(`当前时间：${currentTime}`)
       // console.log(`存储的过期时间：${expireTime}`)
+      // console.log(currentTime === expireTime)
       // if (expireTime) {
       //   const min = (expireTime - currentTime) / 1000 / 60
       //   console.log(`剩余分钟：${min}`)
       //   if (min < 29.7) {
       //     console.log('开始刷新token')
       //     await refreshToken()
-      //       .then((res) => {
-      //         if (res.status === 200 || res.data.code === 200) {
+      //       .then(({ data, status }) => {
+      //         if (status === 200 && data.code === 200) {
       //           console.log(`old:${getToken()}`)
-      //           setToken(res.data.data.token)
-      //           setTokenTime(new Date().getTime() + res.data.data.expireTime)
-      //           console.log(`new:${res.data.data.token}`)
+      //           setToken(data.data.token)
+      //           setTokenTime(new Date().getTime() + data.data.expireTime)
+      //           console.log(`new:${data.data.token}`)
       //         }
       //       })
       //       .catch((error) => {
@@ -40,7 +50,6 @@ axios.interceptors.request.use(
       //       })
       //   }
       // }
-      // 每个请求头都带上token
       config.headers.authorization = getToken()
     }
     return config
@@ -52,43 +61,51 @@ axios.interceptors.request.use(
 )
 
 axios.interceptors.response.use(
-  (response: AxiosResponse) => {
-    // const { code } = response.data
-    // const { status } = response
-    // if (status === 200 && code === 200) return response
-    // if (status === 401 || code === 401)
-    //   return Promise.reject(new Error(response.data.message || 'Error'))
-    // const userStore = useUserStore()
-    // if (status === 401 || code === 401) {
-    //   ElMessageBox.confirm(
-    //     '你已被登出，可以取消继续留在该页面，或者重新登录',
-    //     '确定登出',
-    //     {
-    //       confirmButtonText: '重新登录',
-    //       cancelButtonText: '取消',
-    //       type: 'warning'
-    //     }
-    //   ).then(() => {
-    //     userStore.systemLogout()
-    //     window.location.reload()
-    //   })
-    // }
-    // return Promise.reject(new Error(response.data.message || 'Error'))
+  async (response: AxiosResponse) => {
+    const { data, status } = response
+    if (status !== 200 && data.code !== 200) {
+      ElMessage({
+        message: data.message || 'Error',
+        type: 'warning',
+        duration: 5 * 1000
+      })
+      return Promise.reject(new Error(data.message || 'Error'))
+    }
     return response
   },
-  (error: any) => {
-    let msg = ''
+  async (error: any) => {
     const { message, response } = error
-    if (message === 'Network Error') {
-      msg = '连接异常'
-    } else if (message.includes('timeout')) {
-      msg = '请求超时'
-    } else if (response.status === 401) {
-      msg = 'token过期'
-    } else if (message.includes('Request failed with status code')) {
-      msg = '请求异常'
+    if (response.status === 401 || response.data.code === 401) {
+      ElMessageBox.confirm(
+        '你已被登出，可以取消继续留在该页面，或者重新登录',
+        '提示',
+        {
+          confirmButtonText: '重新登录',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).then(() => {
+        removeToken()
+        removeTokenTime()
+        const userStore = useUserStore()
+        userStore.$reset()
+        window.location.reload()
+      })
     }
-    ElNotification.error(msg)
+    if (response.status === 400 || response.data.code === 400) {
+      ElNotification({
+        message: message || '请求异常',
+        type: 'error',
+        duration: 5 * 1000
+      })
+    }
+    if (response.status === 500 || response.data.code === 500) {
+      ElNotification({
+        message: message || '服务器异常',
+        type: 'error',
+        duration: 5 * 1000
+      })
+    }
     return Promise.reject(error)
   }
 )

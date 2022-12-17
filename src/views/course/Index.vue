@@ -18,7 +18,7 @@
     </el-row>
     <div class="operate-box">
       <el-button
-        v-permission="['course:add']"
+        v-role="['admin', 'teacher']"
         icon="Plus"
         type="primary"
         @click="setDialog('insert')"
@@ -26,7 +26,7 @@
         新增
       </el-button>
       <el-button
-        v-permission="['course:update']"
+        v-role="['admin', 'teacher']"
         icon="EditPen"
         :disabled="disabled.edit"
         type="success"
@@ -35,7 +35,7 @@
         修改
       </el-button>
       <el-button
-        v-permission="['course:del']"
+        v-role="['admin', 'teacher']"
         icon="Delete"
         :disabled="disabled.delete"
         type="danger"
@@ -76,18 +76,15 @@
         {{ moment(row.createTime).format('YYYY-MM-DD HH:mm:ss') }}
       </template>
     </el-table-column>
-    <el-table-column
-      v-permission="['course:update', 'course:del']"
-      label="操作"
-      align="center"
-      width="300"
-    >
+    <el-table-column label="操作" align="center" width="300">
       <template #default="scope">
-        <el-button type="info" @click="handleChoiceCourse(1, scope.row)"
-          >选择
-        </el-button>
-        <el-button type="warning" @click="handleChoiceCourse(2, scope.row)"
-          >退课
+        <el-button
+          v-role="['student']"
+          type="success"
+          :disabled="scope.row.count === scope.row.choice"
+          @click="handleChoiceCourse(scope.row)"
+        >
+          选择
         </el-button>
         <el-button
           v-permission="['course:update']"
@@ -155,7 +152,7 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row :gutter="20">
+      <el-row v-role="['admin']" :gutter="20">
         <el-col :span="12">
           <el-form-item label="任课老师" prop="userId">
             <el-select v-model="dialogForm.userId" placeholder="请选择">
@@ -245,14 +242,6 @@ const rules = reactive<FormRules>({
       message: '课程人数不能为空',
       trigger: 'blur'
     }
-  ],
-  userId: [
-    {
-      required: true,
-      type: 'number',
-      message: '请选择任课老师',
-      trigger: 'blur'
-    }
   ]
 })
 // 查询属性
@@ -337,35 +326,21 @@ const handleBatchDelete = async () => {
     ElNotification.error('删除失败,请重试！')
   })
 }
-// 处理选课/退课
-const handleChoiceCourse = async (type: number, row: Course) => {
-  const info: any = reactive({
-    text: '',
-    success: '',
-    error: ''
-  })
-  if (type === 1) {
-    info.text = `确认选择 ${row.courseName} 课程吗?`
-    info.successText = '选课成功'
-    info.errorText = '选课失败,请重试！'
-  } else {
-    info.text = `确认退选 ${row.courseName} 课程吗?`
-    info.successText = '退选成功'
-    info.errorText = '退选失败,请重试！'
-  }
-  ElMessageBox.confirm(info.text, '提示', {
+// 处理选课
+const handleChoiceCourse = async (row: Course) => {
+  ElMessageBox.confirm(`确认选择 ${row.courseName} 课程吗?`, '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
   }).then(async () => {
-    const { data } = await studentChoiceCourse(type, row.courseId as number)
+    const { data } = await studentChoiceCourse(1, row.courseId as number)
     switch (data.code) {
       case 200:
         await getCourseListPage()
-        ElNotification.success(info.successText)
+        ElNotification.success('选课成功')
         break
       default:
-        ElNotification.error(info.errorText)
+        ElNotification.error('选课失败,请重试！')
     }
   })
 }
@@ -419,6 +394,7 @@ const handleOperate = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate(async (valid) => {
     if (valid) {
+      console.log('aaa')
       if (dialog.operate === 'insert') {
         const { data } = await addCourse(dialogForm.value)
         if (data.code === 200) {

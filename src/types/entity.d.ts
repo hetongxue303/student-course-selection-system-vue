@@ -13,7 +13,7 @@ interface common {
 /**
  * 菜单属性
  */
-export interface Menu extends common {
+export interface Menu {
   menuId?: number
   menuName?: string
   menuTitle?: string
@@ -29,6 +29,9 @@ export interface Menu extends common {
   isFrame?: boolean
   isCache?: boolean
   remark?: string
+  createTime?: Date
+  updateTime?: Date
+  isDelete?: boolean
 }
 
 export interface MenuTree extends Menu {
@@ -39,7 +42,7 @@ export interface MenuTree extends Menu {
 /**
  * 用户属性
  */
-export interface User extends common {
+export interface User {
   userId?: number
   username?: string
   password?: string
@@ -55,12 +58,15 @@ export interface User extends common {
   remark?: string
   lastLoginIp?: string
   lastLoginTime?: string
+  createTime?: Date
+  updateTime?: Date
+  isDelete?: boolean
 }
 
 /**
  * 角色属性
  */
-export interface Role extends common {
+export interface Role {
   roleId?: number
   roleName?: string
   roleKey?: string
@@ -69,47 +75,63 @@ export interface Role extends common {
   description?: string
   isEnable?: boolean
   menus?: Menu[]
+  createTime?: Date
+  updateTime?: Date
+  isDelete?: boolean
 }
 
 /**
  * 学院属性
  */
-export interface College extends common {
+export interface College {
   collegeId?: number
   collegeName?: string
   remark?: string
+  createTime?: Date
+  updateTime?: Date
+  isDelete?: boolean
 }
 
 /**
  * 专业属性
  */
-export interface Major extends common {
+export interface Major {
   majorId?: number
   majorName?: string
   remark?: string
+  createTime?: Date
+  updateTime?: Date
+  isDelete?: boolean
 }
 
 /**
  * 课程属性
  */
-export interface Course extends common {
+export interface Course {
   courseId?: number
   userId?: number
   courseName?: string
   count?: number
   choice?: number
   remark?: string
+  createTime?: Date
+  updateTime?: Date
+  isDelete?: boolean
 }
 
-export interface Choice extends common {
+export interface Choice {
   choiceId?: number
   userId?: number
+  username?: string
   courseId?: number
+  courseName?: string
   score?: number
   isQuit?: boolean
   isEnd?: boolean
-  username?: string
-  courseName?: string
+  status?: number
+  createTime?: Date
+  updateTime?: Date
+  isDelete?: boolean
 }
 
 export interface ILogin {

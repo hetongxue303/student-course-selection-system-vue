@@ -10,7 +10,7 @@ export const getChoiceAll = () => {
   })
 }
 
-export const getChoicePage = (params: any) => {
+export const getChoicePage = (params: Choice) => {
   return axios({
     method: 'GET',
     url: `${baseApi}/choice/get/page`,

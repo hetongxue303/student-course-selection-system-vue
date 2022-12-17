@@ -98,6 +98,15 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@views/choice/Index.vue')
       },
       {
+        name: 'confirm',
+        path: '/confirm',
+        meta: {
+          title: '选课申请',
+          cache: false
+        },
+        component: () => import('@views/confirm/Index.vue')
+      },
+      {
         name: 'about',
         path: '/about',
         meta: {

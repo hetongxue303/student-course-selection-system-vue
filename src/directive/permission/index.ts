@@ -17,11 +17,7 @@ export const permission: ObjectDirective = {
         el.parentNode.removeChild(el)
       }
     } else {
-      ElNotification({
-        message: '暂无权限',
-        type: 'warning',
-        duration: 5 * 1000
-      })
+      console.log('权限不足')
     }
   }
 }
@@ -40,11 +36,7 @@ export const role: ObjectDirective = {
         el.parentNode.removeChild(el)
       }
     } else {
-      ElNotification({
-        message: '暂无权限',
-        type: 'warning',
-        duration: 5 * 1000
-      })
+      console.log('权限不足')
     }
   }
 }

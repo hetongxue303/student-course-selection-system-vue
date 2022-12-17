@@ -90,11 +90,12 @@
     >
       <template #default="scope">
         <el-button
-          v-permission="['choice:update']"
-          icon="EditPen"
-          type="primary"
-          @click="setDialog('update', scope.row)"
-        />
+          v-role="['student']"
+          type="warning"
+          @click="handleChoiceCourse(2, scope.row)"
+        >
+          退课
+        </el-button>
         <el-popconfirm
           title="确定删除本条数据吗？"
           @confirm="handleDelete(scope.row)"
@@ -173,11 +174,16 @@
 <script setup lang="ts">
 import Pagination from '../../components/Pagination/Index.vue'
 import { onMounted, reactive, ref, watch } from 'vue'
-import { Choice } from '../../types/entity'
+import { Choice, Course } from '../../types/entity'
 import { QueryChoice } from '../../types/query'
 import moment from 'moment'
 import { cloneDeep } from 'lodash'
-import { delBatchChoice, delChoice, getChoicePage } from '../../api/choice'
+import {
+  delBatchChoice,
+  delChoice,
+  getChoicePage,
+  studentChoiceCourse
+} from '../../api/choice'
 import {
   ElMessage,
   ElMessageBox,
@@ -367,11 +373,28 @@ const handleOperate = async (formEl: FormInstance | undefined) => {
 watch(
   () => dialog,
   (newValue) => {
-    // 关闭表单时重置表单
     if (!newValue.show) ruleFormRef.value?.resetFields()
   },
   { deep: true }
 )
+// 处理退选
+const handleChoiceCourse = async (row: Course) => {
+  ElMessageBox.confirm(`确认退选 ${row.courseName} 课程吗?`, '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(async () => {
+    const { data } = await studentChoiceCourse(2, row.courseId as number)
+    switch (data.code) {
+      case 200:
+        await getChoiceListPage()
+        ElNotification.success('退选成功')
+        break
+      default:
+        ElNotification.error('退选失败,请重试！')
+    }
+  })
+}
 </script>
 
 <style scoped lang="scss">

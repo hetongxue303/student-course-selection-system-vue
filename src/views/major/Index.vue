@@ -17,10 +17,16 @@
       </el-button>
     </el-row>
     <div class="operate-box">
-      <el-button icon="Plus" type="primary" @click="setDialog('insert')">
+      <el-button
+        v-permission="['major:add']"
+        icon="Plus"
+        type="primary"
+        @click="setDialog('insert')"
+      >
         新增
       </el-button>
       <el-button
+        v-permission="['major:update']"
         icon="EditPen"
         :disabled="disabled.edit"
         type="success"
@@ -29,6 +35,7 @@
         修改
       </el-button>
       <el-button
+        v-permission="['major:del']"
         icon="Delete"
         :disabled="disabled.delete"
         type="danger"
@@ -37,6 +44,7 @@
         删除
       </el-button>
       <el-button
+        v-permission="['major:list']"
         icon="Bottom"
         :disabled="disabled.export"
         type="warning"
@@ -67,9 +75,15 @@
         {{ moment(row.createTime).format('YYYY-MM-DD HH:mm:ss') }}
       </template>
     </el-table-column>
-    <el-table-column label="操作" align="center" width="200">
+    <el-table-column
+      v-permission="['major:del', 'major:update']"
+      label="操作"
+      align="center"
+      width="200"
+    >
       <template #default="scope">
         <el-button
+          v-permission="['major:update']"
           icon="EditPen"
           type="primary"
           @click="setDialog('update', scope.row)"
@@ -79,7 +93,11 @@
           @confirm="handleDelete(scope.row)"
         >
           <template #reference>
-            <el-button type="danger" icon="Delete" />
+            <el-button
+              v-permission="['major:del']"
+              type="danger"
+              icon="Delete"
+            />
           </template>
         </el-popconfirm>
       </template>
@@ -88,6 +106,7 @@
 
   <!--分页-->
   <Pagination
+    v-permission="['major:list']"
     :current-page="query.currentPage"
     :page-size="query.pageSize"
     :total="total"
@@ -98,6 +117,7 @@
   <!--新增-->
   <el-dialog
     v-model="dialog.show"
+    v-permission="['major:add', 'major:update']"
     :title="dialog.title"
     width="40%"
     :close-on-click-modal="false"

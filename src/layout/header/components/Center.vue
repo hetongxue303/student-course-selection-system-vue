@@ -1,13 +1,14 @@
 <template>
-  <el-dropdown trigger="hover">
+  <el-dropdown trigger="click">
     <span class="el-dropdown-link">
       <div class="components-center">
         <el-avatar
           shape="circle"
-          :size="30"
-          src="https://p26-passport.byteacctimg.com/img/user-avatar/7eb085af8382dfa92ed6fb9a4aea448c~300x300.image"
+          :size="35"
+          fit="fill"
+          :src="userStore.getAvatar"
         />
-        <span class="center-username">管理员</span>
+        <span class="center-username">{{ userStore.getUsername }}</span>
       </div>
     </span>
     <template #dropdown>
@@ -24,27 +25,9 @@
       </el-dropdown-menu>
     </template>
   </el-dropdown>
-
-  <!--对话框-->
-  <el-dialog
-    v-model="dialogVisible"
-    title="确认退出"
-    width="35%"
-    top="0"
-    align-center
-  >
-    <span>您确认确认退出系统吗？</span>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="dialogVisible = false">返回</el-button>
-        <el-button type="success" @click="handlerLogout">确认</el-button>
-      </span>
-    </template>
-  </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '../../../store/modules/user'
 import { logout } from '../../../api/login'
@@ -52,7 +35,6 @@ import { useCookies } from '@vueuse/integrations/useCookies'
 import { settings } from '../../../settings'
 
 const userStore = useUserStore()
-const dialogVisible = ref(false)
 
 const handlerLogout = async () => {
   ElMessageBox.confirm('您确认确认退出系统吗？', '提示', {
@@ -78,12 +60,14 @@ const handlerLogout = async () => {
 
 <style scoped lang="scss">
 .components-center {
-  width: 100px;
   height: 49px;
+  min-width: 100px;
+  max-width: 150px;
   margin-bottom: 1px;
   display: flex;
   align-items: center;
   cursor: pointer;
+  margin-right: 10px;
 
   &:hover {
     background-color: rgba(245, 245, 245, 0.8);

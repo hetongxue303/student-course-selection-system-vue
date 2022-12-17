@@ -1,11 +1,13 @@
 import { DirectiveBinding, ObjectDirective } from 'vue'
 import { ElNotification } from 'element-plus'
+import { usePermissionStore } from '../../store/modules/permission'
+import { useUserStore } from '../../store/modules/user'
 
 export const permission: ObjectDirective = {
   mounted(el: any, binding: DirectiveBinding) {
     const { value } = binding
-    // 模拟权限
-    const permissions = ['user:list', 'user:add', 'user:del', 'user:update']
+    const permissionStore = usePermissionStore()
+    const permissions: string[] = permissionStore.getPermissions
     if (value && value.length > 0 && value instanceof Array) {
       const needPermission = value
       const hasPermission = permissions.some((permission) => {
@@ -27,8 +29,8 @@ export const permission: ObjectDirective = {
 export const role: ObjectDirective = {
   mounted(el: any, binding: DirectiveBinding) {
     const { value } = binding
-    // 模拟角色
-    const roles = ['admin']
+    const userStore = useUserStore()
+    const roles: string[] = userStore.getRoles
     if (value && value.length > 0 && value instanceof Array) {
       const needRole = value
       const hasRole = roles.some((role) => {

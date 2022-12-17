@@ -30,10 +30,16 @@
       </el-button>
     </el-row>
     <div class="operate-box">
-      <el-button icon="Plus" type="primary" @click="setDialog('insert')">
+      <el-button
+        v-permission="['system:user:add']"
+        icon="Plus"
+        type="primary"
+        @click="setDialog('insert')"
+      >
         新增
       </el-button>
       <el-button
+        v-permission="['system:user:update']"
         icon="EditPen"
         :disabled="disabled.edit"
         type="success"
@@ -42,6 +48,7 @@
         修改
       </el-button>
       <el-button
+        v-permission="['system:user:del']"
         icon="Delete"
         :disabled="disabled.delete"
         type="danger"
@@ -50,6 +57,7 @@
         删除
       </el-button>
       <el-button
+        v-permission="['system:user:list']"
         icon="Bottom"
         :disabled="disabled.export"
         type="warning"
@@ -73,8 +81,7 @@
     <el-table-column label="性别" width="auto">
       <template #default="scope">
         <span v-if="scope.row.gender === '1'">男</span>
-        <span v-else-if="scope.row.gender === '2'">女</span>
-        <span v-else>保密</span>
+        <span v-else>女</span>
       </template>
     </el-table-column>
     <el-table-column prop="phone" label="电话" align="center" width="auto" />
@@ -93,9 +100,15 @@
         {{ moment(row.createTime).format('YYYY-MM-DD HH:mm:ss') }}
       </template>
     </el-table-column>
-    <el-table-column label="操作" align="center" width="200">
+    <el-table-column
+      v-permission="['system:user:update', 'system:user:del']"
+      label="操作"
+      align="center"
+      width="200"
+    >
       <template #default="scope">
         <el-button
+          v-permission="['system:user:update']"
           icon="EditPen"
           type="primary"
           @click="setDialog('update', scope.row)"
@@ -105,7 +118,11 @@
           @confirm="handleDelete(scope.row)"
         >
           <template #reference>
-            <el-button type="danger" icon="Delete" />
+            <el-button
+              v-permission="['system:user:del']"
+              type="danger"
+              icon="Delete"
+            />
           </template>
         </el-popconfirm>
       </template>
@@ -114,6 +131,7 @@
 
   <!--分页-->
   <Pagination
+    v-permission="['system:user:list']"
     :current-page="query.currentPage"
     :page-size="query.pageSize"
     :total="total"
@@ -124,6 +142,7 @@
   <!--对话框-->
   <el-dialog
     v-model="dialog.show"
+    v-permission="['system:user:add', 'system:user:update']"
     :title="dialog.title"
     width="50%"
     :close-on-click-modal="false"

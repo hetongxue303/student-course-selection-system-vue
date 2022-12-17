@@ -1,3 +1,6 @@
+import { constants } from 'fs'
+import S_IRWXG = module
+
 /**
  * 公共属性
  */
@@ -21,6 +24,7 @@ export interface Menu extends common {
   sort?: number
   icon?: string
   perKey?: string
+  isSub?: boolean
   isDisplay?: boolean
   isFrame?: boolean
   isCache?: boolean
@@ -106,4 +110,11 @@ export interface Choice extends common {
   isEnd?: boolean
   username?: string
   courseName?: string
+}
+
+export interface ILogin {
+  username: string
+  password: string
+  code: string
+  rememberMe: boolean
 }

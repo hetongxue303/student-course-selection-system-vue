@@ -17,7 +17,6 @@
             <el-input
               v-model="loginForm.username"
               placeholder="账号"
-              clearable
               prefix-icon="user"
             />
           </el-form-item>
@@ -25,7 +24,6 @@
             <el-input
               v-model="loginForm.password"
               show-password
-              clearable
               placeholder="密码"
               prefix-icon="lock"
               @keyup.enter="loginHandler(ruleFormRef)"
@@ -37,7 +35,6 @@
                 <el-input
                   v-model.trim="loginForm.code"
                   placeholder="验证码"
-                  clearable
                   prefix-icon="key"
                   @keyup.enter="loginHandler(ruleFormRef)"
                 />
@@ -84,6 +81,8 @@ import { decrypt, encrypt } from '../utils/jsencrypt'
 import { getCaptcha, login } from '../api/login'
 import { setToken, setTokenTime } from '../utils/auth'
 import { encryptMD5 } from '../hook/encryptMD5'
+import { useUserStore } from '../store/modules/user'
+import { ILogin } from '../types/entity'
 
 // 实例化
 const cookie = useCookies()
@@ -104,13 +103,6 @@ const parameter: IParameter = reactive({
 })
 
 // 登陆表单
-interface ILogin {
-  username: string
-  password: string
-  code: string
-  rememberMe: boolean
-}
-
 const loginForm: ILogin = reactive({
   username: '',
   password: '',
@@ -149,6 +141,9 @@ const loginHandler = async (formEl: FormInstance | undefined) => {
       parameter.loading = true
       if (loginForm.rememberMe) {
         const expires: Date = new Date(new Date().getTime() + 60 * 60 * 1000)
+        cookie.remove('username')
+        cookie.remove('password')
+        cookie.remove('rememberMe')
         cookie.set('username', loginForm.username.trim(), { expires })
         cookie.set('password', encrypt(loginForm.password.trim()), { expires })
         cookie.set('rememberMe', loginForm.rememberMe, { expires })
@@ -164,8 +159,10 @@ const loginHandler = async (formEl: FormInstance | undefined) => {
         rememberMe: loginForm.rememberMe
       })
       if (data.code === 200 && status === 200) {
+        const userStore = useUserStore()
         setToken(data.data.token)
         setTokenTime(new Date().getTime() + data.data.expireTime)
+        userStore.setUserInfo(data)
         ElMessage.success('登陆成功')
         await router.push(parameter.redirect || '/')
       } else {
@@ -174,8 +171,6 @@ const loginHandler = async (formEl: FormInstance | undefined) => {
         ElMessage.warning(data.message || '登陆失败')
       }
       parameter.loading = false
-    } else {
-      console.log('error submit!!')
     }
     return false
   })

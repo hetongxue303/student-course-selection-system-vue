@@ -4,9 +4,9 @@
     <el-row :gutter="20" class="search-box">
       <el-col :span="4">
         <el-input
-          v-model="query.courseName"
+          v-model="query.username"
           type="text"
-          placeholder="请输入学院名称..."
+          placeholder="请输入学生姓名..."
         />
       </el-col>
       <el-button icon="Search" type="success" @click="handleSearch">
@@ -55,13 +55,20 @@
     @selection-change="handleSelectionChange"
   >
     <el-table-column type="selection" width="50" align="center" />
-    <el-table-column prop="collegeName" label="学院名称" width="auto" />
-    <el-table-column
-      prop="remark"
-      label="学院描述"
-      align="center"
-      width="auto"
-    />
+    <el-table-column prop="username" label="学生姓名" width="auto" />
+    <el-table-column prop="courseName" label="课程名称" width="auto" />
+    <el-table-column label="成绩" align="center" width="auto">
+      <template #default="{ row }">
+        <span v-if="row.score">{{ row.score }}</span>
+        <span v-else>-</span>
+      </template>
+    </el-table-column>
+    <el-table-column label="是否结课" align="center" width="auto">
+      <template #default="{ row }">
+        <span v-if="row.isEnd">是</span>
+        <span v-else>否</span>
+      </template>
+    </el-table-column>
     <el-table-column label="创建时间" align="center" width="180">
       <template #default="{ row }">
         {{ moment(row.createTime).format('YYYY-MM-DD HH:mm:ss') }}
@@ -111,24 +118,22 @@
     >
       <el-row :gutter="20">
         <el-col :span="24">
-          <el-form-item label="学院名称" prop="collegeName">
+          <el-form-item label="学生名称" prop="username">
             <el-input
-              v-model="dialogForm.collegeName"
+              v-model="dialogForm.username"
               type="text"
-              placeholder="学院名称"
+              placeholder="学生名称"
             />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="20">
         <el-col :span="24">
-          <el-form-item label="学院描述" prop="remark">
+          <el-form-item label="课程名称" prop="courseName">
             <el-input
-              v-model="dialogForm.remark"
-              type="textarea"
-              :rows="5"
-              resize="none"
-              placeholder="学院描述(默认：空)"
+              v-model="dialogForm.courseName"
+              type="text"
+              placeholder="课程名称"
             />
           </el-form-item>
         </el-col>
@@ -146,12 +151,13 @@
 </template>
 
 <script setup lang="ts">
-import Pagination from '../../../components/Pagination/Index.vue'
+import Pagination from '../../components/Pagination/Index.vue'
 import { onMounted, reactive, ref, watch } from 'vue'
-import { College } from '../../../types/entity'
-import { QueryCollege } from '../../../types/query'
+import { Choice } from '../../types/entity'
+import { QueryChoice } from '../../types/query'
 import moment from 'moment'
 import { cloneDeep } from 'lodash'
+import { delBatchChoice, delChoice, getChoicePage } from '../../api/choice'
 import {
   ElMessage,
   ElMessageBox,
@@ -160,36 +166,37 @@ import {
   FormInstance,
   FormRules
 } from 'element-plus'
-import {
-  addCollege,
-  delBatchCollege,
-  delCollege,
-  getCollegePage,
-  updateCollege
-} from '../../../api/college'
 
 // 初始化相关
-const tableData = ref<College[]>([])
-const getCollegeListPage = async () => {
-  const { data } = await getCollegePage(query)
+const tableData = ref<Choice[]>([])
+const getChoiceListPage = async () => {
+  const { data } = await getChoicePage(query)
   tableData.value = cloneDeep(data.data.records)
   total.value = JSON.parse(data.data.total)
 }
-onMounted(() => getCollegeListPage())
+onMounted(() => getChoiceListPage())
 // 表单检验
 const ruleFormRef = ref<FormInstance>()
 const rules = reactive<FormRules>({
-  collegeName: [
+  username: [
     {
       required: true,
       type: 'string',
-      message: '学院名称不能为空',
+      message: '学生名称不能为空',
+      trigger: 'blur'
+    }
+  ],
+  courseName: [
+    {
+      required: true,
+      type: 'string',
+      message: '课程名称不能为空',
       trigger: 'blur'
     }
   ]
 })
 // 查询属性
-const query: QueryCollege = reactive({
+const query: QueryChoice = reactive({
   currentPage: 1,
   pageSize: 10
 })
@@ -197,30 +204,30 @@ const query: QueryCollege = reactive({
 const total = ref<number>(0)
 const handleCurrentChange = (currentPage: number) => {
   query.currentPage = currentPage
-  getCollegeListPage()
+  getChoiceListPage()
 }
 const handleSizeChange = (pageSize: number) => {
   query.pageSize = pageSize
-  getCollegeListPage()
+  getChoiceListPage()
 }
 // 处理搜索
 const handleSearch = () => {
-  if (!query.collegeName) {
+  if (!query.username) {
     ElMessage.info('请输入搜索内容...')
     return
   }
-  getCollegeListPage()
+  getChoiceListPage()
 }
 // 重置搜索
 const resetSearch = () => {
-  query.collegeName = ''
-  getCollegeListPage()
+  query.username = ''
+  getChoiceListPage()
 }
 // 监听查询属性
 watch(
   () => query,
   async () => {
-    await getCollegeListPage()
+    await getChoiceListPage()
   },
   { deep: true }
 )
@@ -231,16 +238,16 @@ const disabled = reactive({
   export: false
 })
 const multipleTableRef = ref<InstanceType<typeof ElTable>>()
-const multipleSelection = ref<College[]>([])
-const handleSelectionChange = (colleges: College[]) => {
-  multipleSelection.value = colleges
+const multipleSelection = ref<Choice[]>([])
+const handleSelectionChange = (choices: Choice[]) => {
+  multipleSelection.value = choices
 }
 // 单个删除
-const handleDelete = async ({ collegeId }: College) => {
-  if (collegeId) {
-    const { data } = await delCollege(collegeId)
+const handleDelete = async ({ choiceId }: Choice) => {
+  if (choiceId) {
+    const { data } = await delChoice(choiceId)
     if (data.code === 200) {
-      await getCollegeListPage()
+      await getChoiceListPage()
       ElNotification.success('删除成功')
       return
     }
@@ -259,11 +266,11 @@ const handleBatchDelete = async () => {
     }
   ).then(async () => {
     const ids: number[] = multipleSelection.value.map((item) => {
-      return item.collegeId as number
+      return item.choiceId as number
     })
-    const { data } = await delBatchCollege(ids)
+    const { data } = await delBatchChoice(ids)
     if (data.code === 200) {
-      await getCollegeListPage()
+      await getChoiceListPage()
       ElNotification.success('删除成功')
       return
     }
@@ -284,24 +291,24 @@ watch(
   { immediate: true, deep: true }
 )
 /* 增加 编辑相关 */
-const dialogForm = ref<College>({})
+const dialogForm = ref<Choice>({})
 const dialog = reactive({
   show: false,
   title: '',
   operate: ''
 })
 // 设置dialog
-const setDialog = async (operate: string, row?: College) => {
+const setDialog = async (operate: string, row?: Choice) => {
   if (operate === 'insert') {
-    dialog.title = '新增学院'
+    dialog.title = '新增选课记录'
   }
   if (operate === 'update') {
     if (row) {
       dialogForm.value = cloneDeep(row)
     } else {
-      dialogForm.value = cloneDeep(multipleSelection.value[0] as College)
+      dialogForm.value = cloneDeep(multipleSelection.value[0] as Choice)
     }
-    dialog.title = '编辑学院'
+    dialog.title = '编辑选课记录'
   }
   dialog.show = true
   dialog.operate = operate
@@ -312,24 +319,26 @@ const handleOperate = async (formEl: FormInstance | undefined) => {
   await formEl.validate(async (valid) => {
     if (valid) {
       if (dialog.operate === 'insert') {
-        const { data } = await addCollege(dialogForm.value)
-        if (data.code === 200) {
-          await getCollegeListPage()
-          dialog.show = false
-          ElNotification.success('添加成功')
-          return
-        }
-        ElNotification.error('添加失败,请重试！')
+        ElMessage.info('待开发...')
+        // const { data } = await addChoice(dialogForm.value)
+        // if (data.code === 200) {
+        //   await getChoiceListPage()
+        //   dialog.show = false
+        //   ElNotification.success('添加成功')
+        //   return
+        // }
+        // ElNotification.error('添加失败,请重试！')
       }
       if (dialog.operate === 'update') {
-        const { data } = await updateCollege(dialogForm.value)
-        if (data.code === 200) {
-          await getCollegeListPage()
-          dialog.show = false
-          ElNotification.success('更新成功')
-          return
-        }
-        ElNotification.error('更新失败,请重试！')
+        ElMessage.info('待开发...')
+        // const { data } = await updateChoice(dialogForm.value)
+        // if (data.code === 200) {
+        //   await getChoiceListPage()
+        //   dialog.show = false
+        //   ElNotification.success('更新成功')
+        //   return
+        // }
+        // ElNotification.error('更新失败,请重试！')
       }
     }
   })

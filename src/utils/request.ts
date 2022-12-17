@@ -10,6 +10,7 @@ import {
 } from './auth'
 import { refreshToken } from '../api/login'
 import { useUserStore } from '../store/modules/user'
+import { useRouter } from 'vue-router'
 
 axios.create({
   baseURL: import.meta.env.VITE_BASIC_HTTP,
@@ -84,13 +85,15 @@ axios.interceptors.response.use(
           cancelButtonText: '取消',
           type: 'warning'
         }
-      ).then(() => {
-        removeToken()
-        removeTokenTime()
-        const userStore = useUserStore()
-        userStore.$reset()
-        window.location.reload()
-      })
+      )
+        .then(() => {
+          removeToken()
+          removeTokenTime()
+          const userStore = useUserStore()
+          userStore.$reset()
+          window.location.reload()
+        })
+        .catch(() => {})
     }
     if (response.status === 400 || response.data.code === 400) {
       ElNotification({

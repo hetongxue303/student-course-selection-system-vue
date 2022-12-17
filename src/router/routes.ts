@@ -12,6 +12,15 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@views/Login.vue')
   },
   {
+    name: '404',
+    path: '/:pathMatch(.*)*',
+    meta: {
+      title: '404',
+      cache: false
+    },
+    component: () => import('@views/error/404.vue')
+  },
+  {
     path: '/',
     component: Layout,
     redirect: '/dashboard',
@@ -46,82 +55,56 @@ const routes: RouteRecordRaw[] = [
       }
     ]
   },
+  // 以下是动态
   {
-    name: 'user',
-    path: '/user',
+    path: '/',
     component: Layout,
-    meta: { title: '用户管理', cache: false },
-    children: [
-      {
-        name: 'admin',
-        path: '/user/admin',
-        meta: {
-          title: '管理员',
-          cache: false
-        },
-        component: () => import('@views/user/admin/Index.vue')
-      },
-      {
-        name: 'teacher',
-        path: '/user/teacher',
-        meta: {
-          title: '教师管理',
-          cache: false
-        },
-        component: () => import('@views/user/teacher/Index.vue')
-      },
-      {
-        name: 'student',
-        path: '/user/student',
-        meta: {
-          title: '学生管理',
-          cache: false
-        },
-        component: () => import('@views/user/student/Index.vue')
-      }
-    ]
-  },
-  {
-    name: 'school',
-    path: '/school',
-    component: Layout,
-    meta: { title: '学校管理', cache: false },
+    meta: { cache: false },
     children: [
       {
         name: 'college',
-        path: '/school/college',
+        path: '/college',
         meta: {
           title: '学院管理',
           cache: false
         },
-        component: () => import('@views/school/college/Index.vue')
+        component: () => import('@views/college/Index.vue')
       },
       {
         name: 'major',
-        path: '/school/major',
+        path: '/major',
         meta: {
           title: '专业管理',
           cache: false
         },
-        component: () => import('@views/school/major/Index.vue')
+        component: () => import('@views/major/Index.vue')
       },
       {
         name: 'course',
-        path: '/school/course',
+        path: '/course',
         meta: {
           title: '课程管理',
           cache: false
         },
-        component: () => import('@views/school/course/Index.vue')
+        component: () => import('@views/course/Index.vue')
       },
       {
         name: 'choice',
-        path: '/school/choice',
+        path: '/choice',
         meta: {
           title: '选课记录',
           cache: false
         },
-        component: () => import('@views/school/choice/Index.vue')
+        component: () => import('@views/choice/Index.vue')
+      },
+      {
+        name: 'about',
+        path: '/about',
+        meta: {
+          title: '关于系统',
+          cache: false
+        },
+        component: () => import('@views/about/Index.vue')
       }
     ]
   },
@@ -157,23 +140,6 @@ const routes: RouteRecordRaw[] = [
           cache: false
         },
         component: () => import('@views/system/menu/Index.vue')
-      }
-    ]
-  },
-  {
-    name: 'about',
-    path: '/',
-    component: Layout,
-    meta: { cache: false },
-    children: [
-      {
-        name: 'about',
-        path: '/about',
-        meta: {
-          title: '关于系统',
-          cache: false
-        },
-        component: () => import('@views/about/Index.vue')
       }
     ]
   }

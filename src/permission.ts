@@ -1,14 +1,14 @@
-import router from './router'
 import NProgress from './plugins/nProgress'
 import { getToken } from './utils/auth'
 import { useUserStore } from './store/modules/user'
 import { setBrowserTitle } from './utils/common'
 import { usePermissionStore } from './store/modules/permission'
-import { ElMessage } from 'element-plus'
+import router from './router'
+import { getUserInfo } from './api/login'
 
 const REQUEST_WITHE_LIST: string[] = ['/login', '/register']
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   NProgress.start()
 
   const userStore = useUserStore()
@@ -16,19 +16,16 @@ router.beforeEach((to, from, next) => {
   if (getToken()) {
     if (to.path === '/login') {
       next('/')
-    } else if (userStore.roles.length === 0) {
-      userStore
-        .getUserInfo()
-        .then(() => {
-          // addRouter(permissionStore.routers)
-          next({ ...to, replace: true })
-        })
-        .catch((err) => {
-          userStore.systemLogout()
-          ElMessage.error(err.message)
-          next('/')
-        })
-    } else {
+    }
+    // else if (
+    //   userStore.roles.length === 0 ||
+    //   !permissionStore.loadMenu ||
+    //   !permissionStore.loadRouter
+    // ) {
+    //   getUserInfo().then(({ data }) => userStore.setUserInfo(data.data))
+    //   next({ ...to, replace: true })
+    // }
+    else {
       next()
     }
   } else if (REQUEST_WITHE_LIST.indexOf(to.path) !== -1) {

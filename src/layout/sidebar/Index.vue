@@ -18,7 +18,6 @@
 </template>
 
 <script setup lang="ts">
-import Logo from './components/Logo.vue'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import MenuItem from './components/MenuItem.vue'
@@ -26,16 +25,14 @@ import { constMenu } from '../data/constMenu'
 import { usePermissionStore } from '../../store/modules/permission'
 import { menus } from '../data/menus'
 
-const menuList = menus
 const route = useRoute()
 const permissionStore = usePermissionStore()
 
+const menuList: Array<any> = menus
 // const menus: Array<any> = constMenu
 // permissionStore.getMenus.forEach((menu) => menus.push(menu))
 
-defineProps({
-  isCollapse: { type: Boolean, required: true, default: false }
-})
+withDefaults(defineProps<{ isCollapse: boolean }>(), { isCollapse: false })
 
 const activeValue = computed((): string => {
   return route.path

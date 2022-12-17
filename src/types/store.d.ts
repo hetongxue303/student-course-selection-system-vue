@@ -1,11 +1,16 @@
+import { Menu } from './entity'
+import { RouteRecordRaw } from 'vue-router'
+
 export type AppStore = {
   collapse: boolean
 }
 
 export type PermissionStore = {
-  isAdmin: boolean
-  menus: Array<any>
-  routers: Array<any>
+  menus: Menu[]
+  loadMenu: boolean
+  routers: RouteRecordRaw[]
+  loadRouter: boolean
+  permissions: string[]
 }
 
 export type UserStore = {
@@ -13,7 +18,7 @@ export type UserStore = {
   username: string
   avatar: string
   roles: string[]
-  permissions: string[]
+  isAdmin: boolean
 }
 
 export type TabStore = {

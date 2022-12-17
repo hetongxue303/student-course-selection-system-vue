@@ -2,9 +2,8 @@ import { defineStore } from 'pinia'
 import { UserStore } from '../../types/store'
 import { getToken, removeToken, removeTokenTime } from '../../utils/auth'
 import { local, session } from '../../utils/storage'
-import { getUserInfo } from '../../api/login'
 import { usePermissionStore } from './permission'
-import { filterAsyncRouter } from '../../router'
+import { mockData } from '../../router/mock'
 
 export const useUserStore = defineStore('user', {
   state: (): UserStore => {
@@ -13,7 +12,7 @@ export const useUserStore = defineStore('user', {
       avatar: '',
       username: '',
       roles: [],
-      permissions: []
+      isAdmin: false
     }
   },
   getters: {
@@ -21,9 +20,26 @@ export const useUserStore = defineStore('user', {
     getRoles: (state) => state.roles,
     getUsername: (state) => state.username,
     getAvatar: (state) => state.avatar,
-    getPermissions: (state) => state.permissions
+    getIsAdmin: (state) => state.isAdmin
   },
   actions: {
+    setUserInfo(data: any) {
+      this.authorization = data.data.token
+      const { roles, username, avatar, isAdmin, menus, routers, permissions } =
+        data.data.user
+      if (roles && roles.length > 0) {
+        this.roles = roles
+        this.username = username
+        this.avatar = avatar
+        this.isAdmin = isAdmin
+      } else {
+        this.roles = []
+      }
+      const permissionStore = usePermissionStore()
+      permissionStore.menus = menus
+      permissionStore.routers = routers
+      permissionStore.permissions = permissions
+    },
     systemLogout() {
       removeToken()
       removeTokenTime()
@@ -34,29 +50,6 @@ export const useUserStore = defineStore('user', {
     fedLogOut() {
       this.authorization = ''
       removeToken()
-    },
-    getUserInfo() {
-      return new Promise((resolve, reject) => {
-        const permissionStore = usePermissionStore()
-        getUserInfo()
-          .then((res) => {
-            const { data } = res.data
-            if (data.roles && data.roles.length > 0) {
-              this.roles = data.roles
-              this.permissions = data.permissions
-            } else {
-              this.roles = []
-            }
-            this.username = data.username
-            this.avatar = data.avatar
-            permissionStore.menus = data.menus
-            permissionStore.routers = filterAsyncRouter(data.routers)
-            resolve(data)
-          })
-          .catch((err) => {
-            reject(err)
-          })
-      })
     }
   },
   persist: { key: 'USER' }

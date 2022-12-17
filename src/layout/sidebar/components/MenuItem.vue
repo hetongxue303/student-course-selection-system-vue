@@ -20,11 +20,9 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from 'vue'
+import { Menu } from 'element-plus'
 
-defineProps({
-  data: { type: Array as PropType<any[]>, required: true }
-})
+withDefaults(defineProps<{ data: Array<Menu> }>(), {})
 </script>
 
 <style scoped lang="scss">

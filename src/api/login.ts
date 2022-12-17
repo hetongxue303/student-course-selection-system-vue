@@ -34,7 +34,7 @@ export const logout = () => {
 export const getUserInfo = () => {
   return axios({
     method: 'get',
-    url: `${baseApi}/user/getUserInfo`
+    url: `${baseApi}/user/info`
   })
 }
 

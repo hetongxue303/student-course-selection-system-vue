@@ -289,6 +289,7 @@ const dialog = reactive({
 const setDialog = async (operate: string, row?: Major) => {
   if (operate === 'insert') {
     dialog.title = '新增专业'
+    multipleSelection.value = []
   }
   if (operate === 'update') {
     if (row) {
@@ -296,7 +297,6 @@ const setDialog = async (operate: string, row?: Major) => {
     } else {
       dialogForm.value = cloneDeep(multipleSelection.value[0] as Major)
     }
-    multipleSelection.value = []
     dialog.title = '编辑专业'
   }
   dialog.show = true

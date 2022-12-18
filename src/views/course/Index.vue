@@ -16,7 +16,7 @@
         重置
       </el-button>
     </el-row>
-    <div class="operate-box">
+    <div v-role="['admin', 'teacher']" class="operate-box">
       <el-button icon="Plus" type="primary" @click="setDialog('insert')">
         新增
       </el-button>
@@ -55,13 +55,27 @@
     @selection-change="handleSelectionChange"
   >
     <el-table-column type="selection" width="50" align="center" />
-    <el-table-column prop="courseName" label="名称" width="auto" />
-    <el-table-column label="已选人数" width="auto">
-      <template #default="scope">
-        <span>{{ scope.row.choice }}</span>
+    <el-table-column prop="courseName" label="课程名称" width="auto" />
+    <el-table-column label="已选" width="auto" align="center">
+      <template #default="{ row }">
+        <el-tag type="success">{{ row.choice }}人</el-tag>
       </template>
     </el-table-column>
-    <el-table-column label="总人数" prop="count" width="auto" />
+    <el-table-column label="剩余" v width="auto">
+      <template #default="{ row }">
+        <el-tag v-if="row.count === row.choice" effect="dark" type="warning"
+          >已满
+        </el-tag>
+        <el-tag v-else effect="dark" type="success"
+          >{{ row.count - row.choice }}人
+        </el-tag>
+      </template>
+    </el-table-column>
+    <el-table-column label="总共" width="auto" align="center">
+      <template #default="{ row }">
+        <el-tag type="info" effect="dark">{{ row.count }}人</el-tag>
+      </template>
+    </el-table-column>
     <el-table-column prop="remark" label="描述" align="center" width="auto" />
     <el-table-column label="创建时间" align="center" width="180">
       <template #default="{ row }">
@@ -70,18 +84,21 @@
     </el-table-column>
     <el-table-column label="操作" align="center" width="300">
       <template #default="{ row }">
-        <el-tag v-if="row.count === row.choice" type="warning">
-          人数已满
-        </el-tag>
+        <el-button v-role="['student']" type="primary">查看</el-button>
         <el-button
-          v-else
-          :type="row.isChoice ? 'info' : 'success'"
-          :disabled="row.isChoice"
+          v-role="['student']"
+          :type="row.isChoice ? 'warning' : 'success'"
+          :disabled="
+            row.isChoice ||
+            useUserStore().getIsAdmin ||
+            row.count === row.choice
+          "
           @click="handleChoiceCourse(row)"
         >
           {{ row.isChoice ? '已选' : '选择' }}
         </el-button>
         <el-button
+          v-role="['admin', 'teacher']"
           icon="EditPen"
           type="primary"
           @click="setDialog('update', row)"
@@ -91,7 +108,11 @@
           @confirm="handleDelete(row)"
         >
           <template #reference>
-            <el-button type="danger" icon="Delete" />
+            <el-button
+              v-role="['admin', 'teacher']"
+              type="danger"
+              icon="Delete"
+            />
           </template>
         </el-popconfirm>
       </template>
@@ -203,6 +224,7 @@ import {
   getCoursePage,
   updateCourse
 } from '../../api/course'
+import { useUserStore } from '../../store/modules/user'
 
 // 初始化相关
 const tableData = ref<Course[]>([])
@@ -241,11 +263,9 @@ const query: QueryCourse = reactive({
 const total = ref<number>(0)
 const handleCurrentChange = (currentPage: number) => {
   query.currentPage = currentPage
-  getCourseListPage()
 }
 const handleSizeChange = (pageSize: number) => {
   query.pageSize = pageSize
-  getCourseListPage()
 }
 // 处理搜索
 const handleSearch = () => {
@@ -256,10 +276,8 @@ const handleSearch = () => {
   getCourseListPage()
 }
 // 重置搜索
-const resetSearch = () => {
-  query.courseName = ''
-  getCourseListPage()
-}
+const resetSearch = () => (query.courseName = undefined)
+
 // 监听查询属性
 watch(
   () => query,
@@ -352,7 +370,7 @@ const dialog = reactive({
   title: '',
   operate: ''
 })
-const dialogForm = ref<Course>({ count: 0 })
+const dialogForm = ref<Course>({ count: 20 })
 const teachers = ref<User[]>([])
 // 下拉框数据
 const getSelectTeacherList = (type: number) => {
@@ -364,6 +382,7 @@ const getSelectTeacherList = (type: number) => {
 const setDialog = async (operate: string, row?: Course) => {
   if (operate === 'insert') {
     dialog.title = '新增课程'
+    multipleSelection.value = []
   }
   if (operate === 'update') {
     if (row) {
@@ -382,7 +401,6 @@ const handleOperate = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate(async (valid) => {
     if (valid) {
-      console.log('aaa')
       if (dialog.operate === 'insert') {
         const { data } = await addCourse(dialogForm.value)
         if (data.code === 200) {

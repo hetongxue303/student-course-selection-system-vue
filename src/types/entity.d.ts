@@ -117,6 +117,8 @@ export interface Course {
   createTime?: Date
   updateTime?: Date
   isDelete?: boolean
+  isChoice?: boolean
+  isConfirm?: boolean
 }
 
 export interface Choice {

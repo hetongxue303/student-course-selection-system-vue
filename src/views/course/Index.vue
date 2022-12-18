@@ -77,24 +77,32 @@
       </template>
     </el-table-column>
     <el-table-column label="操作" align="center" width="300">
-      <template #default="scope">
-        <el-button
+      <template #default="{ row }">
+        <el-tag
+          v-if="row.count === row.choice"
           v-role="['student']"
-          type="success"
-          :disabled="scope.row.count === scope.row.choice"
-          @click="handleChoiceCourse(scope.row)"
+          type="warning"
         >
-          选择
+          人数已满
+        </el-tag>
+        <el-button
+          v-else
+          v-role="['student']"
+          :type="row.isChoice ? 'info' : 'success'"
+          :disabled="row.isChoice"
+          @click="handleChoiceCourse(row)"
+        >
+          {{ row.isChoice ? '已选' : '选择' }}
         </el-button>
         <el-button
           v-permission="['course:update']"
           icon="EditPen"
           type="primary"
-          @click="setDialog('update', scope.row)"
+          @click="setDialog('update', row)"
         />
         <el-popconfirm
           title="确定删除本条数据吗？"
-          @confirm="handleDelete(scope.row)"
+          @confirm="handleDelete(row)"
         >
           <template #reference>
             <el-button

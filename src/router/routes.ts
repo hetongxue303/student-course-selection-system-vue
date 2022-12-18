@@ -101,7 +101,7 @@ const routes: RouteRecordRaw[] = [
         name: 'confirm',
         path: '/confirm',
         meta: {
-          title: '选课申请',
+          title: '申请列表',
           cache: false
         },
         component: () => import('@views/confirm/Index.vue')

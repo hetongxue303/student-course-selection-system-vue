@@ -17,16 +17,10 @@
       </el-button>
     </el-row>
     <div class="operate-box">
-      <el-button
-        v-permission="['system:role:add']"
-        icon="Plus"
-        type="primary"
-        @click="setDialog('insert')"
-      >
+      <el-button icon="Plus" type="primary" @click="setDialog('insert')">
         新增
       </el-button>
       <el-button
-        v-permission="['system:role:update']"
         icon="EditPen"
         :disabled="disabled.edit"
         type="success"
@@ -35,7 +29,6 @@
         修改
       </el-button>
       <el-button
-        v-permission="['system:role:del']"
         icon="Delete"
         :disabled="disabled.delete"
         type="danger"
@@ -44,7 +37,6 @@
         删除
       </el-button>
       <el-button
-        v-permission="['system:role:list']"
         icon="Bottom"
         :disabled="disabled.export"
         type="warning"
@@ -90,15 +82,9 @@
               </span>
             </template>
           </el-table-column>
-          <el-table-column
-            v-permission="['system:role:del', 'system:role:update']"
-            label="操作"
-            align="center"
-            width="200"
-          >
+          <el-table-column label="操作" align="center" width="200">
             <template #default="scope">
               <el-button
-                v-permission="['system:role:update']"
                 icon="EditPen"
                 type="primary"
                 @click="setDialog('update', scope.row)"
@@ -108,11 +94,7 @@
                 @confirm="handleDelete(scope.row)"
               >
                 <template #reference>
-                  <el-button
-                    v-permission="['system:role:del']"
-                    type="danger"
-                    icon="Delete"
-                  />
+                  <el-button type="danger" icon="Delete" />
                 </template>
               </el-popconfirm>
             </template>
@@ -121,7 +103,6 @@
 
         <!--分页-->
         <Pagination
-          v-permission="['system:role:list']"
           :current-page="query.currentPage"
           :page-size="query.pageSize"
           :total="total"
@@ -136,7 +117,6 @@
           <div class="header-box">
             <span>菜单分配</span>
             <el-button
-              v-role="['admin']"
               :disabled="saveDisabled"
               type="primary"
               size="small"
@@ -150,7 +130,6 @@
         <!--菜单树-->
         <el-tree
           ref="menuTreeRef"
-          v-role="['admin']"
           lazy
           empty-text="暂无数据"
           node-key="id"

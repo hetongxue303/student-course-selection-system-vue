@@ -25,7 +25,7 @@ export const menus: Array<any> = [
     path: '/choice'
   },
   {
-    name: '选课申请',
+    name: '申请列表',
     icon: 'confirm',
     path: '/confirm'
   },

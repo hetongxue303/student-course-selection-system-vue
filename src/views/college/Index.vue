@@ -4,9 +4,9 @@
     <el-row :gutter="20" class="search-box">
       <el-col :span="4">
         <el-input
-          v-model="query.courseName"
+          v-model="query.collegeName"
           type="text"
-          placeholder="请输入学院名称..."
+          placeholder="学院名称..."
         />
       </el-col>
       <el-button icon="Search" type="success" @click="handleSearch">
@@ -17,16 +17,10 @@
       </el-button>
     </el-row>
     <div class="operate-box">
-      <el-button
-        v-permission="['college:add']"
-        icon="Plus"
-        type="primary"
-        @click="setDialog('insert')"
-      >
+      <el-button icon="Plus" type="primary" @click="setDialog('insert')">
         新增
       </el-button>
       <el-button
-        v-permission="['college:update']"
         icon="EditPen"
         :disabled="disabled.edit"
         type="success"
@@ -35,7 +29,6 @@
         修改
       </el-button>
       <el-button
-        v-permission="['college:del']"
         icon="Delete"
         :disabled="disabled.delete"
         type="danger"
@@ -44,7 +37,6 @@
         删除
       </el-button>
       <el-button
-        v-permission="['college:list']"
         icon="Bottom"
         :disabled="disabled.export"
         type="warning"
@@ -75,15 +67,9 @@
         {{ moment(row.createTime).format('YYYY-MM-DD HH:mm:ss') }}
       </template>
     </el-table-column>
-    <el-table-column
-      v-permission="['college:update', 'college:del']"
-      label="操作"
-      align="center"
-      width="200"
-    >
+    <el-table-column label="操作" align="center" width="200">
       <template #default="scope">
         <el-button
-          v-permission="['college:update']"
           icon="EditPen"
           type="primary"
           @click="setDialog('update', scope.row)"
@@ -93,11 +79,7 @@
           @confirm="handleDelete(scope.row)"
         >
           <template #reference>
-            <el-button
-              v-permission="['college:del']"
-              type="danger"
-              icon="Delete"
-            />
+            <el-button type="danger" icon="Delete" />
           </template>
         </el-popconfirm>
       </template>
@@ -106,7 +88,6 @@
 
   <!--分页-->
   <Pagination
-    v-permission="['college:list']"
     :current-page="query.currentPage"
     :page-size="query.pageSize"
     :total="total"
@@ -117,7 +98,6 @@
   <!--对话框-->
   <el-dialog
     v-model="dialog.show"
-    v-permission="['college:add', 'college:update']"
     :title="dialog.title"
     width="40%"
     :close-on-click-modal="false"
@@ -314,6 +294,7 @@ const dialog = reactive({
 const setDialog = async (operate: string, row?: College) => {
   if (operate === 'insert') {
     dialog.title = '新增学院'
+    multipleSelection.value = []
   }
   if (operate === 'update') {
     if (row) {

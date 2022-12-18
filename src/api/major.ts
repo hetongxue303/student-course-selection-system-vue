@@ -19,7 +19,6 @@ export const getMajorPage = (params: any) => {
 }
 
 export const addMajor = (data: Major) => {
-  if (data.remark?.length === 0) data.remark = '空'
   return axios({
     method: 'POST',
     url: `${baseApi}/major/insert`,
@@ -27,7 +26,6 @@ export const addMajor = (data: Major) => {
   })
 }
 export const updateMajor = (data: Major) => {
-  if (data.remark?.length === 0) data.remark = '空'
   return axios({
     method: 'PUT',
     url: `${baseApi}/major/update`,

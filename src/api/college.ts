@@ -19,7 +19,6 @@ export const getCollegePage = (params: any) => {
 }
 
 export const addCollege = (data: College) => {
-  if (data.remark?.length === 0) data.remark = '空'
   return axios({
     method: 'POST',
     url: `${baseApi}/college/insert`,
@@ -27,7 +26,6 @@ export const addCollege = (data: College) => {
   })
 }
 export const updateCollege = (data: College) => {
-  if (data.remark?.length === 0) data.remark = '空'
   return axios({
     method: 'PUT',
     url: `${baseApi}/college/update`,

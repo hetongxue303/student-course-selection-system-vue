@@ -38,30 +38,12 @@
     <el-table-column type="selection" width="50" align="center" />
     <el-table-column label="学生名字" prop="readName" width="auto" />
     <el-table-column label="课程名称" prop="courseName" width="auto" />
-    <el-table-column label="状态" align="center" width="auto">
-      <template #default="{ row }">
-        <el-tag v-if="row.status === 0" type="warning" disable-transitions>
-          未处理
-        </el-tag>
-        <el-tag v-if="row.status === 1" type="success" disable-transitions>
-          已同意
-        </el-tag>
-        <el-tag v-if="row.status === 2" type="danger" disable-transitions>
-          已拒绝
-        </el-tag>
-      </template>
-    </el-table-column>
-    <el-table-column label="创建时间" align="center" width="180">
+    <el-table-column label="申请时间" align="center" width="180">
       <template #default="{ row }">
         {{ moment(row.createTime).format('YYYY-MM-DD HH:mm:ss') }}
       </template>
     </el-table-column>
-    <el-table-column
-      v-role="['admin', 'teacher']"
-      label="操作"
-      align="center"
-      width="300"
-    >
+    <el-table-column label="操作" align="center" width="300">
       <template #default="{ row }">
         <el-button
           type="success"
@@ -99,7 +81,7 @@ import { cloneDeep } from 'lodash'
 import { Choice } from '../../types/entity'
 import { QueryChoice } from '../../types/query'
 import { getChoicePage, updateChoice } from '../../api/choice'
-import { ElMessage, ElTable } from 'element-plus'
+import { ElTable } from 'element-plus'
 
 // 初始化相关
 const tableData = ref<Choice[]>([])
@@ -126,16 +108,11 @@ const handleSizeChange = (pageSize: number) => {
 }
 // 处理搜索
 const handleSearch = () => {
-  console.log(query)
-  // if (!query.username || !query.courseName || query.status === undefined) {
-  //   ElMessage.info('请输入搜索内容...')
-  //   return
-  // }
   getChoiceListPage()
 }
 // 重置搜索
 const resetSearch = () => {
-  query.username = ''
+  query.realName = ''
   query.courseName = ''
   query.status = undefined
   getChoiceListPage()

@@ -17,16 +17,10 @@
       </el-button>
     </el-row>
     <div class="operate-box">
-      <el-button
-        v-role="['admin', 'teacher']"
-        icon="Plus"
-        type="primary"
-        @click="setDialog('insert')"
-      >
+      <el-button icon="Plus" type="primary" @click="setDialog('insert')">
         新增
       </el-button>
       <el-button
-        v-role="['admin', 'teacher']"
         icon="EditPen"
         :disabled="disabled.edit"
         type="success"
@@ -35,7 +29,6 @@
         修改
       </el-button>
       <el-button
-        v-role="['admin', 'teacher']"
         icon="Delete"
         :disabled="disabled.delete"
         type="danger"
@@ -44,7 +37,6 @@
         删除
       </el-button>
       <el-button
-        v-permission="['course:list']"
         icon="Bottom"
         :disabled="disabled.export"
         type="warning"
@@ -78,16 +70,11 @@
     </el-table-column>
     <el-table-column label="操作" align="center" width="300">
       <template #default="{ row }">
-        <el-tag
-          v-if="row.count === row.choice"
-          v-role="['student']"
-          type="warning"
-        >
+        <el-tag v-if="row.count === row.choice" type="warning">
           人数已满
         </el-tag>
         <el-button
           v-else
-          v-role="['student']"
           :type="row.isChoice ? 'info' : 'success'"
           :disabled="row.isChoice"
           @click="handleChoiceCourse(row)"
@@ -95,7 +82,6 @@
           {{ row.isChoice ? '已选' : '选择' }}
         </el-button>
         <el-button
-          v-permission="['course:update']"
           icon="EditPen"
           type="primary"
           @click="setDialog('update', row)"
@@ -105,11 +91,7 @@
           @confirm="handleDelete(row)"
         >
           <template #reference>
-            <el-button
-              v-permission="['course:del']"
-              type="danger"
-              icon="Delete"
-            />
+            <el-button type="danger" icon="Delete" />
           </template>
         </el-popconfirm>
       </template>
@@ -118,7 +100,6 @@
 
   <!--分页-->
   <Pagination
-    v-permission="['course:list']"
     :current-page="query.currentPage"
     :page-size="query.pageSize"
     :total="total"
@@ -129,7 +110,6 @@
   <!--对话框-->
   <el-dialog
     v-model="dialog.show"
-    v-permission="['course:add', 'course:update']"
     :title="dialog.title"
     width="40%"
     :close-on-click-modal="false"
@@ -160,7 +140,7 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row v-role="['admin']" :gutter="20">
+      <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="任课老师" prop="userId">
             <el-select v-model="dialogForm.userId" placeholder="请选择">

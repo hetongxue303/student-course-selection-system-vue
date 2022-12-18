@@ -124,9 +124,7 @@ export interface Course {
 export interface Choice {
   choiceId?: number
   userId?: number
-  username?: string
   courseId?: number
-  courseName?: string
   score?: number
   isQuit?: boolean
   isEnd?: boolean
@@ -134,6 +132,8 @@ export interface Choice {
   createTime?: Date
   updateTime?: Date
   isDelete?: boolean
+  realName?: string
+  courseName?: string
 }
 
 export interface ILogin {

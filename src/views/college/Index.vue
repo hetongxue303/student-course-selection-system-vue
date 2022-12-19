@@ -16,11 +16,17 @@
         重置
       </el-button>
     </el-row>
-    <div class="operate-box">
-      <el-button icon="Plus" type="primary" @click="setDialog('insert')">
+    <div v-role="['admin', 'teacher']" class="operate-box">
+      <el-button
+        v-role="['admin']"
+        icon="Plus"
+        type="primary"
+        @click="setDialog('insert')"
+      >
         新增
       </el-button>
       <el-button
+        v-role="['admin']"
         icon="EditPen"
         :disabled="disabled.edit"
         type="success"
@@ -29,6 +35,7 @@
         修改
       </el-button>
       <el-button
+        v-role="['admin']"
         icon="Delete"
         :disabled="disabled.delete"
         type="danger"
@@ -54,20 +61,20 @@
     width="100%"
     @selection-change="handleSelectionChange"
   >
-    <el-table-column type="selection" width="50" align="center" />
-    <el-table-column prop="collegeName" label="学院名称" width="auto" />
     <el-table-column
-      prop="remark"
-      label="学院描述"
+      v-role="['admin', 'teacher']"
+      type="selection"
+      width="50"
       align="center"
-      width="auto"
     />
+    <el-table-column prop="collegeName" label="学院名称" width="auto" />
+    <el-table-column prop="remark" label="学院描述" width="auto" />
     <el-table-column label="创建时间" align="center" width="180">
       <template #default="{ row }">
         {{ moment(row.createTime).format('YYYY-MM-DD HH:mm:ss') }}
       </template>
     </el-table-column>
-    <el-table-column label="操作" align="center" width="200">
+    <el-table-column v-role="['admin']" label="操作" align="center" width="200">
       <template #default="scope">
         <el-button
           icon="EditPen"

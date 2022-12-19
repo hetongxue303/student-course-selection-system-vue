@@ -144,8 +144,8 @@ const loginHandler = async (formEl: FormInstance | undefined) => {
         cookie.remove('username')
         cookie.remove('password')
         cookie.remove('rememberMe')
-        cookie.set('username', loginForm.username.trim(), { expires })
-        cookie.set('password', encrypt(loginForm.password.trim()), { expires })
+        cookie.set('username', loginForm.username, { expires })
+        cookie.set('password', encrypt(loginForm.password), { expires })
         cookie.set('rememberMe', loginForm.rememberMe, { expires })
       } else {
         cookie.remove('username')
@@ -153,9 +153,9 @@ const loginHandler = async (formEl: FormInstance | undefined) => {
         cookie.remove('rememberMe')
       }
       const { data, status } = await login({
-        username: loginForm.username.trim(),
-        password: encryptMD5(loginForm.password.trim()),
-        code: loginForm.code.trim(),
+        username: loginForm.username,
+        password: encryptMD5(loginForm.password),
+        code: loginForm.code,
         rememberMe: loginForm.rememberMe
       })
       if (data.code === 200 && status === 200) {

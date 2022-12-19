@@ -16,7 +16,7 @@
         重置
       </el-button>
     </el-row>
-    <div class="operate-box">
+    <div v-role="['admin', 'teacher']" class="operate-box">
       <el-button icon="Plus" type="primary" @click="setDialog('insert')">
         新增
       </el-button>
@@ -54,20 +54,25 @@
     width="100%"
     @selection-change="handleSelectionChange"
   >
-    <el-table-column type="selection" width="50" align="center" />
-    <el-table-column prop="majorName" label="专业名称" width="auto" />
     <el-table-column
-      prop="remark"
-      label="专业描述"
+      v-role="['admin', 'teacher']"
+      type="selection"
+      width="50"
       align="center"
-      width="auto"
     />
+    <el-table-column prop="majorName" label="专业名称" width="auto" />
+    <el-table-column prop="remark" label="专业描述" width="auto" />
     <el-table-column label="创建时间" align="center" width="180">
       <template #default="{ row }">
         {{ moment(row.createTime).format('YYYY-MM-DD HH:mm:ss') }}
       </template>
     </el-table-column>
-    <el-table-column label="操作" align="center" width="200">
+    <el-table-column
+      v-role="['admin', 'teacher']"
+      label="操作"
+      align="center"
+      width="200"
+    >
       <template #default="scope">
         <el-button
           icon="EditPen"

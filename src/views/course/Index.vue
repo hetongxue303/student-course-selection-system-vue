@@ -151,17 +151,22 @@
       </el-row>
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-form-item label="课程人数" prop="count">
-            <el-input-number
-              v-model="dialogForm.count"
-              controls-position="right"
-              :min="0"
-              style="width: 100%"
-            />
+          <el-form-item label="课程人数">
+            <template #default="{ row }">
+              <el-input-number
+                v-model="dialogForm.count"
+                controls-position="right"
+                :min="10"
+                :max="200"
+                style="width: 100%"
+              >
+                {{ row.count }}
+              </el-input-number>
+            </template>
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row :gutter="20">
+      <el-row v-role="['admin']" :gutter="20">
         <el-col :span="12">
           <el-form-item label="任课老师" prop="userId">
             <el-select v-model="dialogForm.userId" placeholder="请选择">
@@ -370,7 +375,7 @@ const dialog = reactive({
   title: '',
   operate: ''
 })
-const dialogForm = ref<Course>({ count: 20 })
+const dialogForm = ref<Course>({ count: 10 })
 const teachers = ref<User[]>([])
 // 下拉框数据
 const getSelectTeacherList = (type: number) => {
@@ -392,8 +397,8 @@ const setDialog = async (operate: string, row?: Course) => {
     }
     dialog.title = '编辑课程'
   }
-  dialog.show = true
   dialog.operate = operate
+  dialog.show = true
   getSelectTeacherList(2)
 }
 // 处理dialog操作
@@ -412,6 +417,11 @@ const handleOperate = async (formEl: FormInstance | undefined) => {
         ElNotification.error('添加失败,请重试！')
       }
       if (dialog.operate === 'update') {
+        const { count, choice } = dialogForm.value
+        if ((count as number) < (choice as number)) {
+          ElMessage.warning('课程人数应不少于已选人数')
+          return
+        }
         const { data } = await updateCourse(dialogForm.value)
         if (data.code === 200) {
           await getCourseListPage()

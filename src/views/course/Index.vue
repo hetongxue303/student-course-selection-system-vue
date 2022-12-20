@@ -56,6 +56,7 @@
   >
     <el-table-column type="selection" width="50" align="center" />
     <el-table-column prop="courseName" label="课程名称" width="auto" />
+    <el-table-column prop="teacherName" label="任课教师" width="auto" />
     <el-table-column label="已选" width="auto" align="center">
       <template #default="{ row }">
         <el-tag type="success">{{ row.choice }}人</el-tag>

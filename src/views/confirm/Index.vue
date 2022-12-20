@@ -4,16 +4,16 @@
     <el-row :gutter="20" class="search-box">
       <el-col :span="4">
         <el-input
-          v-model="query.username"
+          v-model="query.realName"
           type="text"
-          placeholder="学生名..."
+          placeholder="学生姓名..."
         />
       </el-col>
       <el-col :span="4">
         <el-input
           v-model="query.courseName"
           type="text"
-          placeholder="课程名..."
+          placeholder="课程名称..."
         />
       </el-col>
       <el-col :span="3">
@@ -36,29 +36,40 @@
   <!--表格-->
   <el-table :data="tableData" width="100%">
     <el-table-column type="selection" width="50" align="center" />
-    <el-table-column label="学生名字" prop="readName" width="auto" />
+    <el-table-column label="学生名字" prop="realName" width="auto" />
     <el-table-column label="课程名称" prop="courseName" width="auto" />
     <el-table-column label="申请时间" align="center" width="180">
       <template #default="{ row }">
         {{ moment(row.createTime).format('YYYY-MM-DD HH:mm:ss') }}
       </template>
     </el-table-column>
-    <el-table-column label="操作" align="center" width="300">
+    <el-table-column
+      v-role="['admin', 'teacher']"
+      label="操作"
+      align="center"
+      width="300"
+    >
       <template #default="{ row }">
         <el-button
+          v-show="row.status === 0"
           type="success"
-          :disabled="row.status !== 0"
           @click="handleOperate(1, row)"
         >
           同意
         </el-button>
         <el-button
-          :disabled="row.status !== 0"
+          v-show="row.status === 0"
           type="danger"
           @click="handleOperate(2, row)"
         >
           拒绝
         </el-button>
+        <el-tag
+          v-show="row.status !== 0"
+          :type="row.status === 1 ? 'success' : 'danger'"
+        >
+          {{ row.status === 1 ? '已同意' : '已拒绝' }}
+        </el-tag>
       </template>
     </el-table-column>
   </el-table>
@@ -81,7 +92,7 @@ import { cloneDeep } from 'lodash'
 import { Choice } from '../../types/entity'
 import { QueryChoice } from '../../types/query'
 import { getChoicePage, updateChoice } from '../../api/choice'
-import { ElTable } from 'element-plus'
+import { ElNotification, ElTable } from 'element-plus'
 
 // 初始化相关
 const tableData = ref<Choice[]>([])
@@ -107,13 +118,12 @@ const handleSizeChange = (pageSize: number) => {
   getChoiceListPage()
 }
 // 处理搜索
-const handleSearch = () => {
-  getChoiceListPage()
-}
+const handleSearch = () => getChoiceListPage()
+
 // 重置搜索
 const resetSearch = () => {
-  query.realName = ''
-  query.courseName = ''
+  query.realName = undefined
+  query.courseName = undefined
   query.status = undefined
   getChoiceListPage()
 }
@@ -126,10 +136,21 @@ watch(
   { deep: true }
 )
 // 处理表格
-const handleOperate = (operate: number, row: Choice) => {
+const handleOperate = async (operate: number, row: Choice) => {
   row.status = operate
-  updateChoice(row)
-  getChoiceListPage()
+  const { data } = await updateChoice(row)
+  if (data.code === 200) {
+    if (operate === 1) {
+      ElNotification.success('已同意')
+    } else {
+      ElNotification.success('已拒绝')
+    }
+    await getChoiceListPage()
+  } else if (operate === 1) {
+    ElNotification.success('同意失败，请重试！')
+  } else {
+    ElNotification.success('拒绝失败，请重试！')
+  }
 }
 </script>
 

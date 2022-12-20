@@ -119,6 +119,7 @@ export interface Course {
   isDelete?: boolean
   isChoice?: boolean
   isConfirm?: boolean
+  teacherName?: string
 }
 
 export interface Choice {
@@ -134,6 +135,7 @@ export interface Choice {
   isDelete?: boolean
   realName?: string
   courseName?: string
+  teacherName?: string
 }
 
 export interface ILogin {

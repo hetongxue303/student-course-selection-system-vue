@@ -30,10 +30,16 @@
       </el-button>
     </el-row>
     <div class="operate-box">
-      <el-button icon="Plus" type="primary" @click="setDialog('insert')">
+      <el-button
+        v-role="['admin']"
+        icon="Plus"
+        type="primary"
+        @click="setDialog('insert')"
+      >
         新增
       </el-button>
       <el-button
+        v-role="['admin']"
         icon="EditPen"
         :disabled="disabled.edit"
         type="success"
@@ -42,6 +48,7 @@
         修改
       </el-button>
       <el-button
+        v-role="['admin']"
         icon="Delete"
         :disabled="disabled.delete"
         type="danger"
@@ -83,6 +90,7 @@
         <el-switch
           v-model="scope.row.isEnable"
           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+          :disabled="!useUserStore().getIsAdmin"
           @change="handleSwitchChange(scope.row)"
         />
       </template>
@@ -92,7 +100,7 @@
         {{ moment(row.createTime).format('YYYY-MM-DD HH:mm:ss') }}
       </template>
     </el-table-column>
-    <el-table-column label="操作" align="center" width="200">
+    <el-table-column v-role="['admin']" label="操作" align="center" width="200">
       <template #default="scope">
         <el-button
           icon="EditPen"
@@ -263,6 +271,7 @@ import {
   updateUser
 } from '../../../api/user'
 import { getRoleAll } from '../../../api/role'
+import { useUserStore } from '../../../store/modules/user.js'
 
 // 初始化相关
 const tableData = ref<User[]>([])

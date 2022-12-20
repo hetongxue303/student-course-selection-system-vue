@@ -21,6 +21,7 @@
   <!--表格-->
   <el-table :data="tableData" width="100%">
     <el-table-column prop="realName" label="学生姓名" width="auto" />
+    <el-table-column prop="teacherName" label="任课教师" width="auto" />
     <el-table-column prop="courseName" label="课程名称" width="auto" />
     <el-table-column label="状态" width="auto">
       <template #default="{ row }">

@@ -36,6 +36,15 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@views/dashboard/Index.vue')
       },
       {
+        name: 'center',
+        path: '/user/center',
+        meta: {
+          title: '个人中心',
+          cache: false
+        },
+        component: () => import('@views/center/Index.vue')
+      },
+      {
         name: '401',
         path: '/401',
         meta: {

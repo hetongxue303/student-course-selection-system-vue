@@ -11,13 +11,6 @@ export const getUserByType = (type: number) => {
   })
 }
 
-export const getUserAll = () => {
-  return axios({
-    method: 'GET',
-    url: `${baseApi}/user/get/all`
-  })
-}
-
 export const getUserPage = (params: any) => {
   return axios({
     method: 'GET',
@@ -57,5 +50,13 @@ export const delBatchUser = (data: number[]) => {
     method: 'DELETE',
     url: `${baseApi}/user/delete/batch`,
     data
+  })
+}
+
+export const getUserCenter = (username: string) => {
+  return axios({
+    method: 'GET',
+    url: `${baseApi}/user/center`,
+    params: { username }
   })
 }

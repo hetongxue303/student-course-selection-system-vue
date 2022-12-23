@@ -17,7 +17,7 @@
           <span>布局设置</span>
         </el-dropdown-item>
         <el-dropdown-item>
-          <span>个人中心</span>
+          <router-link to="/user/center"> 个人中心</router-link>
         </el-dropdown-item>
         <el-dropdown-item divided @click="handlerLogout">
           <span>退出登录</span>

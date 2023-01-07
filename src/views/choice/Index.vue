@@ -6,7 +6,7 @@
         <el-input
           v-model="query.courseName"
           type="text"
-          placeholder="请输入学院名称..."
+          placeholder="课程名称"
         />
       </el-col>
       <el-button icon="RefreshLeft" type="warning" @click="resetSearch">
@@ -44,7 +44,7 @@
       </template>
     </el-table-column>
     <el-table-column prop="remark" label="描述" align="center" width="auto" />
-    <el-table-column label="创建时间" align="center" width="180">
+    <el-table-column label="发布时间" align="center" width="180">
       <template #default="{ row }">
         <span>
           {{ moment(row.createTime).format('YYYY-MM-DD HH:mm:ss') }}
@@ -54,13 +54,17 @@
     <el-table-column label="操作" align="center" width="300">
       <template #default="{ row }">
         <el-button
-          :disabled="row.choice === row.count"
+          :disabled="row.choice === row.count || row.isChoice"
           type="primary"
           @click="handleChoiceCourse(1, row)"
         >
-          选择
+          {{ row.isChoice ? '已选' : '选择' }}
         </el-button>
-        <el-button type="warning" @click="handleChoiceCourse(2, row)">
+        <el-button
+          :disabled="!row.isChoice"
+          type="warning"
+          @click="handleChoiceCourse(2, row)"
+        >
           退选
         </el-button>
       </template>

@@ -6,7 +6,7 @@
         <el-input
           v-model="query.courseName"
           type="text"
-          placeholder="请输入学院名称..."
+          placeholder="课程名称"
         />
       </el-col>
       <el-button icon="RefreshLeft" type="warning" @click="resetSearch">
@@ -32,8 +32,7 @@
     </el-table-column>
     <el-table-column label="操作" align="center" width="300">
       <template #default>
-        <el-button type="primary">查看</el-button>
-        <el-button type="primary">退选</el-button>
+        <el-button type="primary">查看详情</el-button>
       </template>
     </el-table-column>
   </el-table>

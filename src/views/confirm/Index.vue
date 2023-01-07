@@ -2,31 +2,29 @@
   <!--表格工具-->
   <div class="table-tool">
     <el-row :gutter="20" class="search-box">
-      <el-col :span="4">
-        <el-input
-          v-model="query.realName"
-          type="text"
-          placeholder="学生姓名..."
-        />
+      <el-col :span="3">
+        <el-input v-model="query.realName" type="text" placeholder="学生姓名" />
       </el-col>
-      <el-col :span="4">
+      <el-col :span="3">
         <el-input
           v-model="query.courseName"
           type="text"
-          placeholder="课程名称..."
+          placeholder="课程名称"
         />
       </el-col>
       <el-col :span="3">
-        <el-select v-model="query.status" placeholder="状态" clearable>
+        <el-select
+          v-model="query.status"
+          placeholder="状态"
+          clearable
+          @close="query.status = undefined"
+        >
           <el-option label="所有记录" :value="-1" />
           <el-option label="未处理" :value="0" />
-          <el-option label="同意" :value="1" />
-          <el-option label="拒绝" :value="2" />
+          <el-option label="已同意" :value="1" />
+          <el-option label="已拒绝" :value="2" />
         </el-select>
       </el-col>
-      <el-button icon="Search" type="success" @click="handleSearch">
-        搜索
-      </el-button>
       <el-button icon="RefreshLeft" type="warning" @click="resetSearch">
         重置
       </el-button>
@@ -34,7 +32,7 @@
   </div>
 
   <!--表格-->
-  <el-table :data="tableData" width="100%">
+  <el-table v-loading="tableLoading" :data="tableData" width="100%">
     <el-table-column type="selection" width="50" align="center" />
     <el-table-column label="学生名字" prop="realName" width="auto" />
     <el-table-column label="课程名称" prop="courseName" width="auto" />
@@ -66,6 +64,7 @@
         </el-button>
         <el-tag
           v-show="row.status !== 0"
+          disable-transitions
           :type="row.status === 1 ? 'success' : 'danger'"
         >
           {{ row.status === 1 ? '已同意' : '已拒绝' }}
@@ -93,13 +92,19 @@ import { Choice } from '../../types/entity'
 import { QueryChoice } from '../../types/query'
 import { getChoicePage, updateChoice } from '../../api/choice'
 import { ElNotification, ElTable } from 'element-plus'
+import { randomTimeout } from '../../utils/common'
 
 // 初始化相关
 const tableData = ref<Choice[]>([])
+const tableLoading = ref<boolean>(false)
 const getChoiceListPage = async () => {
-  const { data } = await getChoicePage(query)
-  tableData.value = cloneDeep(data.data.records)
-  total.value = JSON.parse(data.data.total)
+  tableLoading.value = true
+  setTimeout(async () => {
+    const { data } = await getChoicePage(query)
+    tableData.value = cloneDeep(data.data.records)
+    total.value = JSON.parse(data.data.total)
+    tableLoading.value = false
+  }, randomTimeout(5, 500))
 }
 onMounted(() => getChoiceListPage())
 // 查询属性
@@ -117,15 +122,12 @@ const handleSizeChange = (pageSize: number) => {
   query.pageSize = pageSize
   getChoiceListPage()
 }
-// 处理搜索
-const handleSearch = () => getChoiceListPage()
 
 // 重置搜索
 const resetSearch = () => {
   query.realName = undefined
   query.courseName = undefined
   query.status = undefined
-  getChoiceListPage()
 }
 // 监听查询属性
 watch(

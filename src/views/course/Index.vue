@@ -2,21 +2,18 @@
   <!--表格工具-->
   <div class="table-tool">
     <el-row :gutter="20" class="search-box">
-      <el-col :span="4">
+      <el-col :span="3">
         <el-input
           v-model="query.courseName"
           type="text"
-          placeholder="请输入学院名称..."
+          placeholder="课程名称"
         />
       </el-col>
-      <el-button icon="Search" type="success" @click="handleSearch">
-        搜索
-      </el-button>
       <el-button icon="RefreshLeft" type="warning" @click="resetSearch">
         重置
       </el-button>
     </el-row>
-    <div v-role="['admin', 'teacher']" class="operate-box">
+    <div class="operate-box">
       <el-button icon="Plus" type="primary" @click="setDialog('insert')">
         新增
       </el-button>
@@ -50,6 +47,7 @@
   <!--表格-->
   <el-table
     ref="multipleTableRef"
+    v-loading="tableLoading"
     :data="tableData"
     width="100%"
     @selection-change="handleSelectionChange"
@@ -59,22 +57,29 @@
     <el-table-column prop="teacherName" label="任课教师" width="auto" />
     <el-table-column label="已选" width="auto" align="center">
       <template #default="{ row }">
-        <el-tag type="success">{{ row.choice }}人</el-tag>
+        <el-tag disable-transitions type="success">{{ row.choice }}人</el-tag>
       </template>
     </el-table-column>
     <el-table-column label="剩余" v width="auto">
       <template #default="{ row }">
-        <el-tag v-if="row.count === row.choice" effect="dark" type="warning"
-          >已满
+        <el-tag
+          v-if="row.count === row.choice"
+          disable-transitions
+          effect="dark"
+          type="warning"
+        >
+          已满
         </el-tag>
-        <el-tag v-else effect="dark" type="success"
-          >{{ row.count - row.choice }}人
+        <el-tag v-else effect="dark" type="success" disable-transitions>
+          {{ row.count - row.choice }}人
         </el-tag>
       </template>
     </el-table-column>
-    <el-table-column label="总共" width="auto" align="center">
+    <el-table-column label="总人数" width="auto" align="center">
       <template #default="{ row }">
-        <el-tag type="info" effect="dark">{{ row.count }}人</el-tag>
+        <el-tag disable-transitions type="info" effect="dark"
+          >{{ row.count }}人
+        </el-tag>
       </template>
     </el-table-column>
     <el-table-column prop="remark" label="描述" align="center" width="auto" />
@@ -85,21 +90,7 @@
     </el-table-column>
     <el-table-column label="操作" align="center" width="300">
       <template #default="{ row }">
-        <el-button v-role="['student']" type="primary">查看</el-button>
         <el-button
-          v-role="['student']"
-          :type="row.isChoice ? 'warning' : 'success'"
-          :disabled="
-            row.isChoice ||
-            useUserStore().getIsAdmin ||
-            row.count === row.choice
-          "
-          @click="handleChoiceCourse(row)"
-        >
-          {{ row.isChoice ? '已选' : '选择' }}
-        </el-button>
-        <el-button
-          v-role="['admin', 'teacher']"
           icon="EditPen"
           type="primary"
           @click="setDialog('update', row)"
@@ -109,11 +100,7 @@
           @confirm="handleDelete(row)"
         >
           <template #reference>
-            <el-button
-              v-role="['admin', 'teacher']"
-              type="danger"
-              icon="Delete"
-            />
+            <el-button type="danger" icon="Delete" />
           </template>
         </el-popconfirm>
       </template>
@@ -133,37 +120,31 @@
   <el-dialog
     v-model="dialog.show"
     :title="dialog.title"
-    width="40%"
+    width="25%"
     :close-on-click-modal="false"
   >
     <el-form
       ref="ruleFormRef"
       :model="dialogForm"
       :rules="rules"
-      status-icon
       label-width="80px"
     >
       <el-row :gutter="20">
-        <el-col :span="12">
+        <el-col :span="24">
           <el-form-item label="课程名称" prop="courseName">
             <el-input v-model="dialogForm.courseName" type="text" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="20">
-        <el-col :span="12">
+        <el-col :span="24">
           <el-form-item label="课程人数">
-            <template #default="{ row }">
-              <el-input-number
-                v-model="dialogForm.count"
-                controls-position="right"
-                :min="10"
-                :max="200"
-                style="width: 100%"
-              >
-                {{ row.count }}
-              </el-input-number>
-            </template>
+            <el-input
+              v-model="dialogForm.count"
+              style="width: 100%"
+              type="number"
+              placeholder="介于10~200之间"
+            />
           </el-form-item>
         </el-col>
       </el-row>
@@ -187,9 +168,9 @@
             <el-input
               v-model="dialogForm.remark"
               type="textarea"
-              :rows="5"
+              :rows="3"
               resize="none"
-              placeholder="请输入课程描述(默认：空)"
+              placeholder="默认：空"
             />
           </el-form-item>
         </el-col>
@@ -213,7 +194,6 @@ import moment from 'moment'
 import { cloneDeep } from 'lodash'
 import { Course, User } from '../../types/entity'
 import { QueryCourse } from '../../types/query'
-import { studentChoiceCourse } from '../../api/choice'
 import { getUserByType } from '../../api/user'
 import {
   ElMessage,
@@ -230,14 +210,19 @@ import {
   getCoursePage,
   updateCourse
 } from '../../api/course'
-import { useUserStore } from '../../store/modules/user'
+import { randomTimeout } from '../../utils/common'
 
 // 初始化相关
 const tableData = ref<Course[]>([])
+const tableLoading = ref<boolean>(false)
 const getCourseListPage = async () => {
-  const { data } = await getCoursePage(query)
-  tableData.value = cloneDeep(data.data.records)
-  total.value = JSON.parse(data.data.total)
+  tableLoading.value = true
+  setTimeout(async () => {
+    const { data } = await getCoursePage(query)
+    tableData.value = cloneDeep(data.data.records)
+    total.value = JSON.parse(data.data.total)
+    tableLoading.value = false
+  }, randomTimeout(5, 500))
 }
 onMounted(() => getCourseListPage())
 // 表单检验
@@ -272,14 +257,6 @@ const handleCurrentChange = (currentPage: number) => {
 }
 const handleSizeChange = (pageSize: number) => {
   query.pageSize = pageSize
-}
-// 处理搜索
-const handleSearch = () => {
-  if (!query.courseName) {
-    ElMessage.info('请输入搜索内容...')
-    return
-  }
-  getCourseListPage()
 }
 // 重置搜索
 const resetSearch = () => (query.courseName = undefined)
@@ -338,24 +315,6 @@ const handleBatchDelete = async () => {
     ElNotification.error('删除失败,请重试！')
   })
 }
-// 处理选课
-const handleChoiceCourse = async (row: Course) => {
-  ElMessageBox.confirm(`确认选择 ${row.courseName} 课程吗?`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(async () => {
-    const { data } = await studentChoiceCourse(1, row.courseId as number)
-    switch (data.code) {
-      case 200:
-        await getCourseListPage()
-        ElNotification.success('选课成功')
-        break
-      default:
-        ElNotification.error('选课失败,请重试！')
-    }
-  })
-}
 // 处理导出
 const handleExport = () => {
   ElMessage.info('待开发...')
@@ -407,6 +366,13 @@ const handleOperate = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate(async (valid) => {
     if (valid) {
+      if (
+        (dialogForm.value.count as number) < 10 ||
+        (dialogForm.value.count as number) > 200
+      ) {
+        ElMessage.warning('课程人数介于10~200之间')
+        return
+      }
       if (dialog.operate === 'insert') {
         const { data } = await addCourse(dialogForm.value)
         if (data.code === 200) {
@@ -439,7 +405,7 @@ const handleOperate = async (formEl: FormInstance | undefined) => {
 watch(
   () => dialog,
   (value) => {
-    if (!value.show) ruleFormRef.value?.resetFields()
+    if (!value.show) dialogForm.value = { count: 10 }
   },
   { deep: true }
 )
@@ -456,5 +422,14 @@ watch(
   .operate-box {
     margin-bottom: 15px;
   }
+}
+
+:deep(input::-webkit-outer-spin-button),
+:deep(input::-webkit-inner-spin-button) {
+  -webkit-appearance: none !important;
+}
+
+:deep(input[type='number']) {
+  -moz-appearance: textfield !important;
 }
 </style>

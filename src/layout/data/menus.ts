@@ -5,17 +5,12 @@ export const menus: Array<any> = [
     path: '/dashboard'
   },
   {
-    name: '学院管理',
-    icon: 'college',
-    path: '/college'
+    name: '我的课程',
+    icon: 'course',
+    path: '/my-course'
   },
   {
-    name: '专业管理',
-    icon: 'major',
-    path: '/major'
-  },
-  {
-    name: '课程管理',
+    name: '课程列表',
     icon: 'course',
     path: '/course'
   },
@@ -26,8 +21,25 @@ export const menus: Array<any> = [
   },
   {
     name: '申请列表',
-    icon: 'confirm',
+    icon: 'user',
     path: '/confirm'
+  },
+  {
+    name: '教务管理',
+    icon: 'user',
+    path: '/educational',
+    children: [
+      {
+        name: '学院列表',
+        icon: 'college',
+        path: '/educational/college'
+      },
+      {
+        name: '专业列表',
+        icon: 'major',
+        path: '/educational/major'
+      }
+    ]
   },
   {
     name: '系统管理',

@@ -4,6 +4,7 @@ import { getToken, removeToken, removeTokenTime } from '../../utils/auth'
 import { local, session } from '../../utils/storage'
 import { usePermissionStore } from './permission'
 import { mockData } from '../../router/mock'
+import { filterMenu } from '../../filter/permission'
 
 export const useUserStore = defineStore('user', {
   state: (): UserStore => {
@@ -25,8 +26,16 @@ export const useUserStore = defineStore('user', {
   actions: {
     setUserInfo(data: any) {
       this.authorization = data.data.token
-      const { roles, username, avatar, isAdmin, menus, routers, permissions } =
-        data.data.user
+      const {
+        roles,
+        menu,
+        username,
+        avatar,
+        isAdmin,
+        menus,
+        routers,
+        permissions
+      } = data.data.user
       if (roles && roles.length > 0) {
         this.roles = roles
         this.username = username
@@ -36,6 +45,7 @@ export const useUserStore = defineStore('user', {
         this.roles = []
       }
       const permissionStore = usePermissionStore()
+      permissionStore.menu.push(...filterMenu(menu, 0))
       permissionStore.menus = menus
       permissionStore.routers = routers
       permissionStore.permissions = permissions

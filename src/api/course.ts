@@ -17,6 +17,13 @@ export const getCoursePage = (params: any) => {
     params
   })
 }
+export const getMyCoursePage = (params: any) => {
+  return axios({
+    method: 'GET',
+    url: `${baseApi}/course/get/my/page`,
+    params
+  })
+}
 
 export const addCourse = (data: Course) => {
   if (data.remark?.length === 0) data.remark = '空'

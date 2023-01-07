@@ -16,10 +16,18 @@ export const usePermissionStore = defineStore('permission', {
       routers: [],
       loadMenu: false,
       loadRouter: false,
-      permissions: []
+      permissions: [],
+      menu: [
+        {
+          name: '首页',
+          icon: 'index',
+          path: '/dashboard'
+        }
+      ]
     }
   },
   getters: {
+    getMenu: (state) => state.menu,
     getMenus: (state) => state.menus,
     getLoadMenu: (state) => state.loadMenu,
     getRouters: (state) => state.routers,

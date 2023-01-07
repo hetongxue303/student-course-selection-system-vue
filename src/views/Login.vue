@@ -16,7 +16,7 @@
           <el-form-item prop="username">
             <el-input
               v-model="loginForm.username"
-              placeholder="账号"
+              placeholder="账号 "
               prefix-icon="user"
             />
           </el-form-item>

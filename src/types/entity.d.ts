@@ -125,7 +125,9 @@ export interface Course {
 export interface Choice {
   choiceId?: number
   userId?: number
+  user?: User
   courseId?: number
+  course?: Course
   score?: number
   isQuit?: boolean
   isEnd?: boolean

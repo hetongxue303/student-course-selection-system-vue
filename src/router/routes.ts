@@ -36,15 +36,6 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@views/dashboard/Index.vue')
       },
       {
-        name: 'center',
-        path: '/user/center',
-        meta: {
-          title: '个人中心',
-          cache: false
-        },
-        component: () => import('@views/center/Index.vue')
-      },
-      {
         name: '401',
         path: '/401',
         meta: {
@@ -71,28 +62,19 @@ const routes: RouteRecordRaw[] = [
     meta: { cache: false },
     children: [
       {
-        name: 'college',
-        path: '/college',
+        name: 'my-course',
+        path: '/my-course',
         meta: {
-          title: '学院管理',
+          title: '我的课程',
           cache: false
         },
-        component: () => import('@views/college/Index.vue')
-      },
-      {
-        name: 'major',
-        path: '/major',
-        meta: {
-          title: '专业管理',
-          cache: false
-        },
-        component: () => import('@views/major/Index.vue')
+        component: () => import('@views/my-course/Index.vue')
       },
       {
         name: 'course',
         path: '/course',
         meta: {
-          title: '课程管理',
+          title: '课程列表',
           cache: false
         },
         component: () => import('@views/course/Index.vue')
@@ -101,7 +83,7 @@ const routes: RouteRecordRaw[] = [
         name: 'choice',
         path: '/choice',
         meta: {
-          title: '选课记录',
+          title: '选课列表',
           cache: false
         },
         component: () => import('@views/choice/Index.vue')
@@ -123,6 +105,40 @@ const routes: RouteRecordRaw[] = [
           cache: false
         },
         component: () => import('@views/about/Index.vue')
+      },
+      {
+        name: 'center',
+        path: '/user/center',
+        meta: {
+          title: '个人中心',
+          cache: false
+        },
+        component: () => import('@views/center/Index.vue')
+      }
+    ]
+  },
+  {
+    path: '/educational',
+    component: Layout,
+    meta: { cache: false },
+    children: [
+      {
+        name: 'college',
+        path: '/educational/college',
+        meta: {
+          title: '学院管理',
+          cache: false
+        },
+        component: () => import('@views/college/Index.vue')
+      },
+      {
+        name: 'major',
+        path: '/educational/major',
+        meta: {
+          title: '专业管理',
+          cache: false
+        },
+        component: () => import('@views/major/Index.vue')
       }
     ]
   },

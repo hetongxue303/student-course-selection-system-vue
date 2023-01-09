@@ -1,5 +1,4 @@
 import { DirectiveBinding, ObjectDirective } from 'vue'
-import { ElNotification } from 'element-plus'
 import { usePermissionStore } from '../../store/modules/permission'
 import { useUserStore } from '../../store/modules/user'
 

@@ -1,12 +1,23 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
-import type { FormInstance, FormRules, TabsPaneContext } from 'element-plus'
+import type {
+  Action,
+  FormInstance,
+  FormRules,
+  TabsPaneContext
+} from 'element-plus'
 import { User } from '../../types/entity'
-import { getUserCenter, updateUser } from '../../api/user'
+import { getUserCenter, updateUser, updateUserPassword } from '../../api/user'
 import { useUserStore } from '../../store/modules/user'
 import { cloneDeep } from 'lodash'
-import { ElNotification } from 'element-plus'
+import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import moment from 'moment'
+import { encryptMD5 } from '../../hook/encryptMD5'
+import router from '../../router'
+import { useRouter } from 'vue-router'
+import { removeToken, removeTokenTime } from '../../utils/auth'
+import { cookie, local } from '../../utils/storage'
+import { useCookies } from '@vueuse/integrations/useCookies'
 
 const activeName = ref<string>('userinfo')
 const handleClick = (tab: TabsPaneContext, event: Event) => {
@@ -80,6 +91,62 @@ const centerInfo = async () => {
 onMounted(() => centerInfo())
 
 const passwordDialog = ref<boolean>(false)
+const uPwRuleFormRef = ref<FormInstance>()
+const confirmPassword = ref<HTMLInputElement>()
+const uPwRules = reactive<FormRules>({
+  oldPassword: [
+    {
+      required: true,
+      message: '旧密码不能为空',
+      trigger: 'blur'
+    }
+  ],
+  newPassword: [
+    {
+      required: true,
+      message: '新密码不能为空',
+      trigger: 'blur'
+    }
+  ],
+  confirmPassword: [
+    {
+      required: true,
+      message: '确认密码不能为空',
+      trigger: 'blur'
+    }
+  ]
+})
+const updatePasswordData = ref<{
+  oldPassword?: string
+  newPassword?: string
+  confirmPassword?: string
+}>({})
+const handleUpdatePassword = () => {
+  if (
+    encryptMD5(updatePasswordData.value.newPassword as string) !==
+    encryptMD5(updatePasswordData.value.confirmPassword as string)
+  ) {
+    ElMessage.warning('两次密码不一致')
+    confirmPassword.value?.focus()
+    return
+  }
+  updateUserPassword(updatePasswordData.value).then(({ data }) => {
+    if (data.code === 200) {
+      ElNotification.success('密码修改成功')
+      ElMessageBox.alert('密码已修改，请重新登录！', '修改成功', {
+        confirmButtonText: '重新登录',
+        type: 'warning'
+      }).then(() => {
+        passwordDialog.value = false
+        useUserStore().systemLogout()
+        cookie.remove('password')
+        window.location.reload()
+      })
+      return
+    }
+    ElNotification.error(data.message ? data.message : '密码修改失败，请重试！')
+  })
+}
 </script>
 
 <template>
@@ -150,13 +217,6 @@ const passwordDialog = ref<boolean>(false)
                 >
                   修改密码
                 </el-link>
-                <el-link
-                  :underline="false"
-                  style="color: #317ef3; font-size: 13px"
-                  @click="handleOpenDialog"
-                >
-                  修改邮箱
-                </el-link>
               </div>
             </div>
           </li>
@@ -215,12 +275,52 @@ const passwordDialog = ref<boolean>(false)
   </el-row>
 
   <!--修改密码-->
-  <el-dialog v-model="passwordDialog" title="修改密码" width="30%">
-    内容
+  <el-dialog
+    v-model="passwordDialog"
+    title="修改密码"
+    width="25%"
+    :close-on-click-modal="false"
+  >
+    <el-form
+      ref="uPwRuleFormRef"
+      :model="updatePasswordData"
+      label-width="80px"
+      :rules="uPwRules"
+    >
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <el-form-item prop="oldPassword" label="旧密码" style="width: 100%">
+            <el-input v-model="updatePasswordData.oldPassword" show-password />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <el-form-item prop="oldPassword" label="新密码" style="width: 100%">
+            <el-input v-model="updatePasswordData.newPassword" show-password />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <el-form-item
+            ref="confirmPassword"
+            prop="confirmPassword"
+            label="确认密码"
+            style="width: 100%"
+          >
+            <el-input
+              v-model="updatePasswordData.confirmPassword"
+              show-password
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </el-form>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="passwordDialog = false">返回</el-button>
-        <el-button type="primary" @click="passwordDialog = false">
+        <el-button type="primary" @click="handleUpdatePassword">
           确认
         </el-button>
       </span>

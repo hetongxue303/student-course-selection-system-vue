@@ -5,6 +5,8 @@ import { local, session } from '../../utils/storage'
 import { usePermissionStore } from './permission'
 import { mockData } from '../../router/mock'
 import { filterMenu } from '../../filter/permission'
+import { useTabStore } from './tabs'
+import { useAppStore } from './app'
 
 export const useUserStore = defineStore('user', {
   state: (): UserStore => {
@@ -58,11 +60,15 @@ export const useUserStore = defineStore('user', {
       removeTokenTime()
       session.clear()
       local.clear()
+      usePermissionStore().$reset()
+      useTabStore().$reset()
+      useAppStore().$reset()
       this.$reset()
     },
     fedLogOut() {
-      this.authorization = ''
       removeToken()
+      removeTokenTime()
+      this.$reset()
     }
   },
   persist: { key: 'USER' }

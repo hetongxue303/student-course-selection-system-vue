@@ -1,3 +1,8 @@
+import { decrypt, encrypt } from './jsencrypt'
+import { useCookies } from '@vueuse/integrations/useCookies'
+
+const cookies = useCookies()
+
 /**
  * localStorage存储
  * @method get 获取
@@ -5,7 +10,6 @@
  * @method remove 移除
  * @method clear 移除全部
  */
-import { decrypt, encrypt } from './jsencrypt'
 
 export const local = {
   get(key: string): any {
@@ -47,5 +51,32 @@ export const session = {
   },
   clear() {
     sessionStorage.clear()
+  }
+}
+
+/**
+ * cookie存储
+ * @method get 获取
+ * @method set 设置
+ * @method remove 移除
+ */
+export const cookie = {
+  get(key: string): any {
+    return JSON.parse(decrypt(cookies.get(key)))
+  },
+  getAll(): any {
+    return JSON.parse(decrypt(cookies.getAll()))
+  },
+  getNoDecrypt(key: string): any {
+    return JSON.parse(cookies.get(key))
+  },
+  set(key: string, value: any) {
+    cookies.set(key, encrypt(JSON.stringify(value)))
+  },
+  setNoEncrypt(key: string, value: any) {
+    cookies.set(key, JSON.stringify(value))
+  },
+  remove(key: string) {
+    cookies.remove(key)
   }
 }

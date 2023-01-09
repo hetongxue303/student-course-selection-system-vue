@@ -37,6 +37,17 @@ export const updateUser = (data: User) => {
     data
   })
 }
+export const updateUserPassword = (data: any) => {
+  data = {
+    oldPassword: encryptMD5(data.oldPassword),
+    newPassword: encryptMD5(data.newPassword)
+  }
+  return axios({
+    method: 'PUT',
+    url: `${baseApi}/user/update/password`,
+    data
+  })
+}
 
 export const delUser = (id: number) => {
   return axios({

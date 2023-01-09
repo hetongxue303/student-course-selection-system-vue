@@ -54,14 +54,18 @@
     <el-table-column label="操作" align="center" width="300">
       <template #default="{ row }">
         <el-button
-          :disabled="row.choice === row.count || row.isChoice"
+          :disabled="
+            row.choice === row.count ||
+            row.isChoice ||
+            useUserStore().getIsAdmin
+          "
           type="primary"
           @click="handleChoiceCourse(1, row)"
         >
           {{ row.isChoice ? '已选' : '选择' }}
         </el-button>
         <el-button
-          :disabled="!row.isChoice"
+          :disabled="!row.isChoice || useUserStore().getIsAdmin"
           type="warning"
           @click="handleChoiceCourse(2, row)"
         >
@@ -92,6 +96,7 @@ import { QueryCourse } from '../../types/query'
 import { cloneDeep } from 'lodash'
 import { studentChoiceCourse } from '../../api/choice'
 import { randomTimeout } from '../../utils/common'
+import { useUserStore } from '../../store/modules/user'
 
 // 初始化相关
 const tableData = ref<Course[]>([])

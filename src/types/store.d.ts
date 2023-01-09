@@ -6,7 +6,7 @@ export type AppStore = {
 }
 
 export type PermissionStore = {
-  menus: Menu[]
+  menus: any[]
   menu: any[]
   loadMenu: boolean
   routers: RouteRecordRaw[]

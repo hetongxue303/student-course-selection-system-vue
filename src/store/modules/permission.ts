@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { PermissionStore } from '../../types/store'
-import { constMenu } from '../../layout/data/constMenu'
 import { Menu } from 'element-plus'
 import { RouteRecordRaw } from 'vue-router'
 import Layout from '@layout/Index.vue'
@@ -12,7 +11,13 @@ const modules = import.meta.glob('../../views/**/**.vue')
 export const usePermissionStore = defineStore('permission', {
   state: (): PermissionStore => {
     return {
-      menus: constMenu,
+      menus: [
+        {
+          name: '首页',
+          icon: 'index',
+          path: '/dashboard'
+        }
+      ],
       routers: [],
       loadMenu: false,
       loadRouter: false,

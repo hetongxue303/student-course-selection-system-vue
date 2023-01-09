@@ -45,7 +45,10 @@ export const useUserStore = defineStore('user', {
         this.roles = []
       }
       const permissionStore = usePermissionStore()
-      permissionStore.menu.push(...filterMenu(menu, 0))
+      if (!permissionStore.getLoadMenu) {
+        permissionStore.menu.push(...filterMenu(menu, 0))
+        permissionStore.loadMenu = true
+      }
       permissionStore.menus = menus
       permissionStore.routers = routers
       permissionStore.permissions = permissions

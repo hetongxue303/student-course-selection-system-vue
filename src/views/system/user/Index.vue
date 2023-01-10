@@ -2,14 +2,27 @@
   <!--表格工具-->
   <div class="table-tool">
     <el-row :gutter="20" class="search-box">
-      <el-col :span="4">
+      <el-col :span="3">
         <el-input
+          v-if="query.type === undefined || query.type === 1"
           v-model="query.username"
           type="text"
-          placeholder="请输入用户名..."
+          placeholder="账号"
+        />
+        <el-input
+          v-else-if="query.type === 2"
+          v-model="query.username"
+          type="text"
+          placeholder="工号"
+        />
+        <el-input
+          v-else
+          v-model="query.username"
+          type="text"
+          placeholder="学号"
         />
       </el-col>
-      <el-col :span="2">
+      <el-col :span="3">
         <el-select v-model="query.isEnable" placeholder="状态" clearable>
           <el-option label="启用" :value="true" />
           <el-option label="禁用" :value="false" />
@@ -22,24 +35,15 @@
           <el-option label="学生" :value="3" />
         </el-select>
       </el-col>
-      <el-button icon="Search" type="success" @click="handleSearch">
-        搜索
-      </el-button>
       <el-button icon="RefreshLeft" type="warning" @click="resetSearch">
         重置
       </el-button>
     </el-row>
     <div class="operate-box">
-      <el-button
-        v-role="['admin']"
-        icon="Plus"
-        type="primary"
-        @click="setDialog('insert')"
-      >
+      <el-button icon="Plus" type="primary" @click="setDialog('insert')">
         新增
       </el-button>
       <el-button
-        v-role="['admin']"
         icon="EditPen"
         :disabled="disabled.edit"
         type="success"
@@ -48,21 +52,12 @@
         修改
       </el-button>
       <el-button
-        v-role="['admin']"
         icon="Delete"
         :disabled="disabled.delete"
         type="danger"
         @click="handleBatchDelete"
       >
         删除
-      </el-button>
-      <el-button
-        icon="Bottom"
-        :disabled="disabled.export"
-        type="warning"
-        @click="handleExport"
-      >
-        导出
       </el-button>
     </div>
   </div>
@@ -75,12 +70,41 @@
     @selection-change="handleSelectionChange"
   >
     <el-table-column type="selection" width="50" align="center" />
-    <el-table-column prop="username" label="用户名" width="auto" />
-    <el-table-column prop="nickName" label="昵称" width="auto" />
+    <el-table-column
+      v-if="query.type === undefined || query.type === 1"
+      prop="username"
+      label="账号"
+      width="auto"
+    />
+    <el-table-column
+      v-else-if="query.type === 2"
+      prop="username"
+      label="工号"
+      width="auto"
+    />
+    <el-table-column v-else prop="username" label="学号" width="auto" />
+    <el-table-column
+      v-if="query.type === undefined || query.type === 1"
+      prop="realName"
+      label="姓名"
+      width="auto"
+    >
+      <template #default="{ row }">
+        <span v-if="!row.realName">管理员</span>
+      </template>
+    </el-table-column>
+    <el-table-column
+      v-else-if="query.type === 2"
+      prop="realName"
+      label="教师姓名"
+      width="auto"
+    />
+    <el-table-column v-else prop="realName" label="学生姓名" width="auto" />
     <el-table-column label="性别" width="auto">
-      <template #default="scope">
-        <span v-if="scope.row.gender === '1'">男</span>
-        <span v-else>女</span>
+      <template #default="{ row }">
+        <el-tag type="success" effect="dark">
+          {{ row.gender === '1' ? '男' : '女' }}
+        </el-tag>
       </template>
     </el-table-column>
     <el-table-column prop="phone" label="电话" align="center" width="auto" />
@@ -91,25 +115,28 @@
           v-model="scope.row.isEnable"
           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
           :disabled="!useUserStore().getIsAdmin"
+          inline-prompt
+          active-text="正常"
+          inactive-text="禁用"
           @change="handleSwitchChange(scope.row)"
         />
       </template>
     </el-table-column>
-    <el-table-column label="创建时间" align="center" width="180">
+    <el-table-column label="注册时间" align="center" width="180">
       <template #default="{ row }">
         {{ moment(row.createTime).format('YYYY-MM-DD HH:mm:ss') }}
       </template>
     </el-table-column>
-    <el-table-column v-role="['admin']" label="操作" align="center" width="200">
-      <template #default="scope">
+    <el-table-column label="操作" align="center" width="200">
+      <template #default="{ row }">
         <el-button
           icon="EditPen"
           type="primary"
-          @click="setDialog('update', scope.row)"
+          @click="setDialog('update', row)"
         />
         <el-popconfirm
           title="确定删除本条数据吗？"
-          @confirm="handleDelete(scope.row)"
+          @confirm="handleDelete(row)"
         >
           <template #reference>
             <el-button type="danger" icon="Delete" />
@@ -132,7 +159,7 @@
   <el-dialog
     v-model="dialog.show"
     :title="dialog.title"
-    width="50%"
+    width="30%"
     :close-on-click-modal="false"
   >
     <el-form
@@ -144,12 +171,36 @@
     >
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-form-item label="账户名" prop="username">
+          <el-form-item
+            v-if="dialogForm.type === undefined || dialogForm.type === 1"
+            label="账号"
+            prop="username"
+          >
             <el-input
               v-model="dialogForm.username"
               type="text"
               clearable
-              placeholder="账户名"
+              placeholder="账号"
+            />
+          </el-form-item>
+          <el-form-item
+            v-else-if="dialogForm.type === 2"
+            label="工号"
+            prop="username"
+          >
+            <el-input
+              v-model="dialogForm.username"
+              type="text"
+              clearable
+              placeholder="工号"
+            />
+          </el-form-item>
+          <el-form-item v-else label="学号" prop="username">
+            <el-input
+              v-model="dialogForm.username"
+              type="text"
+              clearable
+              placeholder="学号"
             />
           </el-form-item>
         </el-col>
@@ -158,7 +209,7 @@
             <el-input
               v-model="dialogForm.phone"
               :controls="false"
-              type="text"
+              type="number"
               maxlength="11"
               placeholder="电话"
             />
@@ -167,12 +218,26 @@
       </el-row>
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-form-item label="昵称" prop="nickName">
+          <el-form-item
+            v-if="dialogForm.type === undefined || dialogForm.type === 1"
+            label="昵称"
+            prop="nickName"
+          >
             <el-input
               v-model="dialogForm.nickName"
               placeholder="昵称"
               type="text"
               clearable
+              @close="dialogForm.nickName = undefined"
+            />
+          </el-form-item>
+          <el-form-item v-else label="姓名" prop="realName">
+            <el-input
+              v-model="dialogForm.realName"
+              placeholder="姓名"
+              type="text"
+              clearable
+              @close="dialogForm.realName = undefined"
             />
           </el-form-item>
         </el-col>
@@ -191,8 +256,8 @@
         <el-col :span="12">
           <el-form-item label="性别" prop="gender">
             <el-radio-group v-model="dialogForm.gender">
-              <el-radio label="1">男</el-radio>
-              <el-radio label="2">女</el-radio>
+              <el-radio :label="'1'">男</el-radio>
+              <el-radio :label="'2'">女</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-col>
@@ -230,9 +295,9 @@
             <el-input
               v-model="dialogForm.remark"
               type="textarea"
-              :rows="5"
+              :rows="3"
               resize="none"
-              placeholder="用户描述(默认：空)"
+              placeholder="默认：空"
             />
           </el-form-item>
         </el-col>
@@ -256,7 +321,6 @@ import { QueryUser } from '../../../types/query'
 import moment from 'moment'
 import { cloneDeep } from 'lodash'
 import {
-  ElMessage,
   ElMessageBox,
   ElNotification,
   ElTable,
@@ -288,14 +352,13 @@ const rules = reactive<FormRules>({
     {
       required: true,
       type: 'string',
-      message: '用户名不能为空',
+      message: '不能为空',
       trigger: 'blur'
     }
   ],
   phone: [
     {
       required: true,
-      type: 'number',
       message: '电话不能为空',
       trigger: 'blur'
     }
@@ -324,18 +387,11 @@ const handleSizeChange = (pageSize: number) => {
   query.pageSize = pageSize
   getUserListPage()
 }
-// 处理搜索
-const handleSearch = () => {
-  if (!query.username || !query.isEnable || !query.type) {
-    ElMessage.warning('请选择搜索内容...')
-    return
-  }
-  getUserListPage()
-}
 // 重置搜索
 const resetSearch = () => {
-  query.username = ''
-  getUserListPage()
+  query.username = undefined
+  query.type = undefined
+  query.isEnable = undefined
 }
 // 监听查询属性
 watch(
@@ -391,10 +447,6 @@ const handleBatchDelete = async () => {
     ElNotification.error('删除失败,请重试！')
   })
 }
-// 处理导出
-const handleExport = () => {
-  ElMessage.info('待开发...')
-}
 // 监听多选
 watch(
   () => multipleSelection.value,
@@ -405,7 +457,7 @@ watch(
   { immediate: true, deep: true }
 )
 /* 增加 编辑相关 */
-const dialogForm = ref<User>({ gender: 1, isEnable: false })
+const dialogForm = ref<User>({ gender: '1', isEnable: false })
 const dialog = reactive({
   show: false,
   title: '',
@@ -458,10 +510,10 @@ const handleOperate = async (formEl: FormInstance | undefined) => {
 }
 // 监听dialog显示
 watch(
-  () => dialog,
-  (newValue) => {
+  () => dialog.show,
+  (value) => {
     // 关闭表单时重置表单
-    if (!newValue.show) ruleFormRef.value?.resetFields()
+    if (!value) dialogForm.value = { gender: '1', isEnable: false }
   },
   { deep: true }
 )
@@ -502,5 +554,14 @@ const getRoleList = () => {
   .operate-box {
     margin-bottom: 15px;
   }
+}
+
+:deep(input::-webkit-outer-spin-button),
+:deep(input::-webkit-inner-spin-button) {
+  -webkit-appearance: none !important;
+}
+
+:deep(input[type='number']) {
+  -moz-appearance: textfield !important;
 }
 </style>

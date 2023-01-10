@@ -24,10 +24,10 @@ export interface Menu {
   sort?: number
   icon?: string
   perKey?: string
-  isSub?: boolean
-  isDisplay?: boolean
-  isFrame?: boolean
-  isCache?: boolean
+  isSub?: boolean | string
+  isDisplay?: boolean | string
+  isFrame?: boolean | string
+  isCache?: boolean | string
   remark?: string
   createTime?: Date
   updateTime?: Date
@@ -49,7 +49,7 @@ export interface User {
   nickName?: string
   realName?: string
   avatar?: string
-  gender?: number
+  gender?: number | string
   email?: string
   phone?: string
   type?: number

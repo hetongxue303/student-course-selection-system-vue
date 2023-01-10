@@ -87,10 +87,8 @@ axios.interceptors.response.use(
         }
       )
         .then(() => {
-          removeToken()
-          removeTokenTime()
-          const userStore = useUserStore()
-          userStore.$reset()
+          useUserStore().systemLogout()
+          window.location.replace('/login')
           window.location.reload()
         })
         .catch(() => {})

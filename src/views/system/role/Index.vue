@@ -2,16 +2,9 @@
   <!--表格工具-->
   <div class="table-tool">
     <el-row :gutter="20" class="search-box">
-      <el-col :span="4">
-        <el-input
-          v-model="query.roleName"
-          type="text"
-          placeholder="角色名称..."
-        />
+      <el-col :span="3">
+        <el-input v-model="query.roleName" type="text" placeholder="角色名" />
       </el-col>
-      <el-button icon="Search" type="success" @click="handleSearch">
-        搜索
-      </el-button>
       <el-button icon="RefreshLeft" type="warning" @click="resetSearch">
         重置
       </el-button>
@@ -35,14 +28,6 @@
         @click="handleBatchDelete"
       >
         删除
-      </el-button>
-      <el-button
-        icon="Bottom"
-        :disabled="disabled.export"
-        type="warning"
-        @click="handleExport"
-      >
-        导出
       </el-button>
     </div>
   </div>
@@ -83,18 +68,22 @@
             </template>
           </el-table-column>
           <el-table-column label="操作" align="center" width="200">
-            <template #default="scope">
+            <template #default="{ row }">
               <el-button
                 icon="EditPen"
                 type="primary"
-                @click="setDialog('update', scope.row)"
+                @click="setDialog('update', row)"
               />
               <el-popconfirm
                 title="确定删除本条数据吗？"
-                @confirm="handleDelete(scope.row)"
+                @confirm="handleDelete(row)"
               >
                 <template #reference>
-                  <el-button type="danger" icon="Delete" />
+                  <el-button
+                    type="danger"
+                    :disabled="row.roleKey.includes(useUserStore().getRoles)"
+                    icon="Delete"
+                  />
                 </template>
               </el-popconfirm>
             </template>
@@ -152,7 +141,7 @@
   <el-dialog
     v-model="dialog.show"
     :title="dialog.title"
-    width="40%"
+    width="30%"
     destroy-on-close
     :close-on-click-modal="false"
   >
@@ -232,7 +221,7 @@
             <el-input
               v-model="dialogForm.description"
               type="textarea"
-              :rows="5"
+              :rows="3"
               resize="none"
               clearable
               placeholder="描述信息(默认：空)"
@@ -277,6 +266,7 @@ import {
   getRolePage,
   updateRole
 } from '../../../api/role'
+import { useUserStore } from '../../../store/modules/user'
 
 // 初始化相关
 const tableData = ref<Role[]>([])
@@ -337,18 +327,9 @@ const handleSizeChange = (pageSize: number) => {
   query.pageSize = pageSize
   getRoleListPage()
 }
-// 处理搜索
-const handleSearch = () => {
-  if (!query.roleName) {
-    ElMessage.warning('请选择搜索内容...')
-    return
-  }
-  getRoleListPage()
-}
 // 重置搜索
 const resetSearch = () => {
-  query.roleName = ''
-  getRoleListPage()
+  query.roleName = undefined
 }
 // 监听查询属性
 watch(
@@ -384,30 +365,38 @@ const handleDelete = async ({ roleId }: Role) => {
 }
 // 批量删除
 const handleBatchDelete = async () => {
-  ElMessageBox.confirm(
-    `确认删除选中的${multipleSelection.value.length}条数据?`,
-    '提示',
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
+  const flag = ref<boolean>(true)
+  multipleSelection.value.forEach((item) => {
+    const { roleKey } = item
+    if (roleKey) {
+      if (useUserStore().getRoles.includes(roleKey)) {
+        ElMessage.warning('不能删除当前角色')
+        flag.value = false
+      }
     }
-  ).then(async () => {
-    const ids: number[] = multipleSelection.value.map((item) => {
-      return item.roleId as number
-    })
-    const { data } = await delBatchRole(ids)
-    if (data.code === 200) {
-      await getRoleListPage()
-      ElNotification.success('删除成功')
-      return
-    }
-    ElNotification.error('删除失败,请重试！')
   })
-}
-// 处理导出
-const handleExport = () => {
-  ElMessage.info('待开发...')
+  if (flag.value) {
+    ElMessageBox.confirm(
+      `确认删除选中的${multipleSelection.value.length}条角色数据?`,
+      '提示',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    ).then(async () => {
+      const ids: number[] = multipleSelection.value.map((item) => {
+        return item.roleId as number
+      })
+      const { data } = await delBatchRole(ids)
+      if (data.code === 200) {
+        await getRoleListPage()
+        ElNotification.success('删除角色成功')
+        return
+      }
+      ElNotification.error('删除角色失败,请重试！')
+    })
+  }
 }
 // 监听多选
 watch(

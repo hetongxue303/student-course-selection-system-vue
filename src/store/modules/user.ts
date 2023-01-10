@@ -3,7 +3,6 @@ import { UserStore } from '../../types/store'
 import { getToken, removeToken, removeTokenTime } from '../../utils/auth'
 import { local, session } from '../../utils/storage'
 import { usePermissionStore } from './permission'
-import { mockData } from '../../router/mock'
 import { filterMenu } from '../../filter/permission'
 import { useTabStore } from './tabs'
 import { useAppStore } from './app'
@@ -58,11 +57,11 @@ export const useUserStore = defineStore('user', {
     systemLogout() {
       removeToken()
       removeTokenTime()
-      session.clear()
-      local.clear()
       usePermissionStore().$reset()
       useTabStore().$reset()
       useAppStore().$reset()
+      session.clear()
+      local.clear()
       this.$reset()
     },
     fedLogOut() {

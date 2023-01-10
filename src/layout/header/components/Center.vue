@@ -1,7 +1,7 @@
 <template>
   <el-dropdown trigger="click">
     <span class="el-dropdown-link">
-      <div class="components-center">
+      <span class="components-center">
         <el-avatar
           shape="circle"
           :size="35"
@@ -9,7 +9,7 @@
           :src="userStore.getAvatar"
         />
         <span class="center-username">{{ userStore.getUsername }}</span>
-      </div>
+      </span>
     </span>
     <template #dropdown>
       <el-dropdown-menu>
@@ -31,11 +31,8 @@
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '../../../store/modules/user'
 import { logout } from '../../../api/login'
-import { useCookies } from '@vueuse/integrations/useCookies'
-import { settings } from '../../../settings'
 
 const userStore = useUserStore()
-
 const handlerLogout = async () => {
   ElMessageBox.confirm('您确认确认退出系统吗？', '提示', {
     confirmButtonText: '确定',
@@ -43,16 +40,15 @@ const handlerLogout = async () => {
     type: 'warning'
   }).then(async () => {
     const { data } = await logout()
-    const cookies = useCookies()
     switch (data.code) {
       case 200:
-        userStore.systemLogout()
-        cookies.remove(settings.AUTHORIZATION_KEY)
+        await userStore.systemLogout()
         ElMessage.success('注销成功')
         window.location.replace('/login')
+        window.location.reload()
         break
       default:
-        ElMessage.error('注销失败')
+        ElMessage.error('注销失败，请重试！')
     }
   })
 }

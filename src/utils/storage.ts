@@ -1,4 +1,3 @@
-import { decrypt, encrypt } from './jsencrypt'
 import { useCookies } from '@vueuse/integrations/useCookies'
 
 const cookies = useCookies()
@@ -13,10 +12,10 @@ const cookies = useCookies()
 
 export const local = {
   get(key: string): any {
-    return JSON.parse(decrypt(localStorage.getItem(key) as any))
+    return JSON.parse(localStorage.getItem(key) as any)
   },
   set(key: string, value: any) {
-    localStorage.setItem(key, encrypt(JSON.stringify(value)))
+    localStorage.setItem(key, JSON.stringify(value))
   },
   remove(key: string) {
     localStorage.removeItem(key)
@@ -35,15 +34,9 @@ export const local = {
  */
 export const session = {
   get(key: string): any {
-    return JSON.parse(decrypt(sessionStorage.getItem(key) as any))
-  },
-  getNoDecrypt(key: string): any {
     return JSON.parse(sessionStorage.getItem(key) as any)
   },
   set(key: string, value: any) {
-    sessionStorage.setItem(key, encrypt(JSON.stringify(value)))
-  },
-  setNoEncrypt(key: string, value: any) {
     sessionStorage.setItem(key, JSON.stringify(value))
   },
   remove(key: string) {
@@ -57,26 +50,21 @@ export const session = {
 /**
  * cookie存储
  * @method get 获取
+ * @method getAll 获取所有
  * @method set 设置
  * @method remove 移除
  */
 export const cookie = {
   get(key: string): any {
-    return JSON.parse(decrypt(cookies.get(key)))
-  },
-  getAll(): any {
-    return JSON.parse(decrypt(cookies.getAll()))
-  },
-  getNoDecrypt(key: string): any {
     return JSON.parse(cookies.get(key))
   },
-  set(key: string, value: any) {
-    cookies.set(key, encrypt(JSON.stringify(value)))
+  getAll(): any {
+    return JSON.parse(cookies.getAll())
   },
-  setNoEncrypt(key: string, value: any) {
+  set(key: string, value: any) {
     cookies.set(key, JSON.stringify(value))
   },
   remove(key: string) {
-    cookies.remove(key)
+    cookies.remove(JSON.parse(key))
   }
 }

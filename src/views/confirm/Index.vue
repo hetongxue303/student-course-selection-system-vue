@@ -116,11 +116,9 @@ const query: QueryChoice = reactive({
 const total = ref<number>(0)
 const handleCurrentChange = (currentPage: number) => {
   query.currentPage = currentPage
-  getChoiceListPage()
 }
 const handleSizeChange = (pageSize: number) => {
   query.pageSize = pageSize
-  getChoiceListPage()
 }
 
 // 重置搜索

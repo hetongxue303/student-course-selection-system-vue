@@ -16,7 +16,7 @@
       :name="item.path"
       :closable="index !== 0"
       class="tab-pane"
-    ></el-tab-pane>
+    />
   </el-tabs>
 
   <ul
@@ -162,33 +162,11 @@ watch(
 
 <style scoped lang="scss">
 .tabs {
-  height: 30px;
-  line-height: 30px;
-  width: 100%;
-}
-
-:deep(.el-tabs__item) {
-  position: relative;
-  padding: 0 8px;
   height: 26px;
-  font-size: 12px;
-  display: inline-block;
   line-height: 26px;
-  color: #495060;
-  margin-top: 1.5px;
-  margin-left: 4px;
-  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB,
-    Microsoft YaHei, Arial, sans-serif;
-  text-rendering: optimizeLegibility;
-}
-
-:deep(.is-active) {
-  background-color: #42b983;
-  border-color: #42b983;
-}
-
-:deep(.el-tabs__item.is-active) {
-  color: white;
+  width: 100%;
+  position: relative;
+  margin-bottom: 15px;
 }
 
 .contextMenu {

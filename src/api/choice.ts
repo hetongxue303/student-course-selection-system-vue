@@ -1,5 +1,6 @@
 import axios from '../utils/request'
 import { Choice } from '../types/entity'
+import { cloneDeep } from 'lodash'
 
 const baseApi = import.meta.env.VITE_BASIC_API
 
@@ -10,7 +11,11 @@ export const getChoiceAll = () => {
   })
 }
 
-export const getChoicePage = (params: Choice) => {
+export const getChoicePage = (data: Choice) => {
+  const params = cloneDeep(data)
+  if (params.status === undefined) {
+    params.status = 0
+  }
   return axios({
     method: 'GET',
     url: `${baseApi}/choice/get/page`,

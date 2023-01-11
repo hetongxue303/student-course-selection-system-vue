@@ -7,8 +7,8 @@
       <el-header>
         <Header />
       </el-header>
+      <Tab />
       <el-main>
-        <!--        <Tab />-->
         <router-view />
       </el-main>
       <el-footer>
@@ -22,7 +22,7 @@
 import Sidebar from '@layout/sidebar/Index.vue'
 import Header from '@layout/header/Index.vue'
 import Footer from '@layout/footer/Index.vue'
-// import Tab from '../components/Tabs/Index.vue'
+import Tab from '../components/Tabs/Index.vue'
 import { useAppStore } from '../store/modules/app'
 
 const appStore = useAppStore()
@@ -51,6 +51,7 @@ const appStore = useAppStore()
 :deep(.el-main) {
   height: 100%;
   width: 100%;
+  padding-top: 0;
 }
 
 :deep(.el-footer) {

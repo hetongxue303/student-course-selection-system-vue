@@ -2,16 +2,13 @@
   <!--表格工具-->
   <div class="table-tool">
     <el-row :gutter="20" class="search-box">
-      <el-col :span="4">
+      <el-col :span="3">
         <el-input
           v-model="query.collegeName"
           type="text"
-          placeholder="学院名称..."
+          placeholder="学院名称"
         />
       </el-col>
-      <el-button icon="Search" type="success" @click="handleSearch">
-        搜索
-      </el-button>
       <el-button icon="RefreshLeft" type="warning" @click="resetSearch">
         重置
       </el-button>
@@ -43,20 +40,13 @@
       >
         删除
       </el-button>
-      <el-button
-        icon="Bottom"
-        :disabled="disabled.export"
-        type="warning"
-        @click="handleExport"
-      >
-        导出
-      </el-button>
     </div>
   </div>
 
   <!--表格-->
   <el-table
     ref="multipleTableRef"
+    v-loading="tableLoading"
     :data="tableData"
     width="100%"
     @selection-change="handleSelectionChange"
@@ -133,9 +123,9 @@
             <el-input
               v-model="dialogForm.remark"
               type="textarea"
-              :rows="5"
+              :rows="3"
               resize="none"
-              placeholder="学院描述(默认：空)"
+              placeholder="默认：空"
             />
           </el-form-item>
         </el-col>
@@ -174,13 +164,19 @@ import {
   getCollegePage,
   updateCollege
 } from '../../api/college'
+import { randomTimeout } from '../../utils/common'
 
 // 初始化相关
 const tableData = ref<College[]>([])
+const tableLoading = ref<boolean>(false)
 const getCollegeListPage = async () => {
-  const { data } = await getCollegePage(query)
-  tableData.value = cloneDeep(data.data.records)
-  total.value = JSON.parse(data.data.total)
+  tableLoading.value = true
+  setTimeout(async () => {
+    const { data } = await getCollegePage(query)
+    tableData.value = cloneDeep(data.data.records)
+    total.value = JSON.parse(data.data.total)
+    tableLoading.value = false
+  }, randomTimeout(5, 500))
 }
 onMounted(() => getCollegeListPage())
 // 表单检验
@@ -204,24 +200,13 @@ const query: QueryCollege = reactive({
 const total = ref<number>(0)
 const handleCurrentChange = (currentPage: number) => {
   query.currentPage = currentPage
-  getCollegeListPage()
 }
 const handleSizeChange = (pageSize: number) => {
   query.pageSize = pageSize
-  getCollegeListPage()
-}
-// 处理搜索
-const handleSearch = () => {
-  if (!query.collegeName) {
-    ElMessage.info('请输入搜索内容...')
-    return
-  }
-  getCollegeListPage()
 }
 // 重置搜索
 const resetSearch = () => {
-  query.collegeName = ''
-  getCollegeListPage()
+  query.collegeName = undefined
 }
 // 监听查询属性
 watch(
@@ -277,10 +262,7 @@ const handleBatchDelete = async () => {
     ElNotification.error('删除失败,请重试！')
   })
 }
-// 处理导出
-const handleExport = () => {
-  ElMessage.info('待开发...')
-}
+
 // 监听多选
 watch(
   () => multipleSelection.value,
@@ -344,10 +326,9 @@ const handleOperate = async (formEl: FormInstance | undefined) => {
 }
 // 监听dialog显示
 watch(
-  () => dialog,
-  (newValue) => {
-    // 关闭表单时重置表单
-    if (!newValue.show) ruleFormRef.value?.resetFields()
+  () => dialog.show,
+  (value) => {
+    if (!value) dialogForm.value = {}
   },
   { deep: true }
 )

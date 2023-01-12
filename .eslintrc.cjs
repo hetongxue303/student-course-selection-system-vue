@@ -62,6 +62,7 @@ module.exports = {
     '@typescript-eslint/ban-types': 0,
     '@typescript-eslint/no-explicit-any': 0,
     '@typescript-eslint/no-empty-function': 0,
+    '@typescript-eslint/no-non-null-assertion': 0,
     'no-shadow': 0,
     'no-alert': 0,
     'no-console': 0,

@@ -4,8 +4,8 @@
     class="svg-icon"
     :style="{
       color: color,
-      height: size + 'em',
-      width: size + 'em',
+      height: size + unit,
+      width: size + unit,
       fill: fill,
       'margin-right': mr + 'px',
       'margin-left': ml + 'px'
@@ -25,7 +25,8 @@ const props = defineProps({
   size: { type: Number as PropType<number>, default: 1.2 },
   fill: { type: String as PropType<string>, default: 'currentColor' },
   ml: { type: Number as PropType<number>, default: 0 },
-  mr: { type: Number as PropType<number>, default: 10 }
+  mr: { type: Number as PropType<number>, default: 10 },
+  unit: { type: String as PropType<string>, default: 'em' }
 })
 
 const symbolId = computed(() => `#${props.prefix}-${props.name}`)

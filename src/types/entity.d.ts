@@ -146,3 +146,10 @@ export interface ILogin {
   code: string
   rememberMe: boolean
 }
+
+export interface IndexVo {
+  studentCount?: number
+  teacherCount?: number
+  majorCount?: number
+  courseCount?: number
+}

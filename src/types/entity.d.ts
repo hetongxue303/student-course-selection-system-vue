@@ -153,3 +153,16 @@ export interface IndexVo {
   majorCount?: number
   courseCount?: number
 }
+
+export interface Grade {
+  gradeId?: number
+  gradeName?: string
+  collegeId?: number
+  college?: College
+  majorId?: number
+  major?: Major
+  gradeCount?: number
+  isDelete?: boolean
+  createTime?: Date
+  updateTime?: Date
+}

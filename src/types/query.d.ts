@@ -2,6 +2,7 @@ import {
   Choice,
   College,
   Course,
+  Grade,
   Major,
   MenuTable,
   MenuTree,
@@ -29,4 +30,7 @@ export interface QueryMajor extends Major, Query {}
 export interface QueryCourse extends Course, Query {}
 export interface QueryUser extends User, Query {}
 export interface QueryMenuTree extends MenuTree, Query {}
+
 export interface QueryRole extends Role, Query {}
+
+export interface QueryGrade extends Grade, Query {}

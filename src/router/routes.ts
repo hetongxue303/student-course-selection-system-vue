@@ -123,6 +123,15 @@ const routes: RouteRecordRaw[] = [
     meta: { cache: false },
     children: [
       {
+        name: 'grade',
+        path: '/educational/grade',
+        meta: {
+          title: '班级管理',
+          cache: false
+        },
+        component: () => import('@views/grade/Index.vue')
+      },
+      {
         name: 'college',
         path: '/educational/college',
         meta: {

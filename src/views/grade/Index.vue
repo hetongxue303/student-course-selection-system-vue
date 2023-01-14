@@ -4,12 +4,17 @@
     <el-row :gutter="20" class="search-box">
       <el-col :span="3">
         <el-input
-          v-model="query.courseName"
+          v-model="query.gradeName"
           type="text"
-          placeholder="课程名称"
+          placeholder="班级名称"
         />
       </el-col>
-      <el-button icon="RefreshLeft" type="warning" @click="resetSearch">
+      <el-button
+        icon="RefreshLeft"
+        type="warning"
+        :disabled="query.gradeName === undefined"
+        @click="resetSearch"
+      >
         重置
       </el-button>
     </el-row>
@@ -33,14 +38,6 @@
       >
         删除
       </el-button>
-      <el-button
-        icon="Bottom"
-        :disabled="disabled.export"
-        type="warning"
-        @click="handleExport"
-      >
-        导出
-      </el-button>
     </div>
   </div>
 
@@ -53,46 +50,31 @@
     @selection-change="handleSelectionChange"
   >
     <el-table-column type="selection" width="50" align="center" />
-    <el-table-column prop="courseName" label="课程名称" width="auto" />
-    <el-table-column prop="user.realName" label="任课教师" width="auto" />
-    <el-table-column label="剩余" v width="auto">
+    <el-table-column prop="gradeName" label="班级名称" width="auto" />
+    <el-table-column prop="gradeCount" label="人数" width="auto">
       <template #default="{ row }">
-        <el-tag
-          v-if="row.count === row.choice"
-          disable-transitions
-          effect="dark"
-          type="warning"
-        >
-          已满
-        </el-tag>
-        <el-tag v-else effect="dark" type="info" disable-transitions>
-          {{ row.count - row.choice }}
+        <el-tag type="success" effect="dark" disable-transitions>
+          {{ row.gradeCount }}人
         </el-tag>
       </template>
     </el-table-column>
-    <el-table-column label="人数" width="auto" align="center">
-      <template #default="{ row }">
-        <el-tag disable-transitions type="success" effect="dark">
-          {{ row.choice }}/{{ row.count }}
-        </el-tag>
-      </template>
-    </el-table-column>
-    <el-table-column prop="remark" label="描述" align="center" width="auto" />
+    <el-table-column prop="college.collegeName" label="所属学院" width="auto" />
+    <el-table-column prop="major.majorName" label="所属专业" width="auto" />
     <el-table-column label="创建时间" align="center" width="180">
       <template #default="{ row }">
         {{ moment(row.createTime).format('YYYY-MM-DD HH:mm:ss') }}
       </template>
     </el-table-column>
-    <el-table-column label="操作" align="center" width="300">
-      <template #default="{ row }">
+    <el-table-column label="操作" align="center" width="200">
+      <template #default="scope">
         <el-button
           icon="EditPen"
           type="primary"
-          @click="setDialog('update', row)"
+          @click="setDialog('update', scope.row)"
         />
         <el-popconfirm
           title="确定删除本条数据吗？"
-          @confirm="handleDelete(row)"
+          @confirm="handleDelete(scope.row)"
         >
           <template #reference>
             <el-button type="danger" icon="Delete" />
@@ -115,43 +97,40 @@
   <el-dialog
     v-model="dialog.show"
     :title="dialog.title"
-    width="25%"
+    width="20%"
     :close-on-click-modal="false"
   >
     <el-form
       ref="ruleFormRef"
       :model="dialogForm"
       :rules="rules"
+      status-icon
       label-width="80px"
     >
       <el-row :gutter="20">
         <el-col :span="24">
-          <el-form-item label="课程名称" prop="courseName">
-            <el-input v-model="dialogForm.courseName" type="text" />
+          <el-form-item label="班级名称" prop="gradeName">
+            <el-input
+              v-model="dialogForm.gradeName"
+              type="text"
+              placeholder="班级名称"
+            />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="20">
         <el-col :span="24">
-          <el-form-item label="课程人数">
-            <el-input
-              v-model="dialogForm.count"
+          <el-form-item label="所属学院" prop="collegeId">
+            <el-select
+              v-model="dialogForm.collegeId"
+              placeholder="请选择"
               style="width: 100%"
-              type="number"
-              placeholder="介于10~200之间"
-            />
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row v-role="['admin']" :gutter="20">
-        <el-col :span="12">
-          <el-form-item label="任课老师" prop="userId">
-            <el-select v-model="dialogForm.userId" placeholder="请选择">
+            >
               <el-option
-                v-for="(item, index) in teachers"
+                v-for="(item, index) in colleges"
                 :key="index"
-                :label="item.realName"
-                :value="item.userId"
+                :label="item.collegeName"
+                :value="item.collegeId"
               />
             </el-select>
           </el-form-item>
@@ -159,14 +138,19 @@
       </el-row>
       <el-row :gutter="20">
         <el-col :span="24">
-          <el-form-item label="课程描述" prop="remark">
-            <el-input
-              v-model="dialogForm.remark"
-              type="textarea"
-              :rows="3"
-              resize="none"
-              placeholder="默认：空"
-            />
+          <el-form-item label="所属专业" prop="majorId">
+            <el-select
+              v-model="dialogForm.majorId"
+              placeholder="请选择"
+              style="width: 100%"
+            >
+              <el-option
+                v-for="(item, index) in majors"
+                :key="index"
+                :label="item.majorName"
+                :value="item.majorId"
+              />
+            </el-select>
           </el-form-item>
         </el-col>
       </el-row>
@@ -187,80 +171,86 @@ import Pagination from '../../components/Pagination/Index.vue'
 import { onMounted, reactive, ref, watch } from 'vue'
 import moment from 'moment'
 import { cloneDeep } from 'lodash'
-import { Course, User } from '../../types/entity'
-import { QueryCourse } from '../../types/query'
-import { getUserByType } from '../../api/user'
 import {
-  ElMessage,
   ElMessageBox,
   ElNotification,
   ElTable,
   FormInstance,
   FormRules
 } from 'element-plus'
-import {
-  addCourse,
-  delBatchCourse,
-  delCourse,
-  getCoursePage,
-  updateCourse
-} from '../../api/course'
 import { randomTimeout } from '../../utils/common'
+import { College, Grade, Major } from '../../types/entity'
+import {
+  addGrade,
+  delBatchGrade,
+  delGrade,
+  getGradePage,
+  updateGrade
+} from '../../api/grade'
+import { QueryGrade } from '../../types/query'
+import { getCollegeAll } from '../../api/college'
+import { getMajorAll } from '../../api/major'
 
 // 初始化相关
-const tableData = ref<Course[]>([])
+const tableData = ref<Grade[]>([])
 const tableLoading = ref<boolean>(false)
-const getCourseListPage = async () => {
+const getGradePageList = async () => {
   tableLoading.value = true
   setTimeout(async () => {
-    const { data } = await getCoursePage(query)
+    const { data } = await getGradePage(query)
     tableData.value = cloneDeep(data.data.records)
     total.value = JSON.parse(data.data.total)
     tableLoading.value = false
   }, randomTimeout(5, 500))
 }
-onMounted(() => getCourseListPage())
+onMounted(() => getGradePageList())
 // 表单检验
 const ruleFormRef = ref<FormInstance>()
 const rules = reactive<FormRules>({
-  courseName: [
+  gradeName: [
     {
       required: true,
       type: 'string',
-      message: '课程名称不能为空',
+      message: '班级名称不能为空',
       trigger: 'blur'
     }
   ],
-  count: [
+  collegeId: [
     {
       required: true,
-      type: 'number',
-      message: '课程人数不能为空',
+      message: '请选择学院',
+      trigger: 'blur'
+    }
+  ],
+  majorId: [
+    {
+      required: true,
+      message: '请选择专业',
       trigger: 'blur'
     }
   ]
 })
 // 查询属性
-const query: QueryCourse = reactive({
+const query: QueryGrade = reactive({
   currentPage: 1,
   pageSize: 10
 })
 // 分页相关
 const total = ref<number>(0)
-const handleCurrentChange = (currentPage: number) => {
-  query.currentPage = currentPage
-}
-const handleSizeChange = (pageSize: number) => {
-  query.pageSize = pageSize
-}
-// 重置搜索
-const resetSearch = () => (query.courseName = undefined)
+const handleCurrentChange = (currentPage: number) =>
+  (query.currentPage = currentPage)
 
+const handleSizeChange = (pageSize: number) => (query.pageSize = pageSize)
+
+// 重置搜索
+const resetSearch = () => {
+  query.gradeName = undefined
+}
 // 监听查询属性
 watch(
   () => query,
   async () => {
-    await getCourseListPage()
+    await getGradePageList()
   },
   { deep: true }
 )
@@ -271,16 +261,16 @@ const disabled = reactive({
   export: false
 })
 const multipleTableRef = ref<InstanceType<typeof ElTable>>()
-const multipleSelection = ref<Course[]>([])
-const handleSelectionChange = (colleges: Course[]) => {
-  multipleSelection.value = colleges
+const multipleSelection = ref<Grade[]>([])
+const handleSelectionChange = (grades: Grade[]) => {
+  multipleSelection.value = grades
 }
 // 单个删除
-const handleDelete = async ({ courseId }: Course) => {
-  if (courseId) {
-    const { data } = await delCourse(courseId)
+const handleDelete = async ({ gradeId }: Grade) => {
+  if (gradeId) {
+    const { data } = await delGrade(gradeId)
     if (data.code === 200) {
-      await getCourseListPage()
+      await getGradePageList()
       ElNotification.success('删除成功')
       return
     }
@@ -299,21 +289,18 @@ const handleBatchDelete = async () => {
     }
   ).then(async () => {
     const ids: number[] = multipleSelection.value.map((item) => {
-      return item.courseId as number
+      return item.gradeId as number
     })
-    const { data } = await delBatchCourse(ids)
+    const { data } = await delBatchGrade(ids)
     if (data.code === 200) {
-      await getCourseListPage()
+      await getGradePageList()
       ElNotification.success('删除成功')
       return
     }
     ElNotification.error('删除失败,请重试！')
   })
 }
-// 处理导出
-const handleExport = () => {
-  ElMessage.info('待开发...')
-}
+
 // 监听多选
 watch(
   () => multipleSelection.value,
@@ -323,55 +310,53 @@ watch(
   },
   { immediate: true, deep: true }
 )
-
 /* 增加 编辑相关 */
+const dialogForm = ref<Grade>({})
 const dialog = reactive({
   show: false,
   title: '',
   operate: ''
 })
-const dialogForm = ref<Course>({ count: 10 })
-const teachers = ref<User[]>([])
-// 下拉框数据
-const getSelectTeacherList = (type: number) => {
-  getUserByType(type).then(
-    ({ data }) => (teachers.value = cloneDeep(data.data))
-  )
+const colleges = ref<College[]>([])
+const getColleges = () => {
+  getCollegeAll().then(({ data }) => {
+    if (data.code === 200) colleges.value = cloneDeep(data.data)
+  })
+}
+const majors = ref<Major[]>([])
+const getMajors = () => {
+  getMajorAll().then(({ data }) => {
+    if (data.code === 200) majors.value = cloneDeep(data.data)
+  })
 }
 // 设置dialog
-const setDialog = async (operate: string, row?: Course) => {
+const setDialog = async (operate: string, row?: Grade) => {
   if (operate === 'insert') {
-    dialog.title = '新增课程'
+    dialog.title = '新增学院'
     multipleSelection.value = []
   }
   if (operate === 'update') {
     if (row) {
       dialogForm.value = cloneDeep(row)
     } else {
-      dialogForm.value = cloneDeep(multipleSelection.value[0] as Course)
+      dialogForm.value = cloneDeep(multipleSelection.value[0] as Grade)
     }
-    dialog.title = '编辑课程'
+    dialog.title = '编辑学院'
   }
-  dialog.operate = operate
   dialog.show = true
-  getSelectTeacherList(2)
+  dialog.operate = operate
+  getColleges()
+  getMajors()
 }
 // 处理dialog操作
 const handleOperate = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate(async (valid) => {
     if (valid) {
-      if (
-        (dialogForm.value.count as number) < 10 ||
-        (dialogForm.value.count as number) > 200
-      ) {
-        ElMessage.warning('课程人数介于10~200之间')
-        return
-      }
       if (dialog.operate === 'insert') {
-        const { data } = await addCourse(dialogForm.value)
+        const { data } = await addGrade(dialogForm.value)
         if (data.code === 200) {
-          await getCourseListPage()
+          await getGradePageList()
           dialog.show = false
           ElNotification.success('添加成功')
           return
@@ -379,14 +364,9 @@ const handleOperate = async (formEl: FormInstance | undefined) => {
         ElNotification.error('添加失败,请重试！')
       }
       if (dialog.operate === 'update') {
-        const { count, choice } = dialogForm.value
-        if ((count as number) < (choice as number)) {
-          ElMessage.warning('课程人数应不少于已选人数')
-          return
-        }
-        const { data } = await updateCourse(dialogForm.value)
+        const { data } = await updateGrade(dialogForm.value)
         if (data.code === 200) {
-          await getCourseListPage()
+          await getGradePageList()
           dialog.show = false
           ElNotification.success('更新成功')
           return
@@ -398,9 +378,9 @@ const handleOperate = async (formEl: FormInstance | undefined) => {
 }
 // 监听dialog显示
 watch(
-  () => dialog,
+  () => dialog.show,
   (value) => {
-    if (!value.show) dialogForm.value = { count: 10 }
+    if (!value) dialogForm.value = {}
   },
   { deep: true }
 )
@@ -417,14 +397,5 @@ watch(
   .operate-box {
     margin-bottom: 15px;
   }
-}
-
-:deep(input::-webkit-outer-spin-button),
-:deep(input::-webkit-inner-spin-button) {
-  -webkit-appearance: none !important;
-}
-
-:deep(input[type='number']) {
-  -moz-appearance: textfield !important;
 }
 </style>

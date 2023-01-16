@@ -36,9 +36,9 @@
         </el-tag>
       </template>
     </el-table-column>
-    <el-table-column label="总人数" width="auto">
+    <el-table-column label="人数" width="auto">
       <template #default="{ row }">
-        <el-tag type="info" disable-transitions effect="dark">
+        <el-tag type="success" disable-transitions effect="dark">
           {{ row.count }}人
         </el-tag>
       </template>

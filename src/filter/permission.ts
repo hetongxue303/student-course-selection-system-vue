@@ -13,7 +13,6 @@ export const filterMenu = (
         item.isDisplay
     )
     .forEach((item) => {
-      console.log(item)
       data.push({
         name: item.menuTitle as string,
         icon: item.icon as string,

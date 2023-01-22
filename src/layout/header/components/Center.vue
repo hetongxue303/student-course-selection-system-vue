@@ -31,6 +31,8 @@
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '../../../store/modules/user'
 import { logout } from '../../../api/login'
+import { settings } from '../../../settings'
+import { cookie } from '../../../utils/storage'
 
 const userStore = useUserStore()
 const handlerLogout = async () => {
@@ -42,7 +44,8 @@ const handlerLogout = async () => {
     const { data } = await logout()
     switch (data.code) {
       case 200:
-        await userStore.systemLogout()
+        userStore.systemLogout()
+        cookie.remove(settings.AUTHORIZATION_KEY)
         ElMessage.success('注销成功')
         window.location.replace('/login')
         window.location.reload()

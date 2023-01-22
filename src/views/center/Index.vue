@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
-import type {
-  Action,
-  FormInstance,
-  FormRules,
-  TabsPaneContext
-} from 'element-plus'
+import type { FormInstance, FormRules, TabsPaneContext } from 'element-plus'
 import { User } from '../../types/entity'
 import { getUserCenter, updateUser, updateUserPassword } from '../../api/user'
 import { useUserStore } from '../../store/modules/user'
@@ -13,11 +8,7 @@ import { cloneDeep } from 'lodash'
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import moment from 'moment'
 import { encryptMD5 } from '../../hook/encryptMD5'
-import router from '../../router'
-import { useRouter } from 'vue-router'
-import { removeToken, removeTokenTime } from '../../utils/auth'
-import { cookie, local } from '../../utils/storage'
-import { useCookies } from '@vueuse/integrations/useCookies'
+import { cookie } from '../../utils/storage'
 
 const activeName = ref<string>('userinfo')
 const handleClick = (tab: TabsPaneContext, event: Event) => {
@@ -140,6 +131,7 @@ const handleUpdatePassword = () => {
         passwordDialog.value = false
         useUserStore().systemLogout()
         cookie.remove('password')
+        window.location.replace('/login')
         window.location.reload()
       })
       return

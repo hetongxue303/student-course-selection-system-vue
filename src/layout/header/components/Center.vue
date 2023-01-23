@@ -13,7 +13,7 @@
     </span>
     <template #dropdown>
       <el-dropdown-menu>
-        <el-dropdown-item>
+        <el-dropdown-item @click="ElMessage.warning('待开发')">
           <span>布局设置</span>
         </el-dropdown-item>
         <el-dropdown-item>

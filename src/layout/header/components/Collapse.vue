@@ -1,6 +1,6 @@
 <template>
   <!--折叠组件-->
-  <div class="collapse-content" @click="appStore.setCollapse(!isCollapse)">
+  <div class="collapse-content" @click="useAppStore().setCollapse(!isCollapse)">
     <el-icon :size="28">
       <component is="expand" v-if="isCollapse" />
       <component is="fold" v-else />

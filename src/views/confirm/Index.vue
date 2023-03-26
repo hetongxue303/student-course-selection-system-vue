@@ -2,17 +2,17 @@
   <!--表格工具-->
   <div class="table-tool">
     <el-row :gutter="20" class="search-box">
-      <el-col :span="3">
+      <el-col :span="4">
         <el-input v-model="query.realName" type="text" placeholder="学生姓名" />
       </el-col>
-      <el-col :span="3">
+      <el-col :span="4">
         <el-input
           v-model="query.courseName"
           type="text"
           placeholder="课程名称"
         />
       </el-col>
-      <el-col :span="3">
+      <el-col :span="4">
         <el-select
           v-model="query.status"
           placeholder="状态"

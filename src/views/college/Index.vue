@@ -2,7 +2,7 @@
   <!--表格工具-->
   <div class="table-tool">
     <el-row :gutter="20" class="search-box">
-      <el-col :span="3">
+      <el-col :span="4">
         <el-input
           v-model="query.collegeName"
           type="text"
@@ -95,8 +95,10 @@
   <!--对话框-->
   <el-dialog
     v-model="dialog.show"
-    :title="dialog.title"
-    width="40%"
+    width="35%"
+    :style="{ borderRadius: '10px' }"
+    destroy-on-close
+    :show-close="false"
     :close-on-click-modal="false"
   >
     <el-form

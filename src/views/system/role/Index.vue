@@ -2,7 +2,7 @@
   <!--表格工具-->
   <div class="table-tool">
     <el-row :gutter="20" class="search-box">
-      <el-col :span="3">
+      <el-col :span="4">
         <el-input v-model="query.roleName" type="text" placeholder="角色名" />
       </el-col>
       <el-button icon="RefreshLeft" type="warning" @click="resetSearch">
@@ -141,7 +141,8 @@
   <el-dialog
     v-model="dialog.show"
     :title="dialog.title"
-    width="30%"
+    width="35%"
+    :style="{ borderRadius: '10px' }"
     destroy-on-close
     :close-on-click-modal="false"
   >

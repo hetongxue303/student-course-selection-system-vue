@@ -2,7 +2,7 @@
   <!--表格工具-->
   <div class="table-tool">
     <el-row :gutter="20" class="search-box">
-      <el-col :span="3">
+      <el-col :span="4">
         <el-input
           v-model="query.menuTitle"
           type="text"
@@ -78,7 +78,7 @@
         </span>
       </template>
     </el-table-column>
-    <el-table-column label="组件路径" width="auto" align="center">
+    <el-table-column label="组件路径" width="auto" show-overflow-tooltip>
       <template #default="{ row }">
         <span v-if="row.component && row.component.indexOf('Layout') === -1">
           {{ row.component }}
@@ -103,13 +103,6 @@
         <span v-else>否</span>
       </template>
     </el-table-column>
-    <el-table-column label="创建时间" align="center" width="180">
-      <template #default="{ row }">
-        <span>
-          {{ moment(row.createTime).format('YYYY-MM-DD HH:mm:ss') }}
-        </span>
-      </template>
-    </el-table-column>
     <el-table-column label="操作" align="center" width="150">
       <template #default="{ row }">
         <el-button
@@ -130,7 +123,15 @@
   </el-table>
 
   <!--新增/编辑-->
-  <el-dialog v-model="dialog.show" :title="dialog.title" width="30%">
+  <el-dialog
+    v-model="dialog.show"
+    :title="dialog.title"
+    width="40%"
+    destroy-on-close
+    :close-on-click-modal="false"
+    :show-close="false"
+    :style="{ borderRadius: '10px' }"
+  >
     <el-form ref="ruleFormRef" :model="dialogForm" :rules="rules" status-icon>
       <el-row :gutter="20">
         <el-col v-show="[0, 1, 2].includes(dialogForm.menuType)" :span="12">

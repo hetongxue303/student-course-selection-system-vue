@@ -6,6 +6,8 @@ import { usePermissionStore } from './permission'
 import { filterMenu } from '../../filter/permission'
 import { useTabStore } from './tabs'
 import { useAppStore } from './app'
+import { settings } from '../../settings'
+import { useCookies } from '@vueuse/integrations/useCookies'
 
 export const useUserStore = defineStore('user', {
   state: (): UserStore => {
@@ -60,6 +62,7 @@ export const useUserStore = defineStore('user', {
       usePermissionStore().$reset()
       useTabStore().$reset()
       useAppStore().$reset()
+      useCookies().remove(settings.AUTHORIZATION_KEY)
       session.clear()
       local.clear()
       this.$reset()

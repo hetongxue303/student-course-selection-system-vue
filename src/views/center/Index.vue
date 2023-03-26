@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
 import type { FormInstance, FormRules, TabsPaneContext } from 'element-plus'
+import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import { User } from '../../types/entity'
 import { getUserCenter, updateUser, updateUserPassword } from '../../api/user'
 import { useUserStore } from '../../store/modules/user'
 import { cloneDeep } from 'lodash'
-import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import moment from 'moment'
 import { encryptMD5 } from '../../hook/encryptMD5'
-import { cookie } from '../../utils/storage'
+import { useCookies } from '@vueuse/integrations/useCookies'
 
 const activeName = ref<string>('userinfo')
 const handleClick = (tab: TabsPaneContext, event: Event) => {
@@ -130,7 +130,7 @@ const handleUpdatePassword = () => {
       }).then(() => {
         passwordDialog.value = false
         useUserStore().systemLogout()
-        cookie.remove('password')
+        useCookies().remove('password')
         window.location.replace('/login')
         window.location.reload()
       })
@@ -270,7 +270,10 @@ const handleUpdatePassword = () => {
   <el-dialog
     v-model="passwordDialog"
     title="修改密码"
-    width="25%"
+    width="35%"
+    :style="{ borderRadius: '10px' }"
+    destroy-on-close
+    :show-close="false"
     :close-on-click-modal="false"
   >
     <el-form
@@ -321,6 +324,12 @@ const handleUpdatePassword = () => {
 </template>
 
 <style scoped lang="scss">
+@mixin dis-flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 :deep(.el-form-item) {
   width: 300px;
 }
@@ -335,15 +344,12 @@ const handleUpdatePassword = () => {
 }
 
 .avatar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include dis-flex;
   margin-bottom: 10px;
 }
 
 .item {
-  display: flex;
-  align-items: center;
+  @include dis-flex;
   justify-content: space-between;
   border-bottom: 1px solid #e7eaec;
   margin-bottom: -1px;

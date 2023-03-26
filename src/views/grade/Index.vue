@@ -2,7 +2,7 @@
   <!--表格工具-->
   <div class="table-tool">
     <el-row :gutter="20" class="search-box">
-      <el-col :span="3">
+      <el-col :span="4">
         <el-input
           v-model="query.gradeName"
           type="text"
@@ -53,8 +53,8 @@
     <el-table-column prop="gradeName" label="班级名称" width="auto" />
     <el-table-column prop="gradeCount" label="人数" width="auto">
       <template #default="{ row }">
-        <el-tag type="success" effect="dark" disable-transitions>
-          {{ row.gradeCount }}人
+        <el-tag type="success" disable-transitions>
+          {{ row.gradeCount }}
         </el-tag>
       </template>
     </el-table-column>
@@ -97,7 +97,10 @@
   <el-dialog
     v-model="dialog.show"
     :title="dialog.title"
-    width="20%"
+    width="35%"
+    :style="{ borderRadius: '10px' }"
+    destroy-on-close
+    :show-close="false"
     :close-on-click-modal="false"
   >
     <el-form

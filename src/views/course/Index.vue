@@ -2,7 +2,7 @@
   <!--表格工具-->
   <div class="table-tool">
     <el-row :gutter="20" class="search-box">
-      <el-col :span="3">
+      <el-col :span="4">
         <el-input
           v-model="query.courseName"
           type="text"
@@ -55,7 +55,7 @@
     <el-table-column type="selection" width="50" align="center" />
     <el-table-column prop="courseName" label="课程名称" width="auto" />
     <el-table-column prop="user.realName" label="任课教师" width="auto" />
-    <el-table-column label="剩余" v width="auto">
+    <el-table-column label="剩余" width="auto">
       <template #default="{ row }">
         <el-tag
           v-if="row.count === row.choice"
@@ -115,7 +115,10 @@
   <el-dialog
     v-model="dialog.show"
     :title="dialog.title"
-    width="25%"
+    width="35%"
+    :style="{ borderRadius: '10px' }"
+    destroy-on-close
+    :show-close="false"
     :close-on-click-modal="false"
   >
     <el-form
@@ -144,9 +147,13 @@
         </el-col>
       </el-row>
       <el-row v-role="['admin']" :gutter="20">
-        <el-col :span="12">
+        <el-col :span="24">
           <el-form-item label="任课老师" prop="userId">
-            <el-select v-model="dialogForm.userId" placeholder="请选择">
+            <el-select
+              v-model="dialogForm.userId"
+              placeholder="请选择"
+              style="width: 100%"
+            >
               <el-option
                 v-for="(item, index) in teachers"
                 :key="index"

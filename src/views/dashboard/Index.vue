@@ -1,6 +1,6 @@
 <template>
   <div class="logo">
-    <el-image src="" alt="" />
+    <!--    <el-image src="" alt="" />-->
   </div>
   <div class="dashboard">
     <div
@@ -65,8 +65,8 @@
     </div>
   </div>
   <div class="ref-box">
-    <div ref="choiceRef" style="height: 400px; width: 50%; margin-top: 30px" />
-    <div ref="courseRef" style="height: 400px; width: 50%; margin-top: 30px" />
+    <div ref="choiceRef" style="height: 320px; width: 50%; margin-top: 30px" />
+    <div ref="courseRef" style="height: 320px; width: 50%; margin-top: 30px" />
   </div>
 </template>
 
@@ -198,7 +198,7 @@ const initEchartsData = () => {
 <style scoped lang="scss">
 .logo {
   width: 100%;
-  height: 250px;
+  height: 220px;
   background: linear-gradient(
     123deg,
     #461b93 0%,

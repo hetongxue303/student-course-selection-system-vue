@@ -2,7 +2,7 @@
   <!--表格工具-->
   <div class="table-tool">
     <el-row :gutter="20" class="search-box">
-      <el-col :span="3">
+      <el-col :span="4">
         <el-input
           v-if="query.type === undefined || query.type === 1"
           v-model="query.username"
@@ -22,13 +22,13 @@
           placeholder="学号"
         />
       </el-col>
-      <el-col :span="3">
+      <el-col :span="4">
         <el-select v-model="query.isEnable" placeholder="状态" clearable>
           <el-option label="启用" :value="true" />
           <el-option label="禁用" :value="false" />
         </el-select>
       </el-col>
-      <el-col :span="3">
+      <el-col :span="4">
         <el-select v-model="query.type" placeholder="角色" clearable>
           <el-option label="管理员" :value="1" />
           <el-option label="教师" :value="2" />
@@ -102,13 +102,17 @@
     <el-table-column v-else prop="realName" label="学生姓名" width="auto" />
     <el-table-column label="性别" width="auto">
       <template #default="{ row }">
-        <el-tag type="success" effect="dark">
-          {{ row.gender === '1' ? '男' : '女' }}
-        </el-tag>
+        {{ row.gender === '1' ? '男' : '女' }}
       </template>
     </el-table-column>
     <el-table-column prop="phone" label="电话" align="center" width="auto" />
-    <el-table-column prop="email" label="邮箱" align="center" width="auto" />
+    <el-table-column
+      prop="email"
+      label="邮箱"
+      align="center"
+      width="auto"
+      show-overflow-tooltip
+    />
     <el-table-column prop="isEnable" label="状态" align="center" width="auto">
       <template #default="scope">
         <el-switch
@@ -116,8 +120,6 @@
           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
           :disabled="!useUserStore().getIsAdmin"
           inline-prompt
-          active-text="正常"
-          inactive-text="禁用"
           @change="handleSwitchChange(scope.row)"
         />
       </template>
@@ -159,7 +161,8 @@
   <el-dialog
     v-model="dialog.show"
     :title="dialog.title"
-    width="30%"
+    width="35%"
+    :style="{ borderRadius: '10px' }"
     :close-on-click-modal="false"
   >
     <el-form

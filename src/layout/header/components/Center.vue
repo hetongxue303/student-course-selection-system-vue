@@ -13,9 +13,6 @@
     </span>
     <template #dropdown>
       <el-dropdown-menu>
-        <el-dropdown-item @click="ElMessage.warning('待开发')">
-          <span>布局设置</span>
-        </el-dropdown-item>
         <el-dropdown-item>
           <router-link to="/user/center"> 个人中心</router-link>
         </el-dropdown-item>
@@ -31,28 +28,26 @@
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '../../../store/modules/user'
 import { logout } from '../../../api/login'
-import { settings } from '../../../settings'
-import { cookie } from '../../../utils/storage'
 
 const userStore = useUserStore()
-const handlerLogout = async () => {
+const handlerLogout = () => {
   ElMessageBox.confirm('您确认确认退出系统吗？', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
-  }).then(async () => {
-    const { data } = await logout()
-    switch (data.code) {
-      case 200:
-        userStore.systemLogout()
-        cookie.remove(settings.AUTHORIZATION_KEY)
-        ElMessage.success('注销成功')
-        window.location.replace('/login')
-        window.location.reload()
-        break
-      default:
-        ElMessage.error('注销失败，请重试！')
-    }
+  }).then(() => {
+    logout().then(({ data }) => {
+      switch (data.code) {
+        case 200:
+          ElMessage.success('注销成功')
+          useUserStore().systemLogout()
+          window.location.replace('/login')
+          window.location.reload()
+          break
+        default:
+          ElMessage.error('注销失败，请重试！')
+      }
+    })
   })
 }
 </script>

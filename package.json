@@ -38,13 +38,13 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "nprogress": "^0.2.0",
-    "pinia": "^2.0.23",
+    "pinia": "^2.0.30",
     "pinia-plugin-persistedstate": "^2.4.0",
     "qs": "^6.11.0",
     "universal-cookie": "^4.0.4",
     "vite-plugin-eslint": "^1.8.1",
     "vue": "^3.2.41",
-    "vue-router": "^4.1.5"
+    "vue-router": "^4.0.13"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.2.0",

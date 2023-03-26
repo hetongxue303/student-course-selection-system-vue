@@ -2,7 +2,7 @@
   <!--表格工具-->
   <div class="table-tool">
     <el-row :gutter="20" class="search-box">
-      <el-col :span="3">
+      <el-col :span="4">
         <el-input
           v-model="query.courseName"
           type="text"
@@ -17,14 +17,14 @@
 
   <!--表格-->
   <el-table v-loading="tableLoading" :data="tableData" width="100%">
-    <el-table-column prop="courseName" label="课程名称" width="auto" />
-    <el-table-column prop="user.realName" label="任课教师" width="auto" />
+    <el-table-column prop="courseName" label="课程名称" />
+    <el-table-column prop="user.realName" label="任课教师" />
     <el-table-column label="性别" width="auto">
       <template #default="{ row }">
         {{ row.user.gender === '1' ? '男' : '女' }}
       </template>
     </el-table-column>
-    <el-table-column label="剩余" width="auto">
+    <el-table-column label="剩余">
       <template #default="{ row }">
         <el-tag
           :type="row.choice === row.count ? 'warning' : 'success'"
@@ -38,13 +38,11 @@
     </el-table-column>
     <el-table-column label="人数" width="auto">
       <template #default="{ row }">
-        <el-tag type="success" disable-transitions effect="dark">
-          {{ row.count }}人
-        </el-tag>
+        <el-tag type="info" disable-transitions> {{ row.count }}人</el-tag>
       </template>
     </el-table-column>
-    <el-table-column prop="remark" label="描述" align="center" width="auto" />
-    <el-table-column label="发布时间" align="center" width="180">
+    <el-table-column prop="remark" label="课程简介" show-overflow-tooltip />
+    <el-table-column label="发布时间" width="180">
       <template #default="{ row }">
         <span>
           {{ moment(row.createTime).format('YYYY-MM-DD HH:mm:ss') }}
